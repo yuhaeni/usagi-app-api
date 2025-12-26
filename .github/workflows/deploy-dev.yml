@@ -3,7 +3,7 @@ name: Deploy to DEV (Lightsail)
 on:
   push:
     branches:
-      - develop
+      - dev
   workflow_dispatch:
 
 env:
