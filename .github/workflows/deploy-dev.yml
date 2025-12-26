@@ -1,0 +1,109 @@
+name: Deploy to DEV (Lightsail)
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+  ENVIRONMENT: dev
+  SERVICE_NAME: kou-app-dev
+  APP_IMAGE_NAME: kou-app-dev
+  NGINX_IMAGE_NAME: kou-nginx-dev
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Kotest
+        run: ./gradlew test --no-daemon
+        continue-on-error: false
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-dev
+          path: build/test-results/
+
+      - name: Build with Gradle (DEV)
+        run: ./gradlew clean build --no-daemon
+        env:
+          SPRING_PROFILES_ACTIVE: dev
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build App Docker image (DEV)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: |
+            ${{ env.APP_IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.APP_IMAGE_NAME }}:latest-dev
+          build-args: |
+            SPRING_PROFILES_ACTIVE=dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
+
+      # Nginx Docker 이미지 빌드 (DEV)
+      - name: Build Nginx Docker image (DEV)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./nginx/Dockerfile
+          push: false
+          tags: |
+            ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.NGINX_IMAGE_NAME }}:latest-dev
+          build-args: |
+            ENVIRONMENT=dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
+
+      - name: Verify Docker images
+        run: |
+          echo "=== DEV Environment Images ==="
+          docker images | grep ${{ env.APP_IMAGE_NAME }}
+          docker images | grep ${{ env.NGINX_IMAGE_NAME }}
+          
+          echo "Testing app image..."
+          docker run --rm ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} java -version
+
+      - name: Save Docker images
+        run: |
+          docker save ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} -o /tmp/app-image-dev.tar
+          docker save ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }} -o /tmp/nginx-image-dev.tar
+
+      - name: Upload Docker images as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-images-dev
+          path: |
+            /tmp/app-image-dev.tar
+            /tmp/nginx-image-dev.tar
+          retention-days: 1
+
+    outputs:
+      image-tag: ${{ github.sha }}
+      environment: dev
