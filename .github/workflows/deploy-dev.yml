@@ -90,20 +90,6 @@ jobs:
           echo "Testing app image..."
           docker run --rm ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} java -version
 
-      - name: Save Docker images
-        run: |
-          docker save ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} -o /tmp/app-image-dev.tar
-          docker save ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }} -o /tmp/nginx-image-dev.tar
-
-      - name: Upload Docker images as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-images-dev
-          path: |
-            /tmp/app-image-dev.tar
-            /tmp/nginx-image-dev.tar
-          retention-days: 1
-
     outputs:
       image-tag: ${{ github.sha }}
       environment: dev
