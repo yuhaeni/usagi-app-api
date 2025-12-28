@@ -16,7 +16,11 @@ env:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    
+
+    # ============================================
+    # Build & Test
+    # ============================================
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,7 +69,6 @@ jobs:
           cache-to: type=gha,mode=max
           load: true
 
-      # Nginx Docker 이미지 빌드 (DEV)
       - name: Build Nginx Docker image (DEV)
         uses: docker/build-push-action@v5
         with:
@@ -86,9 +89,167 @@ jobs:
           echo "=== DEV Environment Images ==="
           docker images | grep ${{ env.APP_IMAGE_NAME }}
           docker images | grep ${{ env.NGINX_IMAGE_NAME }}
+
+      # ============================================
+      # Deploy to Lightsail
+      # ============================================
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.KOU_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.KOU_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Lightsail Plugin
+        run: |
+          curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+          sudo chmod +x /usr/local/bin/lightsailctl
+
+      - name: Push App image to Lightsail
+        run: |
+          aws lightsail push-container-image \
+            --service-name ${{ env.SERVICE_NAME }} \
+            --label app-${{ github.sha }} \
+            --image ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Push Nginx image to Lightsail
+        run: |
+          aws lightsail push-container-image \
+            --service-name ${{ env.SERVICE_NAME }} \
+            --label nginx-${{ github.sha }} \
+            --image ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Get pushed image names
+        id: image-names
+        run: |
+          APP_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("app-${{ github.sha }}")) | .image')
+          NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image')
           
-          echo "Testing app image..."
-          docker run --rm ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} java -version
+          echo "app_image=$APP_IMAGE" >> $GITHUB_OUTPUT
+          echo "nginx_image=$NGINX_IMAGE" >> $GITHUB_OUTPUT
+          
+          echo "App Image: $APP_IMAGE"
+          echo "Nginx Image: $NGINX_IMAGE"
+
+      - name: Create deployment configuration
+        run: |
+          cat > deployment.json << EOF
+          {
+            "containers": {
+              "app": {
+                "image": "${{ steps.image-names.outputs.app_image }}",
+                "environment": {
+                  "SPRING_PROFILES_ACTIVE": "dev",
+                  "DB_URL": "${{ secrets.KOU_DEV_DB_URL }}",
+                  "DB_USERNAME": "${{ secrets.KOU_DEV_DB_USERNAME }}",
+                  "DB_PASSWORD": "${{ secrets.KOU_DEV_DB_PASSWORD }}",
+                },
+                "ports": {
+                  "8080": "HTTP"
+                }
+              },
+              "nginx": {
+                "image": "${{ steps.image-names.outputs.nginx_image }}",
+                "ports": {
+                  "80": "HTTP"
+                }
+              }
+            },
+            "publicEndpoint": {
+              "containerName": "nginx",
+              "containerPort": 80,
+              "healthCheck": {
+                "healthyThreshold": 2,
+                "unhealthyThreshold": 2,
+                "timeoutSeconds": 5,
+                "intervalSeconds": 30,
+                "path": "/health",
+                "successCodes": "200"
+              }
+            }
+          }
+          EOF
+          
+          echo "=== Deployment Configuration ==="
+          cat deployment.json
+
+      - name: Deploy to Lightsail
+        run: |
+          aws lightsail create-container-service-deployment \
+            --service-name ${{ env.SERVICE_NAME }} \
+            --region ${{ env.AWS_REGION }} \
+            --cli-input-json file://deployment.json
+
+      - name: Wait for deployment
+        run: |
+          echo "Waiting for deployment to complete..."
+          for i in {1..30}; do
+            STATE=$(aws lightsail get-container-services \
+              --service-name ${{ env.SERVICE_NAME }} \
+              --region ${{ env.AWS_REGION }} \
+              --query 'containerServices[0].state' \
+              --output text)
+          
+            echo "Attempt $i/30: Current state: $STATE"
+          
+            if [ "$STATE" = "RUNNING" ]; then
+              echo "✅ Deployment successful!"
+              exit 0
+            elif [ "$STATE" = "FAILED" ]; then
+              echo "❌ Deployment failed!"
+              exit 1
+            fi
+          
+            sleep 20
+          done
+          
+          echo "⚠️ Deployment timeout after 10 minutes"
+          exit 1
+
+      - name: Get service URL
+        if: success()
+        run: |
+          SERVICE_URL=$(aws lightsail get-container-services \
+            --service-name ${{ env.SERVICE_NAME }} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'containerServices[0].url' \
+            --output text)
+          
+          echo "================================================"
+          echo "🚀 DEV Environment deployed successfully!"
+          echo "📍 Service URL: https://$SERVICE_URL"
+          echo "🏥 Health Check: https://$SERVICE_URL/health"
+          echo "================================================"
+
+      - name: Health check
+        if: success()
+        run: |
+          SERVICE_URL=$(aws lightsail get-container-services \
+            --service-name ${{ env.SERVICE_NAME }} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'containerServices[0].url' \
+            --output text)
+          
+          echo "Performing health check..."
+          
+          for i in {1..10}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://$SERVICE_URL/health || echo "000")
+          
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Health check passed! (HTTP $HTTP_CODE)"
+              curl -s https://$SERVICE_URL/health
+              exit 0
+            fi
+          
+            echo "Attempt $i/10: HTTP $HTTP_CODE - Waiting..."
+            sleep 10
+          done
+          
+          echo "⚠️ Health check did not pass within timeout"
+          exit 1
 
     outputs:
       image-tag: ${{ github.sha }}
