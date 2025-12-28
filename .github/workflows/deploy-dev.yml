@@ -195,8 +195,10 @@ jobs:
           
             echo "Attempt $i/30: Current state: $STATE"
           
-            if [ "$STATE" = "RUNNING" ]; then
+            if [ "$STATE" = "RUNNING" ] && [ "$CURRENT_DEPLOYMENT" = "ACTIVE" ]; then
               echo "✅ Deployment successful!"
+              echo "Waiting 60 seconds for containers to be ready..."
+              sleep 60
               exit 0
             elif [ "$STATE" = "FAILED" ]; then
               echo "❌ Deployment failed!"
