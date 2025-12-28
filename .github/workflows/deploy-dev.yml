@@ -192,22 +192,32 @@ jobs:
               --region ${{ env.AWS_REGION }} \
               --query 'containerServices[0].state' \
               --output text)
-          
-            echo "Attempt $i/30: Current state: $STATE"
-          
+      
+            CURRENT_DEPLOYMENT=$(aws lightsail get-container-services \
+              --service-name ${{ env.SERVICE_NAME }} \
+              --region ${{ env.AWS_REGION }} \
+              --query 'containerServices[0].currentDeployment.state' \
+              --output text)
+      
+            echo "Attempt $i/30: Service state: $STATE, Deployment state: $CURRENT_DEPLOYMENT"
+      
             if [ "$STATE" = "RUNNING" ] && [ "$CURRENT_DEPLOYMENT" = "ACTIVE" ]; then
               echo "✅ Deployment successful!"
-              echo "Waiting 60 seconds for containers to be ready..."
-              sleep 60
               exit 0
-            elif [ "$STATE" = "FAILED" ]; then
+            elif [ "$STATE" = "FAILED" ] || [ "$CURRENT_DEPLOYMENT" = "FAILED" ]; then
               echo "❌ Deployment failed!"
+      
+              aws lightsail get-container-log \
+                --service-name ${{ env.SERVICE_NAME }} \
+                --container-name app \
+                --region ${{ env.AWS_REGION }} || true
+      
               exit 1
             fi
-          
+      
             sleep 20
           done
-          
+      
           echo "⚠️ Deployment timeout after 10 minutes"
           exit 1
 
