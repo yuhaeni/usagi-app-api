@@ -145,7 +145,7 @@ jobs:
                   "SPRING_PROFILES_ACTIVE": "dev",
                   "DB_URL": "${{ secrets.KOU_DEV_DB_URL }}",
                   "DB_USERNAME": "${{ secrets.KOU_DEV_DB_USERNAME }}",
-                  "DB_PASSWORD": "${{ secrets.KOU_DEV_DB_PASSWORD }}",
+                  "DB_PASSWORD": "${{ secrets.KOU_DEV_DB_PASSWORD }}"
                 },
                 "ports": {
                   "8080": "HTTP"
