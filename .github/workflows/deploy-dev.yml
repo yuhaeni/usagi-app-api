@@ -252,7 +252,7 @@ jobs:
           
             if [ "$HTTP_CODE" = "200" ]; then
               echo "✅ Health check passed! (HTTP $HTTP_CODE)"
-              curl -s $SERVICE_URLactuator/health
+              curl -s {$SERVICE_URL}actuator/health
               exit 0
             fi
           
