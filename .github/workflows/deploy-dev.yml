@@ -244,6 +244,7 @@ jobs:
             --region ${{ env.AWS_REGION }} \
             --query 'containerServices[0].url' \
             --output text)
+          SERVICE_URL=${SERVICE_URL%/}
           
           echo "Performing health check..."
           
@@ -252,7 +253,7 @@ jobs:
           
             if [ "$HTTP_CODE" = "200" ]; then
               echo "✅ Health check passed! (HTTP $HTTP_CODE)"
-              curl -s {$SERVICE_URL}actuator/health
+              curl -s {$SERVICE_URL}/actuator/health
               exit 0
             fi
           
