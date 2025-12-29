@@ -32,12 +32,11 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Run Kotest
+      - name: Run tests
         run: ./gradlew test --no-daemon
-        continue-on-error: false
 
       - name: Upload test results
         if: failure()
