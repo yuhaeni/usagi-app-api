@@ -1,0 +1,28 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/kou_app_local
+        username: admin
+        password: 1234qwer
+        driver-class-name: org.postgresql.Driver
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
+
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+
+server:
+    port: 8080
+
+logging:
+    level:
+        com.kou.kouappapi: DEBUG
+        org.springframework.web: DEBUG
+        org.springframework.security: DEBUG

@@ -1,16 +1,24 @@
 spring:
-  application:
-    name: kou-app-api
+    profiles:
+        active: local
+    application:
+        name: kou-app-api
+    jpa:
+        open-in-view: false
+        properties:
+            hibernate:
+                format_sql: true
+                use_sql_comments: true
 
 server:
-  port: 8080
-  shutdown: graceful
+    port: 8080
+    shutdown: graceful
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: when-authorized
+    endpoints:
+        web:
+            exposure:
+                include: health,info
+    endpoint:
+        health:
+            show-details: when-authorized
