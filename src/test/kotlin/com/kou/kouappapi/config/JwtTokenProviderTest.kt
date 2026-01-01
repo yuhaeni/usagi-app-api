@@ -3,6 +3,8 @@ package com.kou.kouappapi.config
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import security.jwt.JwtProperties
+import security.jwt.JwtTokenProvider
 
 class JwtTokenProviderTest : DescribeSpec({
 
