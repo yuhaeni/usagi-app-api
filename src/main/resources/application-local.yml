@@ -26,3 +26,7 @@ logging:
         com.kou.kouappapi: DEBUG
         org.springframework.web: DEBUG
         org.springframework.security: DEBUG
+
+jwt:
+    secret: b25pb24tY29tbXVuaXR5LXRlbXAtc2VjcmV0LWtleS0yMDI1LXZlcnktc2VjdXJlISE=
+    access-token-expiration: 3600000
