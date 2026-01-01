@@ -1,4 +1,4 @@
-package com.kou.kouappapi.config
+package security.jwt
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
