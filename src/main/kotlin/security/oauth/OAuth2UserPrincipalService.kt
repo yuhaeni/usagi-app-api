@@ -8,7 +8,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.core.user.OAuth2User
 
-class CustomOAuth2UserService(
+class OAuth2UserPrincipalService(
     private val userRepository: UserRepository,
     private val extractors: List<OAuth2UserInfoExtractor>,
 ) : DefaultOAuth2UserService() {
@@ -24,7 +24,7 @@ class CustomOAuth2UserService(
 
         val userInfo = extractor.extractUserInfo(oAuth2User.attributes)
         val user = findOrCreateUser(provider, userInfo)
-        return CustomOAuth2User(user, oAuth2User.attributes)
+        return OAuth2UserPrincipal(user, oAuth2User.attributes)
     }
 
     private fun findOrCreateUser(

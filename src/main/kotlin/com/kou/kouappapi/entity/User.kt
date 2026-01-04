@@ -32,6 +32,8 @@ class User(
     val providerId: String,
     @Enumerated(EnumType.STRING)
     var role: Role = Role.USER,
+    @Column(nullable = false)
+    var isRegistrationCompleted: Boolean = false,
 ) : BaseEntity() {
     // TODO 프로필 업데이트 관련 함수 추가
 }
