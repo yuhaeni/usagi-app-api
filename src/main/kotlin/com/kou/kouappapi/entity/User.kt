@@ -1,5 +1,6 @@
 package com.kou.kouappapi.entity
 
+import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.enums.SocialProvider
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -22,10 +23,15 @@ import jakarta.persistence.UniqueConstraint
 class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = 0L,
+    val id: Long? = null,
+    var name: String? = null,
     @Column(nullable = false, unique = true, updatable = false)
     val email: String,
     @Enumerated(EnumType.STRING)
     val provider: SocialProvider,
     val providerId: String,
-) : BaseEntity()
+    @Enumerated(EnumType.STRING)
+    var role: Role = Role.USER,
+) : BaseEntity() {
+    // TODO 프로필 업데이트 관련 함수 추가
+}
