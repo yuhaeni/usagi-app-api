@@ -37,7 +37,7 @@ class JwtTokenProvider(
      * Access Token 생성
      */
     fun generateAccessToken(
-        userId: Long,
+        userId: Long?,
         email: String,
         role: Role,
     ): String =
@@ -53,7 +53,7 @@ class JwtTokenProvider(
      * Refresh Token 생성
      */
     fun generateRefreshToken(
-        userId: Long,
+        userId: Long?,
         email: String,
         role: Role,
     ): String =
@@ -69,7 +69,7 @@ class JwtTokenProvider(
      * 토큰 생성 (공통 로직)
      */
     private fun generateToken(
-        userId: Long,
+        userId: Long?,
         email: String,
         role: Role,
         expireTime: Long,
