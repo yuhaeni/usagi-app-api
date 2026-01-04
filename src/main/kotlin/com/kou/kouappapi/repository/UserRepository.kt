@@ -11,4 +11,5 @@ interface UserRepository : JpaRepository<User, Long> {
     ): User?
 
     fun findByEmail(email: String): User?
+    fun findByProviderAndEmail(provider: SocialProvider, email: String): User?
 }
