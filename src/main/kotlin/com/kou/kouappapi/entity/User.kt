@@ -1,5 +1,6 @@
 package com.kou.kouappapi.entity
 
+import com.kou.kouappapi.auth.service.dto.UserResponseDto
 import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.enums.SocialProvider
 import jakarta.persistence.Column
@@ -34,6 +35,15 @@ class User(
     var role: Role = Role.USER,
     @Column(nullable = false)
     var isRegistrationCompleted: Boolean = false,
-) : BaseEntity() {
-    // TODO 프로필 업데이트 관련 함수 추가
-}
+    @Column(nullable = false)
+    var isDeleted: Boolean = false,
+) : BaseEntity()
+
+fun User.toResponseDto(): UserResponseDto =
+    UserResponseDto(
+        id = id,
+        email = email,
+        name = name,
+    )
+
+// TODO 프로필 업데이트 관련 함수 추가
