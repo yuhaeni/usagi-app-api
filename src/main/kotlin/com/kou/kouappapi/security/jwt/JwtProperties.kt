@@ -1,4 +1,4 @@
-package security.jwt
+package com.kou.kouappapi.security.jwt
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component

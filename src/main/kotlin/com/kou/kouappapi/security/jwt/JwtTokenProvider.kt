@@ -1,4 +1,4 @@
-package security.jwt
+package com.kou.kouappapi.security.jwt
 
 import com.kou.kouappapi.enums.Role
 import io.jsonwebtoken.Claims

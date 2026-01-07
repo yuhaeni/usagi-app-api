@@ -10,14 +10,6 @@ spring:
             ddl-auto: update
         show-sql: true
 
-
-    security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        redirect-uri: "http://localhost:8080/login/oauth2/code/google"
-
 server:
     port: 8080
 
@@ -28,5 +20,5 @@ logging:
         org.springframework.security: DEBUG
 
 jwt:
-    secret: b25pb24tY29tbXVuaXR5LXRlbXAtc2VjcmV0LWtleS0yMDI1LXZlcnktc2VjdXJlISE=
+    secret: ${JWT_SECRET}
     access-token-expiration: 3600000
