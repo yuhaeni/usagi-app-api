@@ -1,17 +1,14 @@
 package com.kou.kouappapi.security.jwt
 
 import com.kou.kouappapi.enums.Role
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jws
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
-import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.*
+import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.util.Date
+import java.nio.charset.StandardCharsets
+import java.util.*
 import javax.crypto.SecretKey
 
 @Component
@@ -30,6 +27,7 @@ class JwtTokenProvider(
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     private val secretKey: SecretKey by lazy {
+        println(jwtProperties.secret)
         Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
     }
 

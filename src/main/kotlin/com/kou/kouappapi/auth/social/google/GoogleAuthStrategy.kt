@@ -1,5 +1,6 @@
 package com.kou.kouappapi.auth.social.google
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
@@ -17,11 +18,14 @@ class GoogleAuthStrategy(
     override fun getSocialProvider() = SocialProvider.GOOGLE
 
     override fun authenticate(token: String): SocialUserInfo {
-        val idToken =
-            verifier.verify(token)
-                ?: throw AuthInvalidIdTokenException()
 
-        val payload = idToken.payload
+        val payload = runCatching {
+            verifier.verify(token)
+        }
+            .getOrElse { throw AuthInvalidIdTokenException() }
+            ?.payload
+            ?: throw AuthInvalidIdTokenException()
+
         if (!payload.emailVerified) {
             throw AuthEmailNotVerifiedException()
         }
@@ -39,6 +43,9 @@ class GoogleAuthStrategy(
             .Builder(
                 NetHttpTransport(),
                 GsonFactory.getDefaultInstance(),
-            ).setAudience(listOf(googleProperties.clientId))
+            ).setAudience(listOf(
+                googleProperties.clientId,
+                googleProperties.playground // TODO 삭제 필요
+            ))
             .build()
 }
