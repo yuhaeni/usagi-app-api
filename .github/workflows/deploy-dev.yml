@@ -110,17 +110,23 @@ jobs:
             --image ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }} \
             --region ${{ env.AWS_REGION }}
 
-      - name: Get pushed image names
-        id: image-names
-        run: |
-          APP_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("app-${{ github.sha }}")) | .image')
-          NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image')
+            - name: Get pushed image names
+              id: image-names
+              run: |
+                APP_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("app-${{ github.sha }}")) | .image' | head -n 1)
           
-          echo "app_image=$APP_IMAGE" >> $GITHUB_OUTPUT
-          echo "nginx_image=$NGINX_IMAGE" >> $GITHUB_OUTPUT
+                NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image' | head -n 1)
           
-          echo "App Image: $APP_IMAGE"
-          echo "Nginx Image: $NGINX_IMAGE"
+                if [[ -z "$APP_IMAGE" ]]; then
+                  echo "Error: Could not find APP_IMAGE matching ${{ github.sha }}"
+                  exit 1
+                fi
+
+                echo "app_image=$APP_IMAGE" >> $GITHUB_OUTPUT
+                echo "nginx_image=$NGINX_IMAGE" >> $GITHUB_OUTPUT
+          
+                echo "Found App Image: $APP_IMAGE"
+                echo "Found Nginx Image: $NGINX_IMAGE"
 
       - name: Create deployment configuration
         run: |
