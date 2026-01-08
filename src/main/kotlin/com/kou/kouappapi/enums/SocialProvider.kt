@@ -5,5 +5,4 @@ enum class SocialProvider(
 ) {
     GOOGLE("google"),
     APPLE("apple"),
-    ;
 }
