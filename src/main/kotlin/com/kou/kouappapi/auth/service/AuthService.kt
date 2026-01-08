@@ -43,7 +43,7 @@ class AuthService(
         userRepository.save(
             User(
                 name = socialUserInfo.name,
-                email = socialUserInfo.providerId,
+                email = socialUserInfo.email,
                 provider = socialUserInfo.provider,
                 providerId = socialUserInfo.providerId,
             ),
