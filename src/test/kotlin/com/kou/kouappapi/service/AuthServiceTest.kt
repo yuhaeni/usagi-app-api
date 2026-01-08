@@ -35,7 +35,7 @@ class AuthServiceTest(
                             authService.socialLogin(
                                 SocialLoginRequestDto(
                                     provider = SocialProvider.GOOGLE,
-                                    token = "test.a0Aa7pCA8ZifEakG0LN3lPCO-fMfVoJdsfaafsdsdf7i3U9Mx8hvqK0tSfO821HLsdArB9Twdu8xV4fP-sguhQk2kQ1t6od06OXu5UAO9mFpGgiamL8gPaQgf0gaCdafsdfadfsdf6",
+                                    token = "test.test.test.test.test",
                                 ),
                             )
                         }
