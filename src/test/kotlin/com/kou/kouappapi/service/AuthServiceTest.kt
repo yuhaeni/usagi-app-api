@@ -7,10 +7,8 @@ import com.kou.kouappapi.exception.AuthInvalidIdTokenException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
-@ActiveProfiles("test")
 class AuthServiceTest(
     private val authService: AuthService,
 ) : DescribeSpec(
