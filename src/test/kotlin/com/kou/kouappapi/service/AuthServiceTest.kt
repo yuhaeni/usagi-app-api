@@ -8,14 +8,10 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldNotBe
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
-@TestPropertySource(
-    properties = [
-        "jwt.secret=testtesttesttesttesttesttesttest"
-    ]
-)
+@ActiveProfiles("test")
 class AuthServiceTest(
     private val authService: AuthService,
 ) : DescribeSpec(
