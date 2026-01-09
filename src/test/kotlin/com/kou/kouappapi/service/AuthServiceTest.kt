@@ -12,8 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest
 class AuthServiceTest(
     private val authService: AuthService,
 ) : DescribeSpec(
-    {
-        describe("google 소셜 로그인") {
+        {
+            describe("google 소셜 로그인") {
 
 //            describe("유효한 google id 토큰이 주어지면") {
 //                it("로그인 토큰을 발행한다.") {
@@ -27,18 +27,18 @@ class AuthServiceTest(
 //                    responseSocialLogin shouldNotBe null
 //                }
 //            }
-            describe("유효하지 않은 google id 토큰이 주어지면") {
-                it("유효하지 않은 토큰 예외가 발생한다.") {
-                    shouldThrow<AuthInvalidIdTokenException> {
-                        authService.socialLogin(
-                            SocialLoginRequestDto(
-                                provider = SocialProvider.GOOGLE,
-                                token = "test.test.test.test.test",
-                            ),
-                        )
+                describe("유효하지 않은 google id 토큰이 주어지면") {
+                    it("유효하지 않은 토큰 예외가 발생한다.") {
+                        shouldThrow<AuthInvalidIdTokenException> {
+                            authService.socialLogin(
+                                SocialLoginRequestDto(
+                                    provider = SocialProvider.GOOGLE,
+                                    token = "test.test.test.test.test",
+                                ),
+                            )
+                        }
                     }
                 }
             }
-        }
-    },
-)
+        },
+    )
