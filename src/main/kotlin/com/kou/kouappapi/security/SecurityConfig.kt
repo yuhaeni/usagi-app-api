@@ -37,8 +37,7 @@ class SecurityConfig(
                         "/actuator/health",
                     ).permitAll()
                     .requestMatchers(
-                        "/api/auth/refresh",
-                        "/api/auth/logout",
+                        "/api/v1/auth/social/**",
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
