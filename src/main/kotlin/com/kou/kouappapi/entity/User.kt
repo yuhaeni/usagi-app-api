@@ -1,8 +1,10 @@
 package com.kou.kouappapi.entity
 
+import com.kou.kouappapi.auth.service.dto.CompleteProfileRequestDto
 import com.kou.kouappapi.auth.service.dto.UserResponseDto
 import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.enums.SocialProvider
+import com.kou.kouappapi.enums.UserStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -28,16 +30,24 @@ class User(
     var name: String? = null,
     @Column(nullable = false, unique = true, updatable = false)
     val email: String,
+    var password: String? = null,
     @Enumerated(EnumType.STRING)
     val provider: SocialProvider,
     val providerId: String,
     @Enumerated(EnumType.STRING)
     var role: Role = Role.USER,
+    @Enumerated(EnumType.STRING)
+    var userStatus: UserStatus = UserStatus.ACTIVE,
     @Column(nullable = false)
-    var isRegistrationCompleted: Boolean = false,
-    @Column(nullable = false)
-    var isDeleted: Boolean = false,
-) : BaseEntity()
+    var profileCompleted: Boolean = false,
+    val coupleUserId: Long? = null,
+) : BaseEntity() {
+    fun update(requestDto: CompleteProfileRequestDto) {
+        name = requestDto.name
+        password = requestDto.password
+        profileCompleted = requestDto.profileComplete
+    }
+}
 
 fun User.toResponseDto(): UserResponseDto =
     UserResponseDto(
@@ -45,5 +55,3 @@ fun User.toResponseDto(): UserResponseDto =
         email = email,
         name = name,
     )
-
-// TODO 프로필 업데이트 관련 함수 추가
