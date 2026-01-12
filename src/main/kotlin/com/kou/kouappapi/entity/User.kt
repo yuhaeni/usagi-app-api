@@ -50,7 +50,6 @@ class User(
     ) {
         requestDto.name.let { name = it }
         requestDto.profileComplete.let { profileCompleted = it }
-        requestDto.profileImageUrl.let { profileImageUrl = it }
         encodePassword?.let { password = it }
     }
 }
