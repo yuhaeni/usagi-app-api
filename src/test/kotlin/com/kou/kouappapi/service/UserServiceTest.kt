@@ -39,8 +39,6 @@ class UserServiceTest(
                                 CompleteProfileRequestDto(
                                     userId = savedUser.id,
                                     name = "Test User2",
-                                    password = null,
-                                    profileImageUrl = null,
                                 ),
                             )
 
@@ -66,7 +64,6 @@ class UserServiceTest(
                                     userId = savedUser.id,
                                     name = "Test User3",
                                     password = "12345678@@",
-                                    profileImageUrl = null,
                                 ),
                             )
 

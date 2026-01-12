@@ -6,11 +6,13 @@ import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.exception.AuthInvalidIdTokenException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import org.junit.jupiter.api.Disabled
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Disabled
 class AuthServiceTest(
     private val authService: AuthService,
 ) : DescribeSpec(

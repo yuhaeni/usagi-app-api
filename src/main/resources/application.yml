@@ -24,3 +24,10 @@ management:
 google:
     oauth2:
         client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
+
+cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME}
+    api-key: ${CLOUDINARY_API_KEY}
+    api-secret: ${CLOUDINARY_API_SECRET}
+    folder:
+        profile: kou-app/prod/individual/profile
