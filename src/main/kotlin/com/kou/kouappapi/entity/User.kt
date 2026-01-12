@@ -24,10 +24,8 @@ import jakarta.persistence.UniqueConstraint
     ],
 )
 class User(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
     var name: String? = null,
+    var profileImageUrl: String? = null,
     @Column(nullable = false, unique = true, updatable = false)
     val email: String,
     var password: String? = null,
@@ -42,10 +40,18 @@ class User(
     var profileCompleted: Boolean = false,
     val coupleUserId: Long? = null,
 ) : BaseEntity() {
-    fun update(requestDto: CompleteProfileRequestDto) {
-        name = requestDto.name
-        password = requestDto.password
-        profileCompleted = requestDto.profileComplete
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L
+
+    fun update(
+        requestDto: CompleteProfileRequestDto,
+        encodePassword: String?,
+    ) {
+        requestDto.name.let { name = it }
+        requestDto.profileComplete.let { profileCompleted = it }
+        requestDto.profileImageUrl.let { profileImageUrl = it }
+        encodePassword?.let { password = it }
     }
 }
 

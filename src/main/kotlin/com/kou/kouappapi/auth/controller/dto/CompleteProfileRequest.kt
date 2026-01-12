@@ -6,7 +6,7 @@ data class CompleteProfileRequest(
     val userId: Long,
     val name: String,
     val password: String?,
-    val confirmPassword: String?,
+    val profileImageUrl: String?,
 )
 
 fun CompleteProfileRequest.toDto(): CompleteProfileRequestDto =
@@ -14,4 +14,5 @@ fun CompleteProfileRequest.toDto(): CompleteProfileRequestDto =
         userId = userId,
         name = name,
         password = password,
+        profileImageUrl = profileImageUrl,
     )
