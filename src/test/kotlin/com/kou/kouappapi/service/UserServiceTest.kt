@@ -93,19 +93,20 @@ class UserServiceTest(
                                 .getResourceAsStream("images/꽃을든_치이카와.jpeg")
                                 ?: throw ImageNotFoundException()
 
-                        val file = MockMultipartFile(
-                            "image",
-                            "integration-test.jpeg",
-                            "image/jpeg",
-                            inputStream
-                        )
+                        val file =
+                            MockMultipartFile(
+                                "image",
+                                "integration-test.jpeg",
+                                "image/jpeg",
+                                inputStream,
+                            )
 
                         val responseDto =
                             userService.completeProfile(
                                 CompleteProfileRequestDto(
                                     userId = savedUser.id,
                                     name = "Test User3",
-                                    profileFile  = file,
+                                    profileFile = file,
                                 ),
                             )
 

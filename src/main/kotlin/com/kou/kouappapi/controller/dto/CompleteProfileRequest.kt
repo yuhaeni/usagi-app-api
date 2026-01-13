@@ -15,5 +15,5 @@ fun CompleteProfileRequest.toDto(): CompleteProfileRequestDto =
         userId = userId,
         name = name,
         password = password,
-        profileFile = profileFile
+        profileFile = profileFile,
     )
