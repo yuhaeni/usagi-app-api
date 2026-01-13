@@ -39,6 +39,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
     implementation("org.postgresql:postgresql")
     implementation("com.cloudinary:cloudinary-http44:1.39.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     testImplementation("io.mockk:mockk:1.13.17")
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

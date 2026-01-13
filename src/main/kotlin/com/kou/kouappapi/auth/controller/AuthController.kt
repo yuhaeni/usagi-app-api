@@ -5,7 +5,6 @@ import com.kou.kouappapi.auth.controller.dto.SocialLoginResponse
 import com.kou.kouappapi.auth.controller.dto.toDto
 import com.kou.kouappapi.auth.controller.dto.toResponse
 import com.kou.kouappapi.auth.service.AuthService
-import com.kou.kouappapi.controller.dto.toDto
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
