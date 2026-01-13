@@ -31,3 +31,4 @@ cloudinary:
     api-secret: ${CLOUDINARY_API_SECRET}
     folder:
         profile: kou-app/prod/individual/profile
+

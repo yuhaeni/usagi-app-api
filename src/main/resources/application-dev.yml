@@ -10,6 +10,12 @@ spring:
             ddl-auto: update
         show-sql: false
 
+    data:
+        redis:
+            host: ${KOU_DEV_REDIS_HOST}
+            port: 6379
+            password: ${KOU_DEV_REDIS_PASSWORD}
+
 server:
     port: 8080
 
