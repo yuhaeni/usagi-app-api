@@ -27,9 +27,10 @@ class UserService(
             throw UserAlreadyProfileCompleteException()
         }
 
-        val resultUploadImage = requestDto.profileFile?.let {
-            imageManager.uploadImage(it, cloudinaryProperties.folder.profile)
-        }
+        val resultUploadImage =
+            requestDto.profileFile?.let {
+                imageManager.uploadImage(it, cloudinaryProperties.folder.profile)
+            }
 
         val encodedPassword = requestDto.password?.let { passwordEncoder.encode(it) }
 

@@ -9,9 +9,10 @@ data class CompleteProfileResponse(
     val profileImageUrl: String?,
 )
 
-fun CompleteProfileResponseDto.toResponse() = CompleteProfileResponse(
-    userId = userId,
-    email = email,
-    userName = userName,
-    profileImageUrl = profileImageUrl
-)
+fun CompleteProfileResponseDto.toResponse() =
+    CompleteProfileResponse(
+        userId = userId,
+        email = email,
+        userName = userName,
+        profileImageUrl = profileImageUrl,
+    )

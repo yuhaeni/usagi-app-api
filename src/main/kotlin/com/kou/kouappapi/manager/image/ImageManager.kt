@@ -3,7 +3,6 @@ package com.kou.kouappapi.manager.image
 import com.cloudinary.Cloudinary
 import com.cloudinary.Transformation
 import com.cloudinary.utils.ObjectUtils
-import com.kou.kouappapi.property.CloudinaryProperties
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 
@@ -11,7 +10,10 @@ import org.springframework.web.multipart.MultipartFile
 class ImageManager(
     private val cloudinary: Cloudinary,
 ) {
-    fun uploadImage(file: MultipartFile, uploadFolder: String): ImageUploadResult {
+    fun uploadImage(
+        file: MultipartFile,
+        uploadFolder: String,
+    ): ImageUploadResult {
         if (file.isEmpty) {
             throw InvalidImageFileException()
         }
@@ -33,8 +35,9 @@ class ImageManager(
         )
     }
 
-    fun getProfileImageUrl(publicId: String): String {
-        return cloudinary.url()
+    fun getProfileImageUrl(publicId: String): String =
+        cloudinary
+            .url()
             .transformation(
                 Transformation<Transformation<*>>()
                     .width(200)
@@ -42,8 +45,6 @@ class ImageManager(
                     .crop("fill")
                     .gravity("face")
                     .radius("max")
-                    .fetchFormat("png")
-            )
-            .generate(publicId)
-    }
+                    .fetchFormat("png"),
+            ).generate(publicId)
 }

@@ -13,9 +13,8 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MultipartFile
 
 class ImageManagerTest(
-    private val cloudinaryProperties: CloudinaryProperties
-) :
-    DescribeSpec(
+    private val cloudinaryProperties: CloudinaryProperties,
+) : DescribeSpec(
         {
 
             val cloudinary = mockk<Cloudinary>()

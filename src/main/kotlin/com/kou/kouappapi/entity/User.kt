@@ -1,6 +1,5 @@
 package com.kou.kouappapi.entity
 
-import com.kou.kouappapi.auth.service.dto.CompleteProfileRequestDto
 import com.kou.kouappapi.auth.service.dto.UserResponseDto
 import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.enums.SocialProvider
