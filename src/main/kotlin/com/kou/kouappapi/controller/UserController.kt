@@ -1,7 +1,9 @@
 package com.kou.kouappapi.controller
 
-import com.kou.kouappapi.auth.controller.dto.CompleteProfileRequest
-import com.kou.kouappapi.auth.controller.dto.toDto
+import com.kou.kouappapi.controller.dto.CompleteProfileRequest
+import com.kou.kouappapi.controller.dto.CompleteProfileResponse
+import com.kou.kouappapi.controller.dto.toDto
+import com.kou.kouappapi.controller.dto.toResponse
 import com.kou.kouappapi.service.UserService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,5 +15,6 @@ class UserController(
     private val service: UserService,
 ) {
     @PostMapping("/me/profile/complete")
-    fun completeProfile(request: CompleteProfileRequest) = service.completeProfile(request.toDto())
+    fun completeProfile(request: CompleteProfileRequest): CompleteProfileResponse =
+        service.completeProfile(request.toDto()).toResponse()
 }

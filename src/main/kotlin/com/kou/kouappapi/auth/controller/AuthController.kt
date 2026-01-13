@@ -3,6 +3,7 @@ package com.kou.kouappapi.auth.controller
 import com.kou.kouappapi.auth.controller.dto.SocialLoginRequest
 import com.kou.kouappapi.auth.controller.dto.SocialLoginResponse
 import com.kou.kouappapi.auth.controller.dto.toDto
+import com.kou.kouappapi.controller.dto.toDto
 import com.kou.kouappapi.auth.controller.dto.toResponse
 import com.kou.kouappapi.auth.service.AuthService
 import jakarta.validation.Valid
