@@ -1,5 +1,6 @@
 package com.kou.kouappapi.auth.service
 
+import com.kou.kouappapi.auth.service.dto.CompleteProfileRequestDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginRequestDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginResponseDto
 import com.kou.kouappapi.auth.social.SocialAuthStrategyFactory

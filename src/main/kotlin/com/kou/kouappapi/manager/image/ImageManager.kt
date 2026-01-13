@@ -1,6 +1,7 @@
 package com.kou.kouappapi.manager.image
 
 import com.cloudinary.Cloudinary
+import com.cloudinary.Transformation
 import com.cloudinary.utils.ObjectUtils
 import com.kou.kouappapi.property.CloudinaryProperties
 import org.springframework.stereotype.Component
@@ -27,8 +28,22 @@ class ImageManager(
             cloudinary.uploader().upload(file.bytes, params)
                 ?: throw ImageUploadFailedException()
         return ImageUploadResult(
-            url = uploadResult["secure_url"] as String,
+            url = getProfileImageUrl(uploadResult["public_id"] as String),
             publicId = uploadResult["public_id"] as String,
         )
+    }
+
+    fun getProfileImageUrl(publicId: String): String {
+        return cloudinary.url()
+            .transformation(
+                Transformation<Transformation<*>>()
+                    .width(200)
+                    .height(200)
+                    .crop("fill")
+                    .gravity("face")
+                    .radius("max")
+                    .fetchFormat("png")
+            )
+            .generate(publicId)
     }
 }
