@@ -1,4 +1,4 @@
-package com.kou.kouappapi.config
+package com.kou.kouappapi.config.redis
 
 import jakarta.annotation.PostConstruct
 import org.springframework.data.redis.core.RedisTemplate
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class RedisHealthCheck(
-    private val redisTemplate: RedisTemplate<String, Any>,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     @PostConstruct
     fun check() {
