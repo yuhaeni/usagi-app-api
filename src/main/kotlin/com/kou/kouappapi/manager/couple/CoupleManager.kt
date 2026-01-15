@@ -1,6 +1,8 @@
 package com.kou.kouappapi.manager.couple
 
+import com.kou.kouappapi.entity.Couple
 import com.kou.kouappapi.exception.UserNotFoundException
+import com.kou.kouappapi.repository.CoupleRepository
 import com.kou.kouappapi.repository.UserRepository
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.repository.findByIdOrNull
@@ -11,6 +13,7 @@ import java.time.Duration
 class CoupleManager(
     private val redisTemplate: StringRedisTemplate,
     private val userRepository: UserRepository,
+    private val coupleRepository: CoupleRepository,
 ) {
     companion object {
         private const val CODE_LENGTH = 6
@@ -25,16 +28,13 @@ class CoupleManager(
             throw CoupleAlreadyInviteRequestException()
         }
 
-        val user =
-            userRepository.findByIdOrNull(inviterUserId)
-                ?: throw UserNotFoundException()
-        if (user.coupleUserId != null) {
+        val couple = coupleRepository.findByInviterUserId(inviterUserId)
+        if (couple != null) {
             throw CoupleAlreadyConnectionException()
         }
 
         val inviteCode = generateInviteCode()
         saveCoupleInviteCode(inviterUserId, inviteCode)
-
 //        inviteCodeValue.inviterUserId
 
         // TODO 유니버셜 링크 생성해서 리턴
@@ -84,7 +84,26 @@ class CoupleManager(
             .map { CHARSET.random() }
             .joinToString("")
 
-    // TODO 커플 연동 설정
-    fun completeCoupleConnection(inviteCode: String) {
+    fun completeCoupleConnection(
+        inviteeUserId: Long,
+        inviteCode: String,
+    ): Long {
+        val inviteUserValue =
+            getRedisValueForInviteCode(inviteCode)
+                ?: throw CoupleNotFoundInviteRequestException()
+
+        val inviterUser =
+            userRepository.findByIdOrNull(inviteUserValue.toLong())
+                ?: throw UserNotFoundException()
+
+        val saveCouple =
+            coupleRepository.save(
+                Couple(
+                    inviterUserId = inviterUser.id,
+                    inviteeUserId = inviteeUserId,
+                ),
+            )
+
+        return saveCouple.id
     }
 }
