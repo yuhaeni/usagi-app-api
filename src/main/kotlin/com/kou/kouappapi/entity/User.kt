@@ -34,10 +34,9 @@ class User(
     @Enumerated(EnumType.STRING)
     var role: Role = Role.USER,
     @Enumerated(EnumType.STRING)
-    var userStatus: UserStatus = UserStatus.ACTIVE,
+    var status: UserStatus = UserStatus.ACTIVE,
     @Column(nullable = false)
     var profileCompleted: Boolean = false,
-    val coupleUserId: Long? = null,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -40,11 +40,7 @@ class ImageManager(
             .url()
             .transformation(
                 Transformation<Transformation<*>>()
-                    .width(200)
-                    .height(200)
-                    .crop("fill")
-                    .gravity("face")
-                    .radius("max")
-                    .fetchFormat("png"),
+                    .width(200) // TODO 수정 필요?
+                    .height(200),
             ).generate(publicId)
 }

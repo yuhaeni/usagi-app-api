@@ -3,10 +3,13 @@ package com.kou.kouappapi.manager
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.manager.couple.CoupleManager
+import com.kou.kouappapi.repository.CoupleRepository
 import com.kou.kouappapi.repository.UserRepository
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 class CoupleManagerTest(
     private val manager: CoupleManager,
     private val userRepository: UserRepository,
+    private val coupleRepository: CoupleRepository,
 ) : DescribeSpec({
 
         describe("커플 초대 코드 생성") {
@@ -23,7 +27,7 @@ class CoupleManagerTest(
                 val savedUser =
                     userRepository.save(
                         User(
-                            email = "test2@gmail.com",
+                            email = "test@gmail.com",
                             provider = SocialProvider.GOOGLE,
                             providerId = "12345678",
                         ),
@@ -38,6 +42,39 @@ class CoupleManagerTest(
 
                     val inviteUserValue = manager.getRedisValueForInviteCode(inviteCode)
                     inviteUserValue shouldBe savedUser.id.toString()
+                }
+            }
+        }
+
+        describe("커플 연동") {
+            context("올바른 초대 코드와 초대 받은 유저 정보가 들어오면") {
+                val savedUser =
+                    userRepository.save(
+                        User(
+                            email = "test1@gmail.com",
+                            provider = SocialProvider.GOOGLE,
+                            providerId = "111111",
+                        ),
+                    )
+                val inviteCode = manager.generateInviteCode()
+                manager.saveCoupleInviteCode(savedUser.id, inviteCode)
+
+                val savedUser2 =
+                    userRepository.save(
+                        User(
+                            email = "test2@gmail.com",
+                            provider = SocialProvider.GOOGLE,
+                            providerId = "222222",
+                        ),
+                    )
+
+                it("커플 테이블에 행이 추가된다.") {
+                    val coupleId = manager.completeCoupleConnection(savedUser2.id, inviteCode)
+
+                    val couple = coupleRepository.findByIdOrNull(coupleId)
+                    couple shouldNotBe null
+                    couple?.inviterUserId shouldBe savedUser.id
+                    couple?.inviteeUserId shouldBe savedUser2.id
                 }
             }
         }
