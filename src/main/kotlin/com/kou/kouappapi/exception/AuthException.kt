@@ -15,3 +15,5 @@ class AuthEmailNotVerifiedException : AuthException(AuthError.AUTH_EMAIL_NOT_VER
 class AuthEmailAlreadyRegisteredException : AuthException(AuthError.AUTH_EMAIL_ALREADY_REGISTERED)
 
 class AuthInvalidIdTokenException : AuthException(AuthError.AUTH_INVALID_ID_TOKEN)
+
+class AuthGenerateTokenFailedException : AuthException(AuthError.AUTH_GENERATE_TOKEN_FAILED)

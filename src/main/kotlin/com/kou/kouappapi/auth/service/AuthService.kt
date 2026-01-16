@@ -7,6 +7,7 @@ import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.entity.toResponseDto
 import com.kou.kouappapi.enums.LoginNextStep
+import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.security.jwt.JwtTokenProvider
 import org.springframework.stereotype.Service
@@ -18,6 +19,7 @@ class AuthService(
     private val socialAuthStrategyFactory: SocialAuthStrategyFactory,
     private val jwtTokenProvider: JwtTokenProvider,
     private val userRepository: UserRepository,
+    private val coupleManager: CoupleManager,
 ) {
     @Transactional
     fun socialLogin(requestDto: SocialLoginRequestDto): SocialLoginResponseDto {
@@ -30,6 +32,10 @@ class AuthService(
 
         val accessToken = jwtTokenProvider.generateAccessToken(user.id, user.email, user.role)
         val refreshToken = jwtTokenProvider.generateRefreshToken(user.id, user.email, user.role)
+
+        if (requestDto.inviteCode != null) {
+            coupleManager.completeCoupleConnection(user.id, requestDto.inviteCode)
+        }
 
         return SocialLoginResponseDto(
             accessToken = accessToken,

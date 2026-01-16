@@ -1,17 +1,13 @@
 package com.kou.kouappapi.security.jwt
 
 import com.kou.kouappapi.enums.Role
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jws
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
-import io.jsonwebtoken.UnsupportedJwtException
+import com.kou.kouappapi.exception.AuthGenerateTokenFailedException
+import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.util.Date
+import java.util.*
 import javax.crypto.SecretKey
 
 @Component
@@ -38,7 +34,7 @@ class JwtTokenProvider(
      * Access Token 생성
      */
     fun generateAccessToken(
-        userId: Long?,
+        userId: Long,
         email: String,
         role: Role,
     ): String =
@@ -54,7 +50,7 @@ class JwtTokenProvider(
      * Refresh Token 생성
      */
     fun generateRefreshToken(
-        userId: Long?,
+        userId: Long,
         email: String,
         role: Role,
     ): String =
@@ -70,7 +66,7 @@ class JwtTokenProvider(
      * 토큰 생성 (공통 로직)
      */
     private fun generateToken(
-        userId: Long?,
+        userId: Long,
         email: String,
         role: Role,
         expireTime: Long,
@@ -79,16 +75,21 @@ class JwtTokenProvider(
         val now = Date()
         val expireTime = Date(now.time + expireTime)
 
-        return Jwts
-            .builder()
-            .subject(userId.toString())
-            .claim(EMAIL_CLAIM, email)
-            .claim(TOKEN_TYPE_CLAIM, tokenType)
-            .claim(ROLE_CLAIM, role)
-            .issuedAt(now)
-            .expiration(expireTime)
-            .signWith(secretKey)
-            .compact()
+        try {
+            return Jwts
+                .builder()
+                .subject(userId.toString())
+                .claim(EMAIL_CLAIM, email)
+                .claim(TOKEN_TYPE_CLAIM, tokenType)
+                .claim(ROLE_CLAIM, role)
+                .issuedAt(now)
+                .expiration(expireTime)
+                .signWith(secretKey)
+                .compact()
+        } catch (e: Exception) {
+            logger.error(e.message, e)
+            throw AuthGenerateTokenFailedException()
+        }
     }
 
     /**
