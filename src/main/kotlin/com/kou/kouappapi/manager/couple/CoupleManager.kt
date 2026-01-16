@@ -28,8 +28,7 @@ class CoupleManager(
             throw CoupleAlreadyInviteRequestException()
         }
 
-        val couple = coupleRepository.findByInviterUserId(inviterUserId)
-        if (couple != null) {
+        if (coupleRepository.existsByInviterUserId(inviterUserId)) {
             throw CoupleAlreadyConnectionException()
         }
 
@@ -95,6 +94,15 @@ class CoupleManager(
         val inviterUser =
             userRepository.findByIdOrNull(inviteUserValue.toLong())
                 ?: throw UserNotFoundException()
+
+        if (
+            coupleRepository.existsByInviterUserIdAndInviteeUserId(
+                inviterUserId = inviterUser.id,
+                inviteeUserId = inviteeUserId,
+            )
+        ) {
+            throw CoupleAlreadyConnectionException()
+        }
 
         val saveCouple =
             coupleRepository.save(
