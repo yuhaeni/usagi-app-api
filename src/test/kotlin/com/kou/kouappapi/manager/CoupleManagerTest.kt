@@ -73,8 +73,6 @@ class CoupleManagerTest(
 
                     val couple = coupleRepository.findByIdOrNull(coupleId)
                     couple shouldNotBe null
-                    couple?.inviterUserId shouldBe savedUser.id
-                    couple?.inviteeUserId shouldBe savedUser2.id
                 }
             }
         }

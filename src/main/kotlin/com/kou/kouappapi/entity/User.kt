@@ -35,8 +35,8 @@ class User(
     var role: Role = Role.USER,
     @Enumerated(EnumType.STRING)
     var status: UserStatus = UserStatus.ACTIVE,
-    @Column(nullable = false)
     var profileCompleted: Boolean = false,
+    var coupleId: Long? = null,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +52,10 @@ class User(
         encodedPassword?.let { this.password = it }
         profileImageId?.let { this.profileImageId = it }
     }
+
+    fun completeCoupleConnection(coupleId: Long) {
+        this.coupleId = coupleId
+    }
 }
 
 fun User.toResponseDto(): UserResponseDto =
@@ -59,4 +63,5 @@ fun User.toResponseDto(): UserResponseDto =
         id = id,
         email = email,
         name = name,
+        coupleId = coupleId,
     )

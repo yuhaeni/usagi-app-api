@@ -28,7 +28,10 @@ class CoupleManager(
             throw CoupleAlreadyInviteRequestException()
         }
 
-        if (coupleRepository.existsByInviterUserId(inviterUserId)) {
+        val inviterUser =
+            userRepository.findByIdOrNull(inviterUserId)
+                ?: throw UserNotFoundException()
+        if (inviterUser.coupleId != null) {
             throw CoupleAlreadyConnectionException()
         }
 
@@ -95,22 +98,25 @@ class CoupleManager(
             userRepository.findByIdOrNull(inviteUserValue.toLong())
                 ?: throw UserNotFoundException()
 
+        val inviteeUser =
+            userRepository.findByIdOrNull(inviteeUserId)
+                ?: throw UserNotFoundException()
+
         if (
-            coupleRepository.existsByInviterUserIdAndInviteeUserId(
-                inviterUserId = inviterUser.id,
-                inviteeUserId = inviteeUserId,
-            )
+            inviterUser.coupleId != null ||
+            inviteeUser.coupleId != null
         ) {
             throw CoupleAlreadyConnectionException()
         }
 
+        // TODO 커플 데이터 뭐가 필요할지 상의 필요
         val saveCouple =
             coupleRepository.save(
-                Couple(
-                    inviterUserId = inviterUser.id,
-                    inviteeUserId = inviteeUserId,
-                ),
+                Couple(),
             )
+
+        inviterUser.completeCoupleConnection(saveCouple.id)
+        inviteeUser.completeCoupleConnection(saveCouple.id)
 
         return saveCouple.id
     }
