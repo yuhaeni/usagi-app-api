@@ -12,9 +12,9 @@ spring:
 
     data:
         redis:
-            host: ${KOU_DEV_REDIS_HOST}
+            host: ${KOU_DEV_REDIS_HOST:localhost}
             port: 6379
-            password: ${KOU_DEV_REDIS_PASSWORD}
+            password: ${KOU_DEV_REDIS_PASSWORD:}
 
 server:
     port: 8080
