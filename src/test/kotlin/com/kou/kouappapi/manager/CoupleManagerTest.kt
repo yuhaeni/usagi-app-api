@@ -68,11 +68,13 @@ class CoupleManagerTest(
                         ),
                     )
 
-                it("커플 테이블에 행이 추가된다.") {
+                it("커플 테이블에 행이 추가되고, 유저의 couple_id 값이 추가된다.") {
                     val coupleId = manager.completeCoupleConnection(savedUser2.id, inviteCode)
 
                     val couple = coupleRepository.findByIdOrNull(coupleId)
                     couple shouldNotBe null
+                    userRepository.findByIdOrNull(savedUser.id)?.coupleId shouldBe couple?.id
+                    userRepository.findByIdOrNull(savedUser2.id)?.coupleId shouldBe couple?.id
                 }
             }
         }

@@ -7,6 +7,7 @@ import com.kou.kouappapi.repository.UserRepository
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 
 @Component
@@ -86,6 +87,7 @@ class CoupleManager(
             .map { CHARSET.random() }
             .joinToString("")
 
+    @Transactional
     fun completeCoupleConnection(
         inviteeUserId: Long,
         inviteCode: String,
