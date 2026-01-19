@@ -151,6 +151,9 @@ jobs:
                   "KOU_DEV_DB_URL": "${{ secrets.KOU_DEV_DB_URL }}",
                   "KOU_DEV_DB_USERNAME": "${{ secrets.KOU_DEV_DB_USERNAME }}",
                   "KOU_DEV_DB_PASSWORD": "${{ secrets.KOU_DEV_DB_PASSWORD }}"
+                  "KOU_DEV_REDIS_HOST": "redis",
+                  "REDIS_PORT": "6379",
+                  "KOU_DEV_REDIS_PASSWORD": "${{ secrets.KOU_DEV_REDIS_PASSWORD }}"
                 },
                 "ports": {
                   "8080": "HTTP"
@@ -160,6 +163,13 @@ jobs:
                 "image": "${{ steps.image-names.outputs.nginx_image }}",
                 "ports": {
                   "80": "HTTP"
+                }
+              }
+              "redis": {
+                "image": "redis:7-alpine",
+                "command": ["redis-server", "--requirepass", "${{ secrets.KOU_DEV_REDIS_PASSWORD }}"],
+                "ports": {
+                  "6379": "TCP"
                 }
               }
             },
