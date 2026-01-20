@@ -66,8 +66,10 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform {
-        if (System.getenv("CI") == "true") {
-            excludeTags("local-only")
+        val excludeTagsProp = project.findProperty("excludeTags") as String?
+        if (!excludeTagsProp.isNullOrBlank()) {
+            excludeTags(excludeTagsProp)
+            println("excludeTags applied: $excludeTagsProp") // 디버깅용 로그
         }
     }
 }
