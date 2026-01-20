@@ -65,14 +65,9 @@ kotlin {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
-tasks.test {
     useJUnitPlatform {
-        val excludeTagsProp = project.findProperty("excludeTags") as String?
-        if (excludeTagsProp != null) {
-            excludeTags(excludeTagsProp)
+        if (System.getenv("CI") == "true") {
+            excludeTags("local-only")
         }
     }
 }
