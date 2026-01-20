@@ -5,6 +5,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.extensions.spring.SpringExtension
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
@@ -30,9 +32,11 @@ abstract class IntegrationTestSupport(
                     withPassword("test")
                 }.apply { start() }
 
-        init {
-            System.setProperty("spring.data.redis.host", redisContainer.host)
-            System.setProperty("spring.data.redis.port", redisContainer.getMappedPort(6379).toString())
+        @JvmStatic
+        @DynamicPropertySource
+        fun overrideProps(registry: DynamicPropertyRegistry) {
+            registry.add("spring.data.redis.host") { redisContainer.host }
+            registry.add("spring.data.redis.port") { redisContainer.getMappedPort(6379).toString() }
         }
     }
 }
