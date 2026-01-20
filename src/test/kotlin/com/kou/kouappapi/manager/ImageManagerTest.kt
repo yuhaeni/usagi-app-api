@@ -2,11 +2,11 @@ package com.kou.kouappapi.manager
 
 import com.cloudinary.Cloudinary
 import com.cloudinary.Url
+import com.kou.kouappapi.IntegrationTestSupport
 import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.manager.image.InvalidImageFileException
 import com.kou.kouappapi.property.CloudinaryProperties
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile
 @ActiveProfiles("test")
 class ImageManagerTest(
     private val cloudinaryProperties: CloudinaryProperties,
-) : DescribeSpec(
+) : IntegrationTestSupport(
         {
 
             lateinit var manager: ImageManager
