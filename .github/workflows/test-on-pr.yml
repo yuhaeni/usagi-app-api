@@ -31,7 +31,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run tests with Testcontainers
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test -PexcludeTags="local-only" --no-daemon
         env:
           SPRING_PROFILES_ACTIVE: test
 
