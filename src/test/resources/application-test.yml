@@ -1,11 +1,17 @@
 spring:
+    datasource:
+
     jpa:
         hibernate:
             ddl-auto: create-drop
         show-sql: true
+
     h2:
         console:
             enabled: false
+
+    data:
+        redis:
 
 jwt:
     secret: ${JWT_SECRET}
