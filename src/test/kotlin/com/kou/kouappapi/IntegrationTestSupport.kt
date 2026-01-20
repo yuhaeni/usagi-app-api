@@ -24,14 +24,16 @@ abstract class IntegrationTestSupport(
         val redisContainer =
             GenericContainer(DockerImageName.parse("redis:alpine"))
                 .withExposedPorts(6379)
+                .apply { start() }
 
         @Container
         @ServiceConnection // Spring이 자동으로 datasource url, username, password를 교체해줌
         val postgresContainer =
-            PostgreSQLContainer<Nothing>(DockerImageName.parse("postgres:15-alpine")).apply {
-                withDatabaseName("testdb")
-                withUsername("test")
-                withPassword("test")
-            }
+            PostgreSQLContainer<Nothing>(DockerImageName.parse("postgres:15-alpine"))
+                .apply {
+                    withDatabaseName("testdb")
+                    withUsername("test")
+                    withPassword("test")
+                }.apply { start() }
     }
 }

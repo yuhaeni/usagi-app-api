@@ -1,9 +1,9 @@
 package com.kou.kouappapi.manager
 
+import com.kou.kouappapi.IntegrationTestSupport
 import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.manager.image.ImageNotFoundException
 import com.kou.kouappapi.property.CloudinaryProperties
-import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Tag
@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 class ImageManagerIntegrationTest(
     private val imageManager: ImageManager,
     private val cloudinaryProperties: CloudinaryProperties,
-) : DescribeSpec({
+) : IntegrationTestSupport({
 
         describe("Cloudinary 실제 업로드 테스트") {
             it("이미지를 실제로 업로드하고 URL과 publicId를 반환한다") {
