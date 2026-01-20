@@ -8,14 +8,14 @@ import com.kou.kouappapi.exception.AuthInvalidIdTokenException
 import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.UserRepository
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.annotation.Tags
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
-@Tag("local-only")
+@Tags("local-only")
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional

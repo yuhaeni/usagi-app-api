@@ -1,14 +1,14 @@
 package com.kou.kouappapi.service
 
+import com.kou.kouappapi.IntegrationTestSupport
 import com.kou.kouappapi.auth.service.dto.CompleteProfileRequestDto
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.manager.image.ImageNotFoundException
 import com.kou.kouappapi.repository.UserRepository
-import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.core.annotation.Tags
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.mock.web.MockMultipartFile
@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
-@Tag("local-only")
+@Tags("local-only")
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -24,7 +24,7 @@ class UserServiceTest(
     private val userService: UserService,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-) : DescribeSpec(
+) : IntegrationTestSupport(
         {
             describe("회원 가입 후 프로필 설정") {
 

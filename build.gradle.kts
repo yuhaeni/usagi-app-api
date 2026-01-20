@@ -43,7 +43,6 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.17")
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
     testImplementation("io.kotest:kotest-property:5.9.1")
@@ -65,11 +64,8 @@ kotlin {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform {
-        val excludeTagsProp = project.findProperty("excludeTags") as String?
-        if (!excludeTagsProp.isNullOrBlank()) {
-            excludeTags(excludeTagsProp)
-            println("excludeTags applied: $excludeTagsProp") // 디버깅용 로그
-        }
-    }
+    systemProperty(
+        "kotest.tags.exclude",
+        project.findProperty("excludeTags") ?: "",
+    )
 }
