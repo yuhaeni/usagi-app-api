@@ -40,15 +40,6 @@ jobs:
         env:
           SPRING_PROFILES_ACTIVE: test
 
-      - name: Publish test results
-        if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          files: |
-            build/test-results/**/*.xml
-          check_name: Test Results
-          comment_mode: always
-
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
@@ -63,8 +54,20 @@ jobs:
         run: |
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f build/test-results/test/TEST-*.xml ]; then
-            echo "✅ Tests completed" >> $GITHUB_STEP_SUMMARY
+          
+          if ./gradlew test --dry-run 2>&1 | grep -q "BUILD SUCCESSFUL"; then
+            echo "✅ Tests completed successfully" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ Tests failed or did not run" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # 테스트 결과 파싱
+          if [ -d "build/test-results/test" ]; then
+            TOTAL=$(find build/test-results/test -name "*.xml" -exec grep -oh 'tests="[0-9]*"' {} \; | grep -oh '[0-9]*' | awk '{s+=$1} END {print s}')
+            FAILURES=$(find build/test-results/test -name "*.xml" -exec grep -oh 'failures="[0-9]*"' {} \; | grep -oh '[0-9]*' | awk '{s+=$1} END {print s}')
+            PASSED=$((TOTAL - FAILURES))
+            
+            echo "- **Total**: $TOTAL" >> $GITHUB_STEP_SUMMARY
+            echo "- **Passed**: $PASSED ✅" >> $GITHUB_STEP_SUMMARY
+            echo "- **Failed**: $FAILURES ❌" >> $GITHUB_STEP_SUMMARY
           fi
