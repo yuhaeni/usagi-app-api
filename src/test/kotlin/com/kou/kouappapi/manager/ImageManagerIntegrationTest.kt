@@ -6,14 +6,14 @@ import com.kou.kouappapi.property.CloudinaryProperties
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
-import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Disabled("Cloudinary 실제 업로드 테스트 - 수동 실행용")
+@Tag("local-only")
 class ImageManagerIntegrationTest(
     private val imageManager: ImageManager,
     private val cloudinaryProperties: CloudinaryProperties,
