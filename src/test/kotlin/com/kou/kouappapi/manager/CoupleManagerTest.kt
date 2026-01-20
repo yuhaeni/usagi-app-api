@@ -1,11 +1,11 @@
 package com.kou.kouappapi.manager
 
+import com.kou.kouappapi.IntegrationTestSupport
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.CoupleRepository
 import com.kou.kouappapi.repository.UserRepository
-import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,7 +20,7 @@ class CoupleManagerTest(
     private val manager: CoupleManager,
     private val userRepository: UserRepository,
     private val coupleRepository: CoupleRepository,
-) : DescribeSpec({
+) : IntegrationTestSupport({
 
         describe("커플 초대 코드 생성") {
             context("올바른 유저 정보가 주어지면") {

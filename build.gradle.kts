@@ -50,9 +50,11 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:2.0.2")
     testImplementation("org.springframework.boot:spring-boot-testcontainers:4.0.1")
+
+    testImplementation("com.redis.testcontainers:testcontainers-redis:1.6.4")
     testImplementation("org.testcontainers:junit-jupiter:1.21.3")
     testImplementation("org.testcontainers:postgresql:1.21.3")
-    implementation("com.redis.testcontainers:testcontainers-redis:1.6.4")
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
