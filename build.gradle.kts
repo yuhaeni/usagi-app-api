@@ -64,6 +64,8 @@ kotlin {
 }
 
 tasks.withType<Test> {
+    useJUnitPlatform()
+
     systemProperty(
         "kotest.tags.exclude",
         project.findProperty("excludeTags") ?: "",
