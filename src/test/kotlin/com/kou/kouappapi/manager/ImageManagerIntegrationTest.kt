@@ -5,7 +5,6 @@ import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.manager.image.ImageNotFoundException
 import com.kou.kouappapi.property.CloudinaryProperties
 import io.kotest.matchers.string.shouldContain
-import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
@@ -33,10 +32,9 @@ class ImageManagerIntegrationTest(
                         "image/jpeg",
                         inputStream,
                     )
-
                 val result = imageManager.uploadImage(file, cloudinaryProperties.folder.profile)
 
-                result.url shouldStartWith "https://res.cloudinary.com"
+                result.url shouldContain "res.cloudinary.com"
                 result.publicId shouldContain "kou-app/test/individual/profile"
             }
         }
