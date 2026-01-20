@@ -1,6 +1,7 @@
 package com.kou.kouappapi.manager
 
 import com.cloudinary.Cloudinary
+import com.cloudinary.Url
 import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.manager.image.InvalidImageFileException
 import com.kou.kouappapi.property.CloudinaryProperties
@@ -9,20 +10,27 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.multipart.MultipartFile
 
+@SpringBootTest
+@ActiveProfiles("test")
 class ImageManagerTest(
     private val cloudinaryProperties: CloudinaryProperties,
 ) : DescribeSpec(
         {
 
+            lateinit var manager: ImageManager
             val cloudinary = mockk<Cloudinary>()
             val uploader = mockk<com.cloudinary.Uploader>()
-            lateinit var manager: ImageManager
+            val urlBuilder = mockk<Url>()
 
             beforeEach {
                 every { cloudinary.uploader() } returns uploader
+                every { cloudinary.url() } returns urlBuilder
+                every { urlBuilder.transformation(any()) } returns urlBuilder
                 manager = ImageManager(cloudinary)
             }
 
@@ -51,18 +59,21 @@ class ImageManagerTest(
                                 "fake-image".toByteArray(),
                             )
 
+                        val publicId = "couple-app/profile/abc123"
+                        val transformedUrl = "https://res.cloudinary.com/demo/image/upload/w_200,h_200/$publicId"
+
                         every {
                             uploader.upload(any<ByteArray>(), any())
-                        } returns
-                            mapOf(
-                                "secure_url" to "https://cloudinary.com/test.png",
-                                "public_id" to "couple-app/profile/test",
-                            )
+                        } returns mapOf("public_id" to publicId)
+
+                        every {
+                            urlBuilder.generate(publicId)
+                        } returns transformedUrl
 
                         val result = manager.uploadImage(file, cloudinaryProperties.folder.profile)
 
-                        result.url shouldBe "https://cloudinary.com/test.png"
-                        result.publicId shouldBe "couple-app/profile/test"
+                        result.url shouldBe transformedUrl
+                        result.publicId shouldBe publicId
                     }
                 }
             }

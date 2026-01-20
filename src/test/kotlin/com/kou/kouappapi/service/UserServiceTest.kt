@@ -8,7 +8,7 @@ import com.kou.kouappapi.repository.UserRepository
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.mock.web.MockMultipartFile
@@ -16,10 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
+@Tag("local-only")
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-@Disabled
 class UserServiceTest(
     private val userService: UserService,
     private val userRepository: UserRepository,
