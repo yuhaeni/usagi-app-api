@@ -11,4 +11,3 @@ no-wildcard-imports=enabled
 
 [*.{kt,kts}]
 ij_kotlin_allow_trailing_comma = true
-ktlint_standard_function_signature = disabled
