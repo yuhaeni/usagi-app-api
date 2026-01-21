@@ -7,6 +7,7 @@ spring:
         show-sql: true
     data:
         redis:
+            password:
 
 jwt:
     secret: ${JWT_SECRET}
