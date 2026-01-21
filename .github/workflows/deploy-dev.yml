@@ -14,12 +14,8 @@ env:
   NGINX_IMAGE_NAME: kou-nginx-dev
 
 jobs:
-  build-and-test:
+  deploy:
     runs-on: ubuntu-latest
-
-    # ============================================
-    # Build
-    # ============================================
 
     steps:
       - name: Checkout code
