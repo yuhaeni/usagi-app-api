@@ -161,7 +161,7 @@ jobs:
                 },
                 redis: {
                   image: "redis:7-alpine",
-                  command: ["redis-server", "--requirepass", $redis_pass],
+                  command: ["redis-server", "--bind", "0.0.0.0", "--requirepass", $redis_pass],
                   ports: {
                     "6379": "TCP"
                   }
