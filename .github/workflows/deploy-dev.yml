@@ -146,9 +146,9 @@ jobs:
                     KOU_DEV_DB_URL: $db_url,
                     KOU_DEV_DB_USERNAME: $db_user,
                     KOU_DEV_DB_PASSWORD: $db_pass,
-                    REDIS_HOST: "redis",
-                    REDIS_PORT: "6379",
-                    REDIS_PASSWORD: $redis_pass
+                    SPRING_DATA_REDIS_HOST: "redis",
+                    SPRING_DATA_REDIS_PORT: "6379",
+                    SPRING_DATA_REDIS_PASSWORD: $redis_pass
                   },
                   ports: {
                     "8080": "HTTP"
