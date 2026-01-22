@@ -8,11 +8,14 @@ import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.exception.AuthEmailNotVerifiedException
 import com.kou.kouappapi.exception.AuthInvalidIdTokenException
+import org.springframework.core.env.Environment
+import org.springframework.core.env.Profiles
 import org.springframework.stereotype.Component
 
 @Component
 class GoogleAuthStrategy(
     private val googleProperties: GoogleProperties,
+    private val environment: Environment,
 ) : SocialAuthStrategy {
     override fun getSocialProvider() = SocialProvider.GOOGLE
 
@@ -42,9 +45,11 @@ class GoogleAuthStrategy(
                 NetHttpTransport(),
                 GsonFactory.getDefaultInstance(),
             ).setAudience(
-                listOf(
-                    googleProperties.clientId,
-                    googleProperties.playground, // TODO 삭제 필요
-                ),
+                buildList {
+                    add(googleProperties.clientId)
+                    if (environment.acceptsProfiles(Profiles.of("local | test"))) {
+                        googleProperties.playground?.let { add(it) }
+                    }
+                },
             ).build()
 }

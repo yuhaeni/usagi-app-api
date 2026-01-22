@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties(prefix = "google.oauth2")
 data class GoogleProperties(
     var clientId: String = "",
-    var playground: String = "407408718192.apps.googleusercontent.com", // TODO 삭제필요
+    var playground: String? = null,
 )

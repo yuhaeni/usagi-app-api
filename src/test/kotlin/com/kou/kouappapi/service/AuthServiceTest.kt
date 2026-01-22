@@ -1,5 +1,6 @@
 package com.kou.kouappapi.service
 
+import com.kou.kouappapi.IntegrationTestSupport
 import com.kou.kouappapi.auth.service.AuthService
 import com.kou.kouappapi.auth.service.dto.SocialLoginRequestDto
 import com.kou.kouappapi.entity.User
@@ -9,7 +10,6 @@ import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.UserRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.Tags
-import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldNotBe
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -23,7 +23,7 @@ class AuthServiceTest(
     private val authService: AuthService,
     private val coupleManager: CoupleManager,
     private val userRepository: UserRepository,
-) : DescribeSpec(
+) : IntegrationTestSupport(
         {
             describe("google 소셜 로그인") {
                 context("유효한 google id 토큰이 주어지면") {
