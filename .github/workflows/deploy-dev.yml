@@ -150,7 +150,7 @@ jobs:
                     KOU_DEV_DB_PASSWORD: $db_pass,
                     KOU_DEV_REDIS_HOST: "localhost",
                     KOU_DEV_REDIS_PASSWORD: $redis_pass,
-                    GOOGLE_OAUTH2_CLIENT_ID: $google_oauth2_client_id
+                    GOOGLE_OAUTH2_CLIENT_ID: $google_oauth2_client_id,
                     JWT_SECRET: $jwt_secrets
                   },
                   ports: {
