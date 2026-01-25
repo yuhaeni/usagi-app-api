@@ -137,6 +137,7 @@ jobs:
             --arg db_user "${{ secrets.KOU_DEV_DB_USERNAME }}" \
             --arg db_pass "${{ secrets.KOU_DEV_DB_PASSWORD }}" \
             --arg redis_pass "${{ secrets.KOU_DEV_REDIS_PASSWORD }}" \
+            --arg google_oauth2_client_id "${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }}" \
             '{
               containers: {
                 app: {
@@ -147,7 +148,8 @@ jobs:
                     KOU_DEV_DB_USERNAME: $db_user,
                     KOU_DEV_DB_PASSWORD: $db_pass,
                     KOU_DEV_REDIS_HOST: "localhost",
-                    KOU_DEV_REDIS_PASSWORD: $redis_pass
+                    KOU_DEV_REDIS_PASSWORD: $redis_pass,
+                    GOOGLE_OAUTH2_CLIENT_ID: $google_oauth2_client_id
                   },
                   ports: {
                     "8080": "HTTP"
