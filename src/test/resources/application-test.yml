@@ -16,6 +16,7 @@ jwt:
 google:
     oauth2:
         playground: ${GOOGLE_OAUTH2_PLAYGROUND}
+        client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
 
 cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME}
