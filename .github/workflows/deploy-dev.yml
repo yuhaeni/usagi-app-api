@@ -139,6 +139,9 @@ jobs:
             --arg redis_pass "${{ secrets.KOU_DEV_REDIS_PASSWORD }}" \
             --arg google_oauth2_client_id "${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }}" \
             --arg jwt_secrets "${{ secrets.JWT_SECRET }}" \
+            --arg cloudinary_cloud_name "${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
+            --arg cloudinary_api_key "${{ secrets.CLOUDINARY_API_KEY }}" \
+            --arg cloudinary_api_secret "${{ secrets.CLOUDINARY_API_SECRET }}" \
             '{
               containers: {
                 app: {
@@ -151,7 +154,10 @@ jobs:
                     KOU_DEV_REDIS_HOST: "localhost",
                     KOU_DEV_REDIS_PASSWORD: $redis_pass,
                     GOOGLE_OAUTH2_CLIENT_ID: $google_oauth2_client_id,
-                    JWT_SECRET: $jwt_secrets
+                    JWT_SECRET: $jwt_secrets,
+                    CLOUDINARY_CLOUD_NAME: $cloudinary_cloud_name,
+                    CLOUDINARY_API_KEY: $cloudinary_api_key,
+                    CLOUDINARY_API_SECRET: $cloudinary_api_secret
                   },
                   ports: {
                     "8080": "HTTP"
