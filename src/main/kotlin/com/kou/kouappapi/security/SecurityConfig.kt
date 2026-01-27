@@ -37,6 +37,9 @@ class SecurityConfig(
                         "/favicon.ico",
                         "/api/health",
                         "/actuator/health",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
                     ).permitAll()
                     .requestMatchers(
                         "/api/v1/auth/social/**",

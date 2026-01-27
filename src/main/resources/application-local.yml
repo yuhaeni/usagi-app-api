@@ -16,9 +16,6 @@ spring:
             port: 6379
             password:
 
-server:
-    port: 8080
-
 logging:
     level:
         com.kou.kouappapi: DEBUG
@@ -39,3 +36,9 @@ cloudinary:
     api-secret: ${CLOUDINARY_API_SECRET}
     folder:
         profile: kou-app/local/individual/profile
+
+springdoc:
+    api-docs:
+        enabled: true
+    swagger-ui:
+        enabled: true

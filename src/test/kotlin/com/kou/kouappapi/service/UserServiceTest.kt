@@ -41,8 +41,8 @@ class UserServiceTest(
 
                         val responseDto =
                             userService.completeProfile(
+                                savedUser.id,
                                 CompleteProfileRequestDto(
-                                    userId = savedUser.id,
                                     name = "Test User2",
                                 ),
                             )
@@ -65,8 +65,8 @@ class UserServiceTest(
 
                         val responseDto =
                             userService.completeProfile(
+                                savedUser.id,
                                 CompleteProfileRequestDto(
-                                    userId = savedUser.id,
                                     name = "Test User3",
                                     password = "12345678@@",
                                 ),
@@ -103,8 +103,8 @@ class UserServiceTest(
 
                         val responseDto =
                             userService.completeProfile(
+                                savedUser.id,
                                 CompleteProfileRequestDto(
-                                    userId = savedUser.id,
                                     name = "Test User3",
                                     profileFile = file,
                                 ),

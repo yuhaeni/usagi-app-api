@@ -1,6 +1,5 @@
 package com.kou.kouappapi.entity
 
-import com.kou.kouappapi.auth.service.dto.UserResponseDto
 import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.enums.UserStatus
@@ -57,11 +56,3 @@ class User(
         this.coupleId = coupleId
     }
 }
-
-fun User.toResponseDto(): UserResponseDto =
-    UserResponseDto(
-        id = id,
-        email = email,
-        name = name,
-        coupleId = coupleId,
-    )

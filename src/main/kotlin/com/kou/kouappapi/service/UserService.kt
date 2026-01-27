@@ -21,8 +21,11 @@ class UserService(
     private val cloudinaryProperties: CloudinaryProperties,
 ) {
     @Transactional
-    fun completeProfile(requestDto: CompleteProfileRequestDto): CompleteProfileResponseDto {
-        val user = userRepository.findByIdOrNull(requestDto.userId) ?: throw UserNotFoundException()
+    fun completeProfile(
+        userId: Long,
+        requestDto: CompleteProfileRequestDto,
+    ): CompleteProfileResponseDto {
+        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
         if (user.profileCompleted) {
             throw UserAlreadyProfileCompleteException()
         }

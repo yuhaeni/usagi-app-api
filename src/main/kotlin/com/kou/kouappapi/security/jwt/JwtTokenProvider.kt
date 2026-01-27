@@ -2,6 +2,7 @@ package com.kou.kouappapi.security.jwt
 
 import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.exception.AuthGenerateTokenFailedException
+import com.kou.kouappapi.security.AuthUser
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
@@ -124,7 +125,7 @@ class JwtTokenProvider(
     /**
      * 토큰에서 userId 추출
      */
-    fun getUserIdFromToken(token: String): Long = getClaims(token).subject.toLong()
+    private fun getUserIdFromToken(token: String): Long = getClaims(token).subject.toLong()
 
     /**
      * 토큰에서 email 추출
@@ -139,7 +140,7 @@ class JwtTokenProvider(
     /**
      * 토큰에서 모든 Claims 추출
      */
-    fun getClaims(token: String): Claims = parseToken(token).payload
+    private fun getClaims(token: String): Claims = parseToken(token).payload
 
     /**
      * 토큰 만료 시간 확인
@@ -155,4 +156,14 @@ class JwtTokenProvider(
             .verifyWith(secretKey)
             .build()
             .parseSignedClaims(token)
+
+    /**
+     * 토큰 기준으로 AuthUser 생성
+     * */
+    fun getAuthUser(token: String) =
+        AuthUser(
+            id = getUserIdFromToken(token),
+            email = getEmailFromToken(token),
+            role = getRoleFromToken(token),
+        )
 }

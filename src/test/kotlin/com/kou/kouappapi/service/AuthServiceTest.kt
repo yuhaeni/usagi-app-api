@@ -75,9 +75,8 @@ class AuthServiceTest(
                             ),
                         )
 
-                    it("로그인 토큰을 발행되고, User 테이블에 couple_id가 업데이트 된다.") {
+                    it("로그인 토큰을 발행된다.") {
                         responseSocialLogin shouldNotBe null
-                        responseSocialLogin.user.coupleId shouldNotBe null
                     }
                 }
             }

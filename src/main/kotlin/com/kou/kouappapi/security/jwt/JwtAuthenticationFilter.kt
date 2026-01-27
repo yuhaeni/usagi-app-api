@@ -29,13 +29,12 @@ class JwtAuthenticationFilter(
             jwt != null &&
             jwtTokenProvider.validateToken(jwt)
         ) {
-            val userId = jwtTokenProvider.getUserIdFromToken(jwt)
-            val role = jwtTokenProvider.getRoleFromToken(jwt)
+            val authUser = jwtTokenProvider.getAuthUser(jwt)
 
-            val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
+            val authorities = listOf(SimpleGrantedAuthority("ROLE_${authUser.role}"))
             val authentication =
                 UsernamePasswordAuthenticationToken(
-                    userId,
+                    authUser,
                     null,
                     authorities,
                 ).apply {
