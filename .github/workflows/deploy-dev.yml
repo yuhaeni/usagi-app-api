@@ -57,6 +57,10 @@ jobs:
           cache-to: type=gha,mode=max
           load: true
 
+      - name: Create .htpasswd file from secrets
+        run: |
+          echo "${{ secrets.HTPASSWD_BASE64 }}" | base64 -d > ./nginx/.htpasswd
+
       - name: Build Nginx Docker image (DEV)
         uses: docker/build-push-action@v5
         with:
