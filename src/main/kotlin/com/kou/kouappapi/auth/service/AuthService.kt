@@ -5,7 +5,6 @@ import com.kou.kouappapi.auth.service.dto.SocialLoginResponseDto
 import com.kou.kouappapi.auth.social.SocialAuthStrategyFactory
 import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.entity.User
-import com.kou.kouappapi.entity.toResponseDto
 import com.kou.kouappapi.enums.LoginNextStep
 import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.UserRepository
@@ -41,7 +40,6 @@ class AuthService(
             accessToken = accessToken,
             refreshToken = refreshToken,
             nextStep = LoginNextStep.PROFILE_SETUP,
-            user = user.toResponseDto(),
         )
     }
 

@@ -6,5 +6,4 @@ data class SocialLoginResponseDto(
     val accessToken: String,
     val refreshToken: String,
     val nextStep: LoginNextStep,
-    val user: UserResponseDto,
 )

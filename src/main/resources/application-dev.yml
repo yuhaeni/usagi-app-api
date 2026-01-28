@@ -16,9 +16,6 @@ spring:
             port: 6379
             password: ${KOU_DEV_REDIS_PASSWORD:}
 
-server:
-    port: 8080
-
 logging:
     level:
         com.kou.kouappapi: DEBUG
@@ -26,7 +23,7 @@ logging:
         org.springframework.security: DEBUG
 
 jwt:
-    secret: ${JWT_SECRET}
+    secret: ${KOU_DEV_JWT_SECRET}
     access-token-expiration: 3600000
 
 cloudinary:
@@ -35,3 +32,9 @@ cloudinary:
     api-secret: ${CLOUDINARY_API_SECRET}
     folder:
         profile: kou-app/dev/individual/profile
+
+springdoc:
+    api-docs:
+        enabled: true
+    swagger-ui:
+        enabled: true
