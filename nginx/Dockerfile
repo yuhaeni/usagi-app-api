@@ -3,6 +3,7 @@ FROM nginx:alpine
 ARG ENVIRONMENT=dev
 
 COPY nginx/nginx.${ENVIRONMENT}.conf /etc/nginx/nginx.conf
+COPY .htpasswd /etc/nginx/.htpasswd
 
 EXPOSE 80
 
