@@ -59,8 +59,14 @@ jobs:
 
       - name: Create .htpasswd file from secrets
         run: |
-          echo "${{ secrets.HTPASSWD_BASE64 }}" | base64 -d > ./nginx/.htpasswd
-
+          echo "${{ secrets.HTPASSWD_BASE64 }}" | tr -d '\n' | base64 -d > ./nginx/.htpasswd          
+          if [ -s ./nginx/.htpasswd ]; then
+            echo "✅ .htpasswd created successfully"
+          else
+            echo "❌ .htpasswd creation failed"
+            exit 1
+          fi
+          
       - name: Build Nginx Docker image (DEV)
         uses: docker/build-push-action@v5
         with:
