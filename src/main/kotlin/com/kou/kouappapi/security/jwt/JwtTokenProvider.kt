@@ -48,7 +48,7 @@ class JwtTokenProvider(
             userId = userId,
             email = email,
             role = role,
-            expireTime = jwtProperties.accessTokenExpireTime,
+            expireDuration = jwtProperties.accessTokenExpireDuration,
             tokenType = TOKEN_TYPE_ACCESS,
         )
 
@@ -64,7 +64,7 @@ class JwtTokenProvider(
             userId = userId,
             email = email,
             role = role,
-            expireTime = jwtProperties.refreshTokenExpireTime,
+            expireDuration = jwtProperties.refreshTokenExpireDuration,
             tokenType = TOKEN_TYPE_REFRESH,
         )
 
@@ -75,11 +75,11 @@ class JwtTokenProvider(
         userId: Long,
         email: String,
         role: Role,
-        expireTime: Long,
+        expireDuration: Long,
         tokenType: String,
     ): String {
         val now = Date()
-        val expireTime = Date(now.time + expireTime)
+        val expireDate = Date(now.time + expireDuration)
 
         try {
             return Jwts
@@ -89,7 +89,7 @@ class JwtTokenProvider(
                 .claim(TOKEN_TYPE_CLAIM, tokenType)
                 .claim(ROLE_CLAIM, role)
                 .issuedAt(now)
-                .expiration(expireTime)
+                .expiration(expireDate)
                 .signWith(secretKey)
                 .compact()
         } catch (e: Exception) {
