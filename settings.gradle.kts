@@ -1,1 +1,1 @@
-rootProject.name = "kouappapi"
+rootProject.name = "usagiappapi"

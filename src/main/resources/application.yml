@@ -1,6 +1,6 @@
 spring:
     application:
-        name: kou-app-api
+        name: usagi-app-api
     jpa:
         open-in-view: false
         properties:
