@@ -1,5 +1,7 @@
 package com.kou.kouappapi.auth.service
 
+import com.kou.kouappapi.auth.service.dto.RefreshTokenRequestDto
+import com.kou.kouappapi.auth.service.dto.RefreshTokenResponseDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginRequestDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginResponseDto
 import com.kou.kouappapi.auth.social.SocialAuthStrategyFactory
@@ -7,6 +9,9 @@ import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.entity.RefreshToken
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.LoginNextStep
+import com.kou.kouappapi.enums.Role
+import com.kou.kouappapi.exception.AuthTokenExpiredException
+import com.kou.kouappapi.exception.AuthUnauthorizedTokenAccessException
 import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
@@ -63,4 +68,44 @@ class AuthService(
                 providerId = socialUserInfo.providerId,
             ),
         )
+
+    fun refreshToken(
+        userId: Long,
+        requestDto: RefreshTokenRequestDto,
+    ): RefreshTokenResponseDto {
+        jwtTokenProvider.validateToken(requestDto.refreshToken)
+
+        refreshTokenRepository.findByTokenHash(requestDto.refreshToken) ?: throw AuthTokenExpiredException()
+
+        val authUser = jwtTokenProvider.getAuthUser(requestDto.refreshToken)
+        if (authUser.id != userId) {
+            throw AuthUnauthorizedTokenAccessException()
+        }
+
+        val accessToken = jwtTokenProvider.generateAccessToken(authUser.id, authUser.email, Role.valueOf(authUser.role))
+
+        val shouldRefreshToken =
+            jwtTokenProvider.shouldRefreshToken(requestDto.refreshToken, 7)
+        if (shouldRefreshToken) {
+            val newRefreshToken =
+                jwtTokenProvider.generateRefreshToken(authUser.id, authUser.email, Role.valueOf(authUser.role))
+            refreshTokenRepository.save(
+                RefreshToken(
+                    userId = userId,
+                    tokenHash = newRefreshToken,
+                    expiresAt = jwtTokenProvider.getExpiration(newRefreshToken),
+                ),
+            )
+
+            return RefreshTokenResponseDto(
+                accessToken = accessToken,
+                refreshToken = newRefreshToken,
+            )
+        }
+
+        return RefreshTokenResponseDto(
+            accessToken = accessToken,
+            refreshToken = requestDto.refreshToken,
+        )
+    }
 }

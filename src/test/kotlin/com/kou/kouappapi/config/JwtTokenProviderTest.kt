@@ -84,4 +84,27 @@ class JwtTokenProviderTest :
                 extractedRole shouldBe extractedRole
             }
         }
+
+        fun createToken(days: Long) =
+            jwtTokenProvider.generateToken(
+                userId = 1L,
+                email = "test@example.com",
+                role = Role.USER,
+                expireDuration = days * 86400000,
+                tokenType = "REFRESH",
+            )
+
+        describe("만료 예정 리프레시 토큰 확인") {
+
+            it("7일 이내 만료 예정이면 true") {
+                jwtTokenProvider.shouldRefreshToken(createToken(7)) shouldBe true
+                jwtTokenProvider.shouldRefreshToken(createToken(3)) shouldBe true
+                jwtTokenProvider.shouldRefreshToken(createToken(1)) shouldBe true
+            }
+
+            it("8일 이상 남았으면 false") {
+                jwtTokenProvider.shouldRefreshToken(createToken(8)) shouldBe false
+                jwtTokenProvider.shouldRefreshToken(createToken(30)) shouldBe false
+            }
+        }
     })

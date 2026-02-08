@@ -2,17 +2,22 @@ package com.kou.kouappapi.service
 
 import com.kou.kouappapi.IntegrationTestSupport
 import com.kou.kouappapi.auth.service.AuthService
+import com.kou.kouappapi.auth.service.dto.RefreshTokenRequestDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginRequestDto
+import com.kou.kouappapi.entity.RefreshToken
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.exception.AuthInvalidIdTokenException
 import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
+import com.kou.kouappapi.security.jwt.JwtProperties
+import com.kou.kouappapi.security.jwt.JwtTokenProvider
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.Tags
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldNotBe
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
@@ -27,6 +32,8 @@ class AuthServiceTest(
     private val coupleManager: CoupleManager,
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
+    @Autowired private val jwtProperties: JwtProperties,
+    private val jwtTokenProvider: JwtTokenProvider,
 ) : IntegrationTestSupport(
         {
             describe("google 소셜 로그인") {
@@ -36,7 +43,7 @@ class AuthServiceTest(
                             authService.socialLogin(
                                 SocialLoginRequestDto(
                                     provider = SocialProvider.GOOGLE,
-                                    token = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg2MzBhNzFiZDZlYzFjNjEyNTdhMjdmZjJlZmQ5MTg3MmVjYWIxZjYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI0MDc0MDg3MTgxOTIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI0MDc0MDg3MTgxOTIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDAxNTc1NjMyNzg1Mzc4Nzc0MTEiLCJlbWFpbCI6ImtvdS5kZXYuY29ycEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6Ik5JcXZBMGl1aUxvOGFlNllqSkUwMEEiLCJuYW1lIjoi7ZW064uI7ISd7KeE7ZW064uI7ISd7KeEIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0o0d3hwOURBQTF6TzYxMU5QYUtpUXU2RTVDdWllMS11MVk5QnZydEwtRTNZWi00SG89czk2LWMiLCJnaXZlbl9uYW1lIjoi7ZW064uI7ISd7KeEIiwiZmFtaWx5X25hbWUiOiLtlbTri4jshJ3sp4QiLCJpYXQiOjE3NzAwOTgxNDgsImV4cCI6MTc3MDEwMTc0OH0.L4TaER-42sDarge2CQatGqz0rOD7XDOAf7m8sdvm8wphswcPWTIFwO5TmjGbOUfmwk4bC9_gApniMo7WbfaHszo_bApGbBZi3Spz3Wb3uS86WFpAZB2BhJB5DYybuplRx4pfnEBwluZohPL9-WEcwIDQiGm9Z855rRrn7mCr0CbzG8euYZeZxvonmfmiW7YXwmu69e_z3hASbKEkwBDi4oNP9KiJQ_VyBlVsRC8qXmrBM77NzZDNHnIlnaeFiXM_QjgArHI-ZYetyvOwYH5zX2WgCpWEqJJnQmw007FawZD4enZXQYU0RdELmkgUx9j-DMZzZOpsz4MaXty6_Lo71g",
+                                    token = "",
                                 ),
                             )
 
@@ -78,13 +85,46 @@ class AuthServiceTest(
                         authService.socialLogin(
                             SocialLoginRequestDto(
                                 provider = SocialProvider.GOOGLE,
-                                token = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg2MzBhNzFiZDZlYzFjNjEyNTdhMjdmZjJlZmQ5MTg3MmVjYWIxZjYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI0MDc0MDg3MTgxOTIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI0MDc0MDg3MTgxOTIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDAxNTc1NjMyNzg1Mzc4Nzc0MTEiLCJlbWFpbCI6ImtvdS5kZXYuY29ycEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6Ik5JcXZBMGl1aUxvOGFlNllqSkUwMEEiLCJuYW1lIjoi7ZW064uI7ISd7KeE7ZW064uI7ISd7KeEIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0o0d3hwOURBQTF6TzYxMU5QYUtpUXU2RTVDdWllMS11MVk5QnZydEwtRTNZWi00SG89czk2LWMiLCJnaXZlbl9uYW1lIjoi7ZW064uI7ISd7KeEIiwiZmFtaWx5X25hbWUiOiLtlbTri4jshJ3sp4QiLCJpYXQiOjE3NzAwOTgxNDgsImV4cCI6MTc3MDEwMTc0OH0.L4TaER-42sDarge2CQatGqz0rOD7XDOAf7m8sdvm8wphswcPWTIFwO5TmjGbOUfmwk4bC9_gApniMo7WbfaHszo_bApGbBZi3Spz3Wb3uS86WFpAZB2BhJB5DYybuplRx4pfnEBwluZohPL9-WEcwIDQiGm9Z855rRrn7mCr0CbzG8euYZeZxvonmfmiW7YXwmu69e_z3hASbKEkwBDi4oNP9KiJQ_VyBlVsRC8qXmrBM77NzZDNHnIlnaeFiXM_QjgArHI-ZYetyvOwYH5zX2WgCpWEqJJnQmw007FawZD4enZXQYU0RdELmkgUx9j-DMZzZOpsz4MaXty6_Lo71g",
+                                token = "",
                                 inviteCode = inviteCode,
                             ),
                         )
 
                     it("로그인 토큰을 발행된다.") {
                         responseSocialLogin shouldNotBe null
+                    }
+                }
+            }
+
+            describe("token 재발급") {
+                val savedUser =
+                    userRepository.save(
+                        User(
+                            email = "haeni-test-2@gmail.com",
+                            provider = SocialProvider.GOOGLE,
+                            providerId = "19191919191",
+                        ),
+                    )
+
+                val refreshToken = jwtTokenProvider.generateRefreshToken(savedUser.id, savedUser.email, savedUser.role)
+                refreshTokenRepository.save(
+                    RefreshToken(
+                        userId = savedUser.id,
+                        tokenHash = refreshToken,
+                        expiresAt = jwtTokenProvider.getExpiration(refreshToken),
+                    ),
+                )
+
+                context("만료된 token이 주어지면") {
+                    it("토큰을 새로 발급한다.") {
+                        val responseDto =
+                            authService.refreshToken(
+                                savedUser.id,
+                                RefreshTokenRequestDto(refreshToken = refreshToken),
+                            )
+
+                        responseDto.refreshToken shouldNotBe null
+                        responseDto.accessToken shouldNotBe null
                     }
                 }
             }

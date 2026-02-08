@@ -13,6 +13,8 @@ import io.jsonwebtoken.security.Keys
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import javax.crypto.SecretKey
 
@@ -71,7 +73,7 @@ class JwtTokenProvider(
     /**
      * 토큰 생성 (공통 로직)
      */
-    private fun generateToken(
+    fun generateToken(
         userId: Long,
         email: String,
         role: Role,
@@ -146,6 +148,29 @@ class JwtTokenProvider(
      * 토큰 만료 시간 확인
      */
     fun getExpiration(token: String): Date = parseToken(token).payload.expiration
+
+    /**
+     * 리프레시 토큰이 지정된 기간 내에 만료되는지 확인
+     *
+     * @param refreshToken 검증할 리프레시 토큰
+     * @param baseDays 만료 임박 기준 일수 (기본 7일)
+     * @return 0일 ~ baseDays 이내 만료 예정이면 true, 이미 만료되었거나 기간이 더 남았으면 false
+     *
+     * 예시:
+     * - 6일 23시간 남음 → true
+     * - 0일 23시간 남음 → true (당일 만료)
+     * - 이미 만료됨 → false
+     * - 8일 남음 → false
+     */
+    fun shouldRefreshToken(
+        refreshToken: String,
+        baseDays: Long = 7,
+    ): Boolean {
+        val expiration = getExpiration(refreshToken).toInstant()
+        val now = Instant.now()
+        val deadline = now.plus(baseDays, ChronoUnit.DAYS)
+        return expiration in now..deadline
+    }
 
     /**
      * 토큰 파싱
