@@ -1,267 +1,298 @@
 name: Deploy to DEV (Lightsail)
 
 on:
-  push:
-    branches:
-      - dev
-  workflow_dispatch:
+    push:
+        branches:
+            - dev
+    workflow_dispatch:
 
 env:
-  AWS_REGION: ap-northeast-2
-  ENVIRONMENT: dev
-  SERVICE_NAME: usagi-app-dev
-  APP_IMAGE_NAME: usagi-app-dev
-  NGINX_IMAGE_NAME: usagi-nginx-dev
+    AWS_REGION: ap-northeast-2
+    ENVIRONMENT: dev
+    SERVICE_NAME: usagi-app-dev
+    APP_IMAGE_NAME: usagi-app-dev
+    NGINX_IMAGE_NAME: usagi-nginx-dev
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+    deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'gradle'
+            - name: Set up JDK 21
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'temurin'
+                  java-version: '21'
+                  cache: 'gradle'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v4
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+            - name: Grant execute permission for gradlew
+              run: chmod +x gradlew
 
-      - name: Build with Gradle (DEV) - Skip Tests
-        run: ./gradlew clean build -x test --no-daemon
-        env:
-          SPRING_PROFILES_ACTIVE: dev
+            - name: Build with Gradle (DEV) - Skip Tests
+              run: ./gradlew clean build -x test --no-daemon
+              env:
+                  SPRING_PROFILES_ACTIVE: dev
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
 
-      - name: Build App Docker image (DEV)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          tags: |
-            ${{ env.APP_IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.APP_IMAGE_NAME }}:latest-dev
-          build-args: |
-            SPRING_PROFILES_ACTIVE=dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          load: true
+            - name: Build App Docker image (DEV)
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  push: false
+                  tags: |
+                      ${{ env.APP_IMAGE_NAME }}:${{ github.sha }}
+                      ${{ env.APP_IMAGE_NAME }}:latest-dev
+                  build-args: |
+                      SPRING_PROFILES_ACTIVE=dev
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  load: true
 
-      - name: Build Nginx Docker image (DEV)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./nginx/Dockerfile
-          push: false
-          tags: |
-            ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.NGINX_IMAGE_NAME }}:latest-dev
-          build-args: |
-            ENVIRONMENT=dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          load: true
+            - name: Create .htpasswd file from secrets
+              run: |
+                  echo "${{ secrets.HTPASSWD_BASE64 }}" | tr -d '\n' | base64 -d > ./nginx/.htpasswd
+                  if [ -s ./nginx/.htpasswd ]; then
+                    echo "✅ .htpasswd created successfully"
+                  else
+                    echo "❌ .htpasswd creation failed"
+                    exit 1
+                  fi
 
-      - name: Verify Docker images
-        run: |
-          echo "=== DEV Environment Images ==="
-          docker images | grep ${{ env.APP_IMAGE_NAME }}
-          docker images | grep ${{ env.NGINX_IMAGE_NAME }}
+            - name: Build Nginx Docker image (DEV)
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: ./nginx/Dockerfile
+                  push: false
+                  tags: |
+                      ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }}
+                      ${{ env.NGINX_IMAGE_NAME }}:latest-dev
+                  build-args: |
+                      ENVIRONMENT=dev
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  load: true
 
-      # ============================================
-      # Deploy to Lightsail
-      # ============================================
+            - name: Verify Docker images
+              run: |
+                  echo "=== DEV Environment Images ==="
+                  docker images | grep ${{ env.APP_IMAGE_NAME }}
+                  docker images | grep ${{ env.NGINX_IMAGE_NAME }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+            # ============================================
+            # Deploy to Lightsail
+            # ============================================
 
-      - name: Install Lightsail Plugin
-        run: |
-          curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
-          sudo chmod +x /usr/local/bin/lightsailctl
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION }}
 
-      - name: Push App image to Lightsail
-        run: |
-          aws lightsail push-container-image \
-            --service-name ${{ env.SERVICE_NAME }} \
-            --label app-${{ github.sha }} \
-            --image ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} \
-            --region ${{ env.AWS_REGION }}
+            - name: Install Lightsail Plugin
+              run: |
+                  curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+                  sudo chmod +x /usr/local/bin/lightsailctl
 
-      - name: Push Nginx image to Lightsail
-        run: |
-          aws lightsail push-container-image \
-            --service-name ${{ env.SERVICE_NAME }} \
-            --label nginx-${{ github.sha }} \
-            --image ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }} \
-            --region ${{ env.AWS_REGION }}
+            - name: Push App image to Lightsail
+              run: |
+                  aws lightsail push-container-image \
+                    --service-name ${{ env.SERVICE_NAME }} \
+                    --label app-${{ github.sha }} \
+                    --image ${{ env.APP_IMAGE_NAME }}:${{ github.sha }} \
+                    --region ${{ env.AWS_REGION }}
 
-      - name: Get pushed image names
-        id: image-names
-        run: |
-          APP_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("app-${{ github.sha }}")) | .image')
-          NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image')
-          
-          echo "app_image=$APP_IMAGE" >> $GITHUB_OUTPUT
-          echo "nginx_image=$NGINX_IMAGE" >> $GITHUB_OUTPUT
-          
-          echo "App Image: $APP_IMAGE"
-          echo "Nginx Image: $NGINX_IMAGE"
+            - name: Push Nginx image to Lightsail
+              run: |
+                  aws lightsail push-container-image \
+                    --service-name ${{ env.SERVICE_NAME }} \
+                    --label nginx-${{ github.sha }} \
+                    --image ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }} \
+                    --region ${{ env.AWS_REGION }}
 
-      - name: Create deployment configuration
-        run: |
-          cat > deployment.json << EOF
-          {
-            "containers": {
-              "app": {
-                "image": "${{ steps.image-names.outputs.app_image }}",
-                "environment": {
-                  "SPRING_PROFILES_ACTIVE": "dev",
-                  "DB_URL": "${{ secrets.USAGI_DEV_DB_URL }}",
-                  "DB_USERNAME": "${{ secrets.USAGI_DEV_DB_USERNAME }}",
-                  "DB_PASSWORD": "${{ secrets.USAGI_DEV_DB_PASSWORD }}"
-                  "REDIS_HOST": "redis",
-                  "REDIS_PORT": "6379"
-                },
-                "ports": {
-                  "8080": "HTTP"
-                }
-              },
-              "nginx": {
-                "image": "${{ steps.image-names.outputs.nginx_image }}",
-                "ports": {
-                  "80": "HTTP"
-                }
-              }
-              "redis": {
-                "image": "redis:7-alpine",
-                "command": ["redis-server", "--requirepass", "${{ secrets.USAGI_DEV_REDIS_PASSWORD }}"],
-                "ports": {
-                  "6379": "TCP"
-                }
-              }              
-            },
-            "publicEndpoint": {
-              "containerName": "nginx",
-              "containerPort": 80,
-              "healthCheck": {
-                "healthyThreshold": 2,
-                "unhealthyThreshold": 2,
-                "timeoutSeconds": 5,
-                "intervalSeconds": 30,
-                "path": "/health",
-                "successCodes": "200"
-              }
-            }
-          }
-          EOF
-          
-          echo "=== Deployment Configuration ==="
-          cat deployment.json
+            - name: Get pushed image names
+              id: image-names
+              run: |
+                  APP_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("app-${{ github.sha }}")) | .image' | head -n 1)
 
-      - name: Deploy to Lightsail
-        run: |
-          aws lightsail create-container-service-deployment \
-            --service-name ${{ env.SERVICE_NAME }} \
-            --region ${{ env.AWS_REGION }} \
-            --cli-input-json file://deployment.json
+                  NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image' | head -n 1)
 
-      - name: Wait for deployment
-        run: |
-          echo "Waiting for deployment to complete..."
-          for i in {1..30}; do
-            STATE=$(aws lightsail get-container-services \
-              --service-name ${{ env.SERVICE_NAME }} \
-              --region ${{ env.AWS_REGION }} \
-              --query 'containerServices[0].state' \
-              --output text)
-      
-            CURRENT_DEPLOYMENT=$(aws lightsail get-container-services \
-              --service-name ${{ env.SERVICE_NAME }} \
-              --region ${{ env.AWS_REGION }} \
-              --query 'containerServices[0].currentDeployment.state' \
-              --output text)
-      
-            echo "Attempt $i/30: Service state: $STATE, Deployment state: $CURRENT_DEPLOYMENT"
-      
-            if [ "$STATE" = "RUNNING" ] && [ "$CURRENT_DEPLOYMENT" = "ACTIVE" ]; then
-              echo "✅ Deployment successful!"
-              exit 0
-            elif [ "$STATE" = "FAILED" ] || [ "$CURRENT_DEPLOYMENT" = "FAILED" ]; then
-              echo "❌ Deployment failed!"
-      
-              aws lightsail get-container-log \
-                --service-name ${{ env.SERVICE_NAME }} \
-                --container-name app \
-                --region ${{ env.AWS_REGION }} || true
-      
-              exit 1
-            fi
-      
-            sleep 60
-          done
-      
-          echo "⚠️ Deployment timeout after 10 minutes"
-          exit 1
+                  if [[ -z "$APP_IMAGE" ]]; then
+                    echo "Error: Could not find APP_IMAGE matching ${{ github.sha }}"
+                    exit 1
+                  fi
 
-      - name: Get service URL
-        if: success()
-        run: |
-          SERVICE_URL=$(aws lightsail get-container-services \
-            --service-name ${{ env.SERVICE_NAME }} \
-            --region ${{ env.AWS_REGION }} \
-            --query 'containerServices[0].url' \
-            --output text)
-          SERVICE_URL=${SERVICE_URL%/}
-          
-          echo "================================================"
-          echo "🚀 DEV Environment deployed successfully!"
-          echo "📍 Service URL: ${SERVICE_URL}"
-          echo "🏥 Health Check: ${SERVICE_URL}/actuator/health"
-          echo "================================================"
+                  echo "app_image=$APP_IMAGE" >> $GITHUB_OUTPUT
+                  echo "nginx_image=$NGINX_IMAGE" >> $GITHUB_OUTPUT
 
-      - name: Health check
-        if: success()
-        run: |
-          SERVICE_URL=$(aws lightsail get-container-services \
-            --service-name ${{ env.SERVICE_NAME }} \
-            --region ${{ env.AWS_REGION }} \
-            --query 'containerServices[0].url' \
-            --output text)
-          SERVICE_URL=${SERVICE_URL%/}
-          
-          echo "Performing health check..."
-          
-          for i in {1..10}; do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${SERVICE_URL}/actuator/health || echo "000")
-          
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ Health check passed! (HTTP $HTTP_CODE)"
-              curl -s {$SERVICE_URL}/actuator/health
-              exit 0
-            fi
-          
-            echo "Attempt $i/10: HTTP $HTTP_CODE - Waiting..."
-            sleep 10
-          done
-          
-          echo "⚠️ Health check did not pass within timeout"
-          exit 1
+                  echo "Found App Image: $APP_IMAGE"
+                  echo "Found Nginx Image: $NGINX_IMAGE"
 
-    outputs:
-      image-tag: ${{ github.sha }}
-      environment: dev
+            - name: Create deployment configuration
+              run: |
+                  jq -n \
+                    --arg app_image "${{ steps.image-names.outputs.app_image }}" \
+                    --arg nginx_image "${{ steps.image-names.outputs.nginx_image }}" \
+                    --arg db_url "${{ secrets.USAGI_DEV_DB_URL }}" \
+                    --arg db_user "${{ secrets.USAGI_DEV_DB_USERNAME }}" \
+                    --arg db_pass "${{ secrets.USAGI_DEV_DB_PASSWORD }}" \
+                    --arg redis_pass "${{ secrets.USAGI_DEV_REDIS_PASSWORD }}" \
+                    --arg google_oauth2_client_id "${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }}" \
+                    --arg jwt_secrets "${{ secrets.USAGI_DEV_JWT_SECRET }}" \
+                    --arg cloudinary_cloud_name "${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
+                    --arg cloudinary_api_key "${{ secrets.CLOUDINARY_API_KEY }}" \
+                    --arg cloudinary_api_secret "${{ secrets.CLOUDINARY_API_SECRET }}" \
+                    '{
+                      containers: {
+                        app: {
+                          image: $app_image,
+                          environment: {
+                            SPRING_PROFILES_ACTIVE: "dev",
+                            USAGI_DEV_DB_URL: $db_url,
+                            USAGI_DEV_DB_USERNAME: $db_user,
+                            USAGI_DEV_DB_PASSWORD: $db_pass,
+                            USAGI_DEV_REDIS_HOST: "localhost",
+                            USAGI_DEV_REDIS_PASSWORD: $redis_pass,
+                            GOOGLE_OAUTH2_CLIENT_ID: $google_oauth2_client_id,
+                            JWT_SECRET: $jwt_secrets,
+                            CLOUDINARY_CLOUD_NAME: $cloudinary_cloud_name,
+                            CLOUDINARY_API_KEY: $cloudinary_api_key,
+                            CLOUDINARY_API_SECRET: $cloudinary_api_secret
+                          },
+                          ports: {
+                            "8080": "HTTP"
+                          }
+                        },
+                        nginx: {
+                          image: $nginx_image,
+                          ports: {
+                            "80": "HTTP"
+                          }
+                        },
+                        redis: {
+                          image: "redis:7-alpine",
+                          command: ["redis-server", "--bind", "0.0.0.0", "--requirepass", $redis_pass],
+                          ports: {
+                            "6379": "TCP"
+                          }
+                        }
+                      },
+                      publicEndpoint: {
+                        containerName: "nginx",
+                        containerPort: 80,
+                        healthCheck: {
+                          healthyThreshold: 2,
+                          unhealthyThreshold: 2,
+                          timeoutSeconds: 5,
+                          intervalSeconds: 30,
+                          path: "/health",
+                          successCodes: "200"
+                        }
+                      }
+                    }' > deployment.json
+
+                  echo "=== Deployment Configuration ==="
+                  cat deployment.json
+
+            - name: Deploy to Lightsail
+              run: |
+                  aws lightsail create-container-service-deployment \
+                    --service-name ${{ env.SERVICE_NAME }} \
+                    --region ${{ env.AWS_REGION }} \
+                    --cli-input-json file://deployment.json
+
+            - name: Wait for deployment
+              run: |
+                  echo "Waiting for deployment to complete..."
+                  for i in {1..30}; do
+                    STATE=$(aws lightsail get-container-services \
+                      --service-name ${{ env.SERVICE_NAME }} \
+                      --region ${{ env.AWS_REGION }} \
+                      --query 'containerServices[0].state' \
+                      --output text)
+
+                    CURRENT_DEPLOYMENT=$(aws lightsail get-container-services \
+                      --service-name ${{ env.SERVICE_NAME }} \
+                      --region ${{ env.AWS_REGION }} \
+                      --query 'containerServices[0].currentDeployment.state' \
+                      --output text)
+
+                    echo "Attempt $i/30: Service state: $STATE, Deployment state: $CURRENT_DEPLOYMENT"
+
+                    if [ "$STATE" = "RUNNING" ] && [ "$CURRENT_DEPLOYMENT" = "ACTIVE" ]; then
+                      echo "✅ Deployment successful!"
+                      exit 0
+                    elif [ "$STATE" = "FAILED" ] || [ "$CURRENT_DEPLOYMENT" = "FAILED" ]; then
+                      echo "❌ Deployment failed!"
+
+                      aws lightsail get-container-log \
+                        --service-name ${{ env.SERVICE_NAME }} \
+                        --container-name app \
+                        --region ${{ env.AWS_REGION }} || true
+
+                      exit 1
+                    fi
+
+                    sleep 60
+                  done
+
+                  echo "⚠️ Deployment timeout after 10 minutes"
+                  exit 1
+
+            - name: Get service URL
+              if: success()
+              run: |
+                  SERVICE_URL=$(aws lightsail get-container-services \
+                    --service-name ${{ env.SERVICE_NAME }} \
+                    --region ${{ env.AWS_REGION }} \
+                    --query 'containerServices[0].url' \
+                    --output text)
+                  SERVICE_URL=${SERVICE_URL%/}
+
+                  echo "================================================"
+                  echo "🚀 DEV Environment deployed successfully!"
+                  echo "📍 Service URL: ${SERVICE_URL}"
+                  echo "🏥 Health Check: ${SERVICE_URL}/actuator/health"
+                  echo "================================================"
+
+            - name: Health check
+              if: success()
+              run: |
+                  SERVICE_URL=$(aws lightsail get-container-services \
+                    --service-name ${{ env.SERVICE_NAME }} \
+                    --region ${{ env.AWS_REGION }} \
+                    --query 'containerServices[0].url' \
+                    --output text)
+                  SERVICE_URL=${SERVICE_URL%/}
+
+                  echo "Performing health check..."
+
+                  for i in {1..10}; do
+                    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${SERVICE_URL}/actuator/health || echo "000")
+
+                    if [ "$HTTP_CODE" = "200" ]; then
+                      echo "✅ Health check passed! (HTTP $HTTP_CODE)"
+                      curl -s {$SERVICE_URL}/actuator/health
+                      exit 0
+                    fi
+
+                    echo "Attempt $i/10: HTTP $HTTP_CODE - Waiting..."
+                    sleep 10
+                  done
+
+                  echo "⚠️ Health check did not pass within timeout"
+                  exit 1
+
+        outputs:
+            image-tag: ${{ github.sha }}
+            environment: dev
