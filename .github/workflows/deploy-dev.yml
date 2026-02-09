@@ -9,9 +9,9 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   ENVIRONMENT: dev
-  SERVICE_NAME: kou-app-dev
-  APP_IMAGE_NAME: kou-app-dev
-  NGINX_IMAGE_NAME: kou-nginx-dev
+  SERVICE_NAME: usagi-app-dev
+  APP_IMAGE_NAME: usagi-app-dev
+  NGINX_IMAGE_NAME: usagi-nginx-dev
 
 jobs:
   deploy:
@@ -57,16 +57,6 @@ jobs:
           cache-to: type=gha,mode=max
           load: true
 
-      - name: Create .htpasswd file from secrets
-        run: |
-          echo "${{ secrets.HTPASSWD_BASE64 }}" | tr -d '\n' | base64 -d > ./nginx/.htpasswd          
-          if [ -s ./nginx/.htpasswd ]; then
-            echo "✅ .htpasswd created successfully"
-          else
-            echo "❌ .htpasswd creation failed"
-            exit 1
-          fi
-          
       - name: Build Nginx Docker image (DEV)
         uses: docker/build-push-action@v5
         with:
@@ -95,8 +85,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.KOU_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.KOU_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install Lightsail Plugin
@@ -123,83 +113,62 @@ jobs:
       - name: Get pushed image names
         id: image-names
         run: |
-          APP_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("app-${{ github.sha }}")) | .image' | head -n 1)
+          APP_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("app-${{ github.sha }}")) | .image')
+          NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image')
           
-          NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image' | head -n 1)
-          
-          if [[ -z "$APP_IMAGE" ]]; then
-            echo "Error: Could not find APP_IMAGE matching ${{ github.sha }}"
-            exit 1
-          fi
-
           echo "app_image=$APP_IMAGE" >> $GITHUB_OUTPUT
           echo "nginx_image=$NGINX_IMAGE" >> $GITHUB_OUTPUT
           
-          echo "Found App Image: $APP_IMAGE"
-          echo "Found Nginx Image: $NGINX_IMAGE"
+          echo "App Image: $APP_IMAGE"
+          echo "Nginx Image: $NGINX_IMAGE"
 
       - name: Create deployment configuration
         run: |
-          jq -n \
-            --arg app_image "${{ steps.image-names.outputs.app_image }}" \
-            --arg nginx_image "${{ steps.image-names.outputs.nginx_image }}" \
-            --arg db_url "${{ secrets.KOU_DEV_DB_URL }}" \
-            --arg db_user "${{ secrets.KOU_DEV_DB_USERNAME }}" \
-            --arg db_pass "${{ secrets.KOU_DEV_DB_PASSWORD }}" \
-            --arg redis_pass "${{ secrets.KOU_DEV_REDIS_PASSWORD }}" \
-            --arg google_oauth2_client_id "${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }}" \
-            --arg jwt_secrets "${{ secrets.JWT_SECRET }}" \
-            --arg cloudinary_cloud_name "${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
-            --arg cloudinary_api_key "${{ secrets.CLOUDINARY_API_KEY }}" \
-            --arg cloudinary_api_secret "${{ secrets.CLOUDINARY_API_SECRET }}" \
-            '{
-              containers: {
-                app: {
-                  image: $app_image,
-                  environment: {
-                    SPRING_PROFILES_ACTIVE: "dev",
-                    KOU_DEV_DB_URL: $db_url,
-                    KOU_DEV_DB_USERNAME: $db_user,
-                    KOU_DEV_DB_PASSWORD: $db_pass,
-                    KOU_DEV_REDIS_HOST: "localhost",
-                    KOU_DEV_REDIS_PASSWORD: $redis_pass,
-                    GOOGLE_OAUTH2_CLIENT_ID: $google_oauth2_client_id,
-                    JWT_SECRET: $jwt_secrets,
-                    CLOUDINARY_CLOUD_NAME: $cloudinary_cloud_name,
-                    CLOUDINARY_API_KEY: $cloudinary_api_key,
-                    CLOUDINARY_API_SECRET: $cloudinary_api_secret
-                  },
-                  ports: {
-                    "8080": "HTTP"
-                  }
+          cat > deployment.json << EOF
+          {
+            "containers": {
+              "app": {
+                "image": "${{ steps.image-names.outputs.app_image }}",
+                "environment": {
+                  "SPRING_PROFILES_ACTIVE": "dev",
+                  "DB_URL": "${{ secrets.USAGI_DEV_DB_URL }}",
+                  "DB_USERNAME": "${{ secrets.USAGI_DEV_DB_USERNAME }}",
+                  "DB_PASSWORD": "${{ secrets.USAGI_DEV_DB_PASSWORD }}"
+                  "REDIS_HOST": "redis",
+                  "REDIS_PORT": "6379"
                 },
-                nginx: {
-                  image: $nginx_image,
-                  ports: {
-                    "80": "HTTP"
-                  }
-                },
-                redis: {
-                  image: "redis:7-alpine",
-                  command: ["redis-server", "--bind", "0.0.0.0", "--requirepass", $redis_pass],
-                  ports: {
-                    "6379": "TCP"
-                  }
+                "ports": {
+                  "8080": "HTTP"
                 }
               },
-              publicEndpoint: {
-                containerName: "nginx",
-                containerPort: 80,
-                healthCheck: {
-                  healthyThreshold: 2,
-                  unhealthyThreshold: 2,
-                  timeoutSeconds: 5,
-                  intervalSeconds: 30,
-                  path: "/health",
-                  successCodes: "200"
+              "nginx": {
+                "image": "${{ steps.image-names.outputs.nginx_image }}",
+                "ports": {
+                  "80": "HTTP"
                 }
               }
-            }' > deployment.json
+              "redis": {
+                "image": "redis:7-alpine",
+                "command": ["redis-server", "--requirepass", "${{ secrets.USAGI_DEV_REDIS_PASSWORD }}"],
+                "ports": {
+                  "6379": "TCP"
+                }
+              }              
+            },
+            "publicEndpoint": {
+              "containerName": "nginx",
+              "containerPort": 80,
+              "healthCheck": {
+                "healthyThreshold": 2,
+                "unhealthyThreshold": 2,
+                "timeoutSeconds": 5,
+                "intervalSeconds": 30,
+                "path": "/health",
+                "successCodes": "200"
+              }
+            }
+          }
+          EOF
           
           echo "=== Deployment Configuration ==="
           cat deployment.json
