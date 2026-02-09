@@ -35,7 +35,7 @@ class ImageManagerIntegrationTest(
                 val result = imageManager.uploadImage(file, cloudinaryProperties.folder.profile)
 
                 result.url shouldContain "res.cloudinary.com"
-                result.publicId shouldContain "kou-app/test/individual/profile"
+                result.publicId shouldContain "usagi-app/test/individual/profile"
             }
         }
     })

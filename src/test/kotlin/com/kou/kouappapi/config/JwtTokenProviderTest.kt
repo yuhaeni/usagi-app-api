@@ -12,7 +12,7 @@ class JwtTokenProviderTest :
 
         val jwtProperties =
             JwtProperties(
-                secret = "q9T2eL0mR7P6K1d4vZxW3S5b8HnYJ0aQfC+UOeM9Lw=",
+                secret = "testq9T2eL0mR7P6K1d4vZxW3S5b8HnYJ0aQfC+UOeM9Lw=",
                 accessTokenExpireDuration = 1800000,
                 refreshTokenExpireDuration = 604800000,
             )

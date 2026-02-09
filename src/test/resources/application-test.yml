@@ -24,4 +24,4 @@ cloudinary:
     api-key: ${CLOUDINARY_API_KEY}
     api-secret: ${CLOUDINARY_API_SECRET}
     folder:
-        profile: kou-app/test/individual/profile
+        profile: usagi-app/test/individual/profile
