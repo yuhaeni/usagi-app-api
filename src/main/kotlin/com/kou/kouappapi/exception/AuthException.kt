@@ -17,3 +17,7 @@ class AuthEmailAlreadyRegisteredException : AuthException(AuthError.AUTH_EMAIL_A
 class AuthInvalidIdTokenException : AuthException(AuthError.AUTH_INVALID_ID_TOKEN)
 
 class AuthGenerateTokenFailedException : AuthException(AuthError.AUTH_GENERATE_TOKEN_FAILED)
+
+class AuthTokenExpiredException : AuthException(AuthError.AUTH_TOKEN_EXPIRED)
+
+class AuthUnauthorizedTokenAccessException : AuthException(AuthError.AUTH_UNAUTHORIZED_TOKEN_ACCESS)

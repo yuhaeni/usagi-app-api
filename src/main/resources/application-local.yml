@@ -1,6 +1,6 @@
 spring:
     datasource:
-        url: jdbc:postgresql://localhost:5432/kou_app_local
+        url: jdbc:postgresql://localhost:5432/usagi_app_local
         username: admin
         password: 1234qwer
         driver-class-name: org.postgresql.Driver
@@ -22,10 +22,6 @@ logging:
         org.springframework.web: DEBUG
         org.springframework.security: DEBUG
 
-jwt:
-    secret: ${JWT_SECRET}
-    access-token-expiration: 3600000
-
 google:
     oauth2:
         playground: ${GOOGLE_OAUTH2_PLAYGROUND}
@@ -35,7 +31,7 @@ cloudinary:
     api-key: ${CLOUDINARY_API_KEY}
     api-secret: ${CLOUDINARY_API_SECRET}
     folder:
-        profile: kou-app/local/individual/profile
+        profile: usagi-app/local/individual/profile
 
 springdoc:
     api-docs:

@@ -1,8 +1,8 @@
 spring:
     datasource:
-        url: ${KOU_DEV_DB_URL}
-        username: ${KOU_DEV_DB_USERNAME}
-        password: ${KOU_DEV_DB_PASSWORD}
+        url: ${USAGI_DEV_DB_URL}
+        username: ${USAGI_DEV_DB_USERNAME}
+        password: ${USAGI_DEV_DB_PASSWORD}
         driver-class-name: org.postgresql.Driver
 
     jpa:
@@ -12,26 +12,27 @@ spring:
 
     data:
         redis:
-            host: ${KOU_DEV_REDIS_HOST:localhost}
+            host: ${USAGI_DEV_REDIS_HOST:localhost}
             port: 6379
-            password: ${KOU_DEV_REDIS_PASSWORD:}
+            password: ${USAGI_DEV_REDIS_PASSWORD:}
 
 logging:
     level:
-        com.kou.kouappapi: DEBUG
+        com.usagi.usagiappapi: DEBUG
         org.springframework.web: DEBUG
         org.springframework.security: DEBUG
 
 jwt:
-    secret: ${KOU_DEV_JWT_SECRET}
-    access-token-expiration: 3600000
+    secret: ${USAGI_DEV_JWT_SECRET}
+    access-token-expire-duration: 1800000
+    refresh-token-expire-duration: 1209600000
 
 cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME}
     api-key: ${CLOUDINARY_API_KEY}
     api-secret: ${CLOUDINARY_API_SECRET}
     folder:
-        profile: kou-app/dev/individual/profile
+        profile: usagi-app/dev/individual/profile
 
 springdoc:
     api-docs:

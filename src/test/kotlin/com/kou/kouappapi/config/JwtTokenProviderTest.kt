@@ -12,9 +12,9 @@ class JwtTokenProviderTest :
 
         val jwtProperties =
             JwtProperties(
-                secret = "q9T2eL0mR7P6K1d4vZxW3S5b8HnYJ0aQfC+UOeM9Lw=",
-                accessTokenExpireTime = 1800000,
-                refreshTokenExpireTime = 604800000,
+                secret = "testq9T2eL0mR7P6K1d4vZxW3S5b8HnYJ0aQfC+UOeM9Lw=",
+                accessTokenExpireDuration = 1800000,
+                refreshTokenExpireDuration = 604800000,
             )
 
         val jwtTokenProvider = JwtTokenProvider(jwtProperties)
@@ -82,6 +82,29 @@ class JwtTokenProviderTest :
                 val extractedRole = jwtTokenProvider.getRoleFromToken(token)
 
                 extractedRole shouldBe extractedRole
+            }
+        }
+
+        fun createToken(days: Long) =
+            jwtTokenProvider.generateToken(
+                userId = 1L,
+                email = "test@example.com",
+                role = Role.USER,
+                expireDuration = days * 86400000,
+                tokenType = "REFRESH",
+            )
+
+        describe("만료 예정 리프레시 토큰 확인") {
+
+            it("7일 이내 만료 예정이면 true") {
+                jwtTokenProvider.shouldRefreshToken(createToken(7)) shouldBe true
+                jwtTokenProvider.shouldRefreshToken(createToken(3)) shouldBe true
+                jwtTokenProvider.shouldRefreshToken(createToken(1)) shouldBe true
+            }
+
+            it("8일 이상 남았으면 false") {
+                jwtTokenProvider.shouldRefreshToken(createToken(8)) shouldBe false
+                jwtTokenProvider.shouldRefreshToken(createToken(30)) shouldBe false
             }
         }
     })
