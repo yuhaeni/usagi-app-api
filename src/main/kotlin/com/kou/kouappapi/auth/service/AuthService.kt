@@ -4,17 +4,18 @@ import com.kou.kouappapi.auth.service.dto.RefreshTokenRequestDto
 import com.kou.kouappapi.auth.service.dto.RefreshTokenResponseDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginRequestDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginResponseDto
+import com.kou.kouappapi.auth.service.dto.ValidateTokenResponseDto
 import com.kou.kouappapi.auth.social.SocialAuthStrategyFactory
 import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.entity.RefreshToken
 import com.kou.kouappapi.entity.User
-import com.kou.kouappapi.enums.LoginNextStep
 import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.exception.AuthTokenExpiredException
 import com.kou.kouappapi.exception.AuthUnauthorizedTokenAccessException
 import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
+import com.kou.kouappapi.security.AuthUser
 import com.kou.kouappapi.security.jwt.JwtTokenProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -55,7 +56,6 @@ class AuthService(
         return SocialLoginResponseDto(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            nextStep = LoginNextStep.PROFILE_SETUP,
         )
     }
 
@@ -107,5 +107,10 @@ class AuthService(
             accessToken = accessToken,
             refreshToken = requestDto.refreshToken,
         )
+    }
+
+    fun validateToken(authUser: AuthUser?): ValidateTokenResponseDto {
+        authUser ?: return ValidateTokenResponseDto(isValidToken = false)
+        return ValidateTokenResponseDto(isValidToken = true)
     }
 }

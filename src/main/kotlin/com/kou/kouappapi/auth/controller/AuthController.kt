@@ -4,11 +4,13 @@ import com.kou.kouappapi.auth.controller.dto.RefreshTokenRequest
 import com.kou.kouappapi.auth.controller.dto.RefreshTokenResponse
 import com.kou.kouappapi.auth.controller.dto.SocialLoginRequest
 import com.kou.kouappapi.auth.controller.dto.SocialLoginResponse
+import com.kou.kouappapi.auth.controller.dto.ValidateTokenResponse
 import com.kou.kouappapi.auth.controller.dto.toDto
 import com.kou.kouappapi.auth.controller.dto.toResponse
 import com.kou.kouappapi.auth.service.AuthService
 import com.kou.kouappapi.security.AuthUser
-import jakarta.validation.Valid
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,23 +18,38 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+@Tag(name = "🔐인증", description = "인증 관련 API")
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
     private val authService: AuthService,
 ) {
+    @Operation(summary = "소셜 로그인", description = "소셜 로그인을 통해 로그인 및 회원가입 처리")
     @PostMapping("/social/login")
     fun socialLogin(
-        @RequestBody @Valid request: SocialLoginRequest,
+        @RequestBody request: SocialLoginRequest,
     ): ResponseEntity<SocialLoginResponse> =
         ResponseEntity.ok(
             authService.socialLogin(request.toDto()).toResponse(),
         )
 
+    @Operation(
+        summary = "토큰 재발급",
+        description = "access token 재발급 (refresh token의 만료일이 다가오는 경우, refresh token도 재발급)",
+    )
     @PostMapping("/refresh/token")
     fun refreshToken(
         @AuthenticationPrincipal authUser: AuthUser,
         @RequestBody request: RefreshTokenRequest,
     ): ResponseEntity<RefreshTokenResponse> =
         ResponseEntity.ok(authService.refreshToken(authUser.id, request.toDto()).toResponse())
+
+    @Operation(
+        summary = "토큰 검증",
+        description = "유효한 access token 검증",
+    )
+    @PostMapping("/validate/token")
+    fun validateToken(
+        @AuthenticationPrincipal authUser: AuthUser?,
+    ): ResponseEntity<ValidateTokenResponse> = ResponseEntity.ok(authService.validateToken(authUser).toResponse())
 }
