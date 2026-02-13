@@ -11,13 +11,11 @@ import com.kou.kouappapi.exception.AuthInvalidIdTokenException
 import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
-import com.kou.kouappapi.security.jwt.JwtProperties
 import com.kou.kouappapi.security.jwt.JwtTokenProvider
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.Tags
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldNotBe
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
@@ -32,7 +30,6 @@ class AuthServiceTest(
     private val coupleManager: CoupleManager,
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
-    @Autowired private val jwtProperties: JwtProperties,
     private val jwtTokenProvider: JwtTokenProvider,
 ) : IntegrationTestSupport(
         {
@@ -119,7 +116,6 @@ class AuthServiceTest(
                     it("토큰을 새로 발급한다.") {
                         val responseDto =
                             authService.refreshToken(
-                                savedUser.id,
                                 RefreshTokenRequestDto(refreshToken = refreshToken),
                             )
 
