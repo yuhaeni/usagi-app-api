@@ -3,7 +3,7 @@ package com.kou.kouappapi.auth.controller.dto
 import com.kou.kouappapi.auth.service.dto.ValidateTokenResponseDto
 
 data class ValidateTokenResponse(
-    val isValidToken: Boolean,
+    val validToken: Boolean,
 )
 
-fun ValidateTokenResponseDto.toResponse(): ValidateTokenResponse = ValidateTokenResponse(isValidToken = isValidToken)
+fun ValidateTokenResponseDto.toResponse(): ValidateTokenResponse = ValidateTokenResponse(validToken = validToken)

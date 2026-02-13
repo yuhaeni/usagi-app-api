@@ -8,6 +8,7 @@ import com.kou.kouappapi.auth.controller.dto.ValidateTokenResponse
 import com.kou.kouappapi.auth.controller.dto.toDto
 import com.kou.kouappapi.auth.controller.dto.toResponse
 import com.kou.kouappapi.auth.service.AuthService
+import com.kou.kouappapi.common.dto.ApiResponse
 import com.kou.kouappapi.security.AuthUser
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
-    private val authService: AuthService,
+    private val service: AuthService,
 ) {
     @Operation(summary = "소셜 로그인", description = "소셜 로그인을 통해 로그인 및 회원가입 처리")
     @PostMapping("/social/login")
@@ -30,7 +31,7 @@ class AuthController(
         @RequestBody request: SocialLoginRequest,
     ): ResponseEntity<SocialLoginResponse> =
         ResponseEntity.ok(
-            authService.socialLogin(request.toDto()).toResponse(),
+            service.socialLogin(request.toDto()).toResponse(),
         )
 
     @Operation(
@@ -39,10 +40,8 @@ class AuthController(
     )
     @PostMapping("/refresh/token")
     fun refreshToken(
-        @AuthenticationPrincipal authUser: AuthUser,
         @RequestBody request: RefreshTokenRequest,
-    ): ResponseEntity<RefreshTokenResponse> =
-        ResponseEntity.ok(authService.refreshToken(authUser.id, request.toDto()).toResponse())
+    ): ApiResponse<RefreshTokenResponse> = ApiResponse.success(service.refreshToken(request.toDto()).toResponse())
 
     @Operation(
         summary = "토큰 검증",
@@ -51,5 +50,5 @@ class AuthController(
     @PostMapping("/validate/token")
     fun validateToken(
         @AuthenticationPrincipal authUser: AuthUser?,
-    ): ResponseEntity<ValidateTokenResponse> = ResponseEntity.ok(authService.validateToken(authUser).toResponse())
+    ): ApiResponse<ValidateTokenResponse> = ApiResponse.success(service.validateToken(authUser).toResponse())
 }

@@ -1,11 +1,13 @@
 package com.kou.kouappapi.service
 
+import com.kou.kouappapi.controller.dto.ModifyUserProfileResponse
 import com.kou.kouappapi.exception.UserNotFoundException
 import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.property.CloudinaryProperties
 import com.kou.kouappapi.repository.CoupleRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.GetUserProfileResponseDto
+import com.kou.kouappapi.service.dto.ModifyUserProfileRequestDto
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -37,6 +39,35 @@ class UserService(
             profileImageUrl = profileImageUrl,
             coupleId = couple?.id,
             coupleStatus = couple?.status,
+        )
+    }
+
+    @Transactional
+    fun modifyUserProfile(
+        id: Long,
+        requestDto: ModifyUserProfileRequestDto,
+    ): ModifyUserProfileResponse {
+        val user = userRepository.findByIdOrNull(id) ?: throw UserNotFoundException()
+
+        val encodedPassword =
+            requestDto.password?.let { password ->
+                passwordEncoder.encode(password)
+            }
+
+        val resultUploadImage =
+            requestDto.profileImageFile?.let { file ->
+                imageManager.uploadImage(file, cloudinaryProperties.folder.profile)
+            }
+
+        user.updateUser(
+            name = requestDto.name,
+            encodedPassword = encodedPassword,
+            profileImageId = resultUploadImage?.publicId,
+        )
+
+        return ModifyUserProfileResponse(
+            userId = user.id,
+            profileImageUrl = resultUploadImage?.url,
         )
     }
 }

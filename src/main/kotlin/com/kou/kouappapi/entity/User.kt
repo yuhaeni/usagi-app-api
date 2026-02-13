@@ -40,12 +40,12 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
 
-    fun updateUserProfile(
-        name: String,
-        encodedPassword: String?,
-        profileImageId: String?,
+    fun updateUser(
+        name: String? = null,
+        encodedPassword: String? = null,
+        profileImageId: String? = null,
     ) {
-        this.name = name
+        name?.let { this.name = name }
         encodedPassword?.let { this.password = it }
         profileImageId?.let { this.profileImageId = it }
     }

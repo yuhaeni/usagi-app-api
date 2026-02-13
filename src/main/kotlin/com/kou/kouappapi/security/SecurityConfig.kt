@@ -44,8 +44,7 @@ class SecurityConfig(
                         "/v3/api-docs/**",
                     ).permitAll()
                     .requestMatchers(
-                        "/api/v1/auth/social/**",
-                        "/api/v1/auth/validate/token",
+                        "/api/v1/auth/**",
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
