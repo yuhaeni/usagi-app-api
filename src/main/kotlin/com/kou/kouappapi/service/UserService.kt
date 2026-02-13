@@ -1,12 +1,13 @@
 package com.kou.kouappapi.service
 
-import com.kou.kouappapi.auth.service.dto.CompleteProfileRequestDto
-import com.kou.kouappapi.exception.UserAlreadyProfileCompleteException
+import com.kou.kouappapi.controller.dto.ModifyUserProfileResponse
 import com.kou.kouappapi.exception.UserNotFoundException
 import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.property.CloudinaryProperties
+import com.kou.kouappapi.repository.CoupleRepository
 import com.kou.kouappapi.repository.UserRepository
-import com.kou.kouappapi.service.dto.CompleteProfileResponseDto
+import com.kou.kouappapi.service.dto.GetUserProfileResponseDto
+import com.kou.kouappapi.service.dto.ModifyUserProfileRequestDto
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -16,38 +17,57 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class UserService(
     private val userRepository: UserRepository,
+    private val coupleRepository: CoupleRepository,
     private val passwordEncoder: PasswordEncoder,
     private val imageManager: ImageManager,
     private val cloudinaryProperties: CloudinaryProperties,
 ) {
-    @Transactional
-    fun completeProfile(
-        userId: Long,
-        requestDto: CompleteProfileRequestDto,
-    ): CompleteProfileResponseDto {
+    fun getUserProfile(userId: Long): GetUserProfileResponseDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-        if (user.profileCompleted) {
-            throw UserAlreadyProfileCompleteException()
+        val couple = coupleRepository.findByIdOrNull(userId)
+
+        // TODO 프로필 이미지 주소 추가
+        var profileImageUrl: String? = null
+        user.profileImageId?.let {
+            profileImageUrl = imageManager.getProfileImageUrl(user.profileImageId!!)
         }
 
-        val resultUploadImage =
-            requestDto.profileFile?.let {
-                imageManager.uploadImage(it, cloudinaryProperties.folder.profile)
+        return GetUserProfileResponseDto(
+            userId = user.id,
+            name = user.name,
+            email = user.email,
+            profileImageUrl = profileImageUrl,
+            coupleId = couple?.id,
+            coupleStatus = couple?.status,
+        )
+    }
+
+    @Transactional
+    fun modifyUserProfile(
+        id: Long,
+        requestDto: ModifyUserProfileRequestDto,
+    ): ModifyUserProfileResponse {
+        val user = userRepository.findByIdOrNull(id) ?: throw UserNotFoundException()
+
+        val encodedPassword =
+            requestDto.password?.let { password ->
+                passwordEncoder.encode(password)
             }
 
-        val encodedPassword = requestDto.password?.let { passwordEncoder.encode(it) }
+        val resultUploadImage =
+            requestDto.profileImageFile?.let { file ->
+                imageManager.uploadImage(file, cloudinaryProperties.folder.profile)
+            }
 
-        user.completeProfile(
+        user.updateUser(
             name = requestDto.name,
             encodedPassword = encodedPassword,
-            profileImageId = resultUploadImage?.let { resultUploadImage.publicId },
+            profileImageId = resultUploadImage?.publicId,
         )
 
-        return CompleteProfileResponseDto(
+        return ModifyUserProfileResponse(
             userId = user.id,
-            email = user.email,
-            userName = user.name,
-            profileImageUrl = resultUploadImage?.let { resultUploadImage.url },
+            profileImageUrl = resultUploadImage?.url,
         )
     }
 }

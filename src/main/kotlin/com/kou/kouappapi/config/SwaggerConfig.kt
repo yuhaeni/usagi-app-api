@@ -17,7 +17,7 @@ class SwaggerConfig {
         return OpenAPI()
             .info(
                 Info()
-                    .title("Kou App API")
+                    .title("Usagi App API")
                     .version("1.0")
                     .description(
                         """
