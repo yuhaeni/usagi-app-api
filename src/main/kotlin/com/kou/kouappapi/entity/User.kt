@@ -34,20 +34,18 @@ class User(
     var role: Role = Role.USER,
     @Enumerated(EnumType.STRING)
     var status: UserStatus = UserStatus.ACTIVE,
-    var profileCompleted: Boolean = false,
     var coupleId: Long? = null,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
 
-    fun completeProfile(
+    fun updateUserProfile(
         name: String,
         encodedPassword: String?,
         profileImageId: String?,
     ) {
         this.name = name
-        this.profileCompleted = true
         encodedPassword?.let { this.password = it }
         profileImageId?.let { this.profileImageId = it }
     }
