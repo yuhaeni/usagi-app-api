@@ -23,7 +23,8 @@ management:
 
 google:
     oauth2:
-        client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
+        web-client-id: ${GOOGLE_OAUTH2_WEB_CLIENT_ID}
+        ios-client-id: ${GOOGLE_OAUTH2_IOS_CLIENT_ID}
 
 springdoc:
   api-docs:
