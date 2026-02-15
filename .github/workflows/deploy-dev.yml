@@ -147,7 +147,8 @@ jobs:
                     --arg db_user "${{ secrets.USAGI_DEV_DB_USERNAME }}" \
                     --arg db_pass "${{ secrets.USAGI_DEV_DB_PASSWORD }}" \
                     --arg redis_pass "${{ secrets.USAGI_DEV_REDIS_PASSWORD }}" \
-                    --arg google_oauth2_client_id "${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }}" \
+                    --arg google_oauth2_web_client_id "${{ secrets.GOOGLE_OAUTH2_WEB_CLIENT_ID }}" \
+                    --arg google_oauth2_ios_client_id "${{ secrets.GOOGLE_OAUTH2_IOS_CLIENT_ID }}" \
                     --arg jwt_secrets "${{ secrets.USAGI_DEV_JWT_SECRET }}" \
                     --arg cloudinary_cloud_name "${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
                     --arg cloudinary_api_key "${{ secrets.CLOUDINARY_API_KEY }}" \
@@ -163,7 +164,8 @@ jobs:
                             USAGI_DEV_DB_PASSWORD: $db_pass,
                             USAGI_DEV_REDIS_HOST: "localhost",
                             USAGI_DEV_REDIS_PASSWORD: $redis_pass,
-                            GOOGLE_OAUTH2_CLIENT_ID: $google_oauth2_client_id,
+                            GOOGLE_OAUTH2_WEB_CLIENT_ID: $google_oauth2_web_client_id,
+                            GOOGLE_OAUTH2_IOS_CLIENT_ID: $google_oauth2_ios_client_id,
                             JWT_SECRET: $jwt_secrets,
                             CLOUDINARY_CLOUD_NAME: $cloudinary_cloud_name,
                             CLOUDINARY_API_KEY: $cloudinary_api_key,
