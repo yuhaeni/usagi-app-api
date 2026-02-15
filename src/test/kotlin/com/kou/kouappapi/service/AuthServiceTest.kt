@@ -8,7 +8,6 @@ import com.kou.kouappapi.entity.RefreshToken
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.exception.AuthInvalidIdTokenException
-import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.security.jwt.JwtTokenProvider
@@ -27,7 +26,6 @@ import java.util.Date
 @Transactional
 class AuthServiceTest(
     private val authService: AuthService,
-    private val coupleManager: CoupleManager,
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtTokenProvider: JwtTokenProvider,
@@ -61,34 +59,6 @@ class AuthServiceTest(
                                 ),
                             )
                         }
-                    }
-                }
-            }
-
-            describe("커플 연동 완료") {
-                context("유효한 초대 코드가 주어지면") {
-                    val inviterUser =
-                        userRepository.save(
-                            User(
-                                email = "haeni-test@gmail.com",
-                                provider = SocialProvider.GOOGLE,
-                                providerId = "1212313131",
-                            ),
-                        )
-                    val inviteCode = coupleManager.generateInviteCode()
-                    coupleManager.saveCoupleInviteCode(inviterUser.id, inviteCode)
-
-                    val responseSocialLogin =
-                        authService.socialLogin(
-                            SocialLoginRequestDto(
-                                provider = SocialProvider.GOOGLE,
-                                token = "",
-                                inviteCode = inviteCode,
-                            ),
-                        )
-
-                    it("로그인 토큰을 발행된다.") {
-                        responseSocialLogin shouldNotBe null
                     }
                 }
             }

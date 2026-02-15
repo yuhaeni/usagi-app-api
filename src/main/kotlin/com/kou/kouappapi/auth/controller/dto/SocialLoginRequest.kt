@@ -9,13 +9,10 @@ data class SocialLoginRequest(
     val provider: SocialProvider,
     @Schema(description = "제공사의 로그인 토큰 (구글은 id_token)", required = true)
     val token: String,
-    @Schema(description = "커플 연동 초대 코드")
-    val inviteCode: String?,
 )
 
 fun SocialLoginRequest.toDto() =
     SocialLoginRequestDto(
         provider = provider,
         token = token,
-        inviteCode = inviteCode,
     )

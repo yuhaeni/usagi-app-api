@@ -46,7 +46,8 @@ class GoogleAuthStrategy(
                 GsonFactory.getDefaultInstance(),
             ).setAudience(
                 buildList {
-                    add(googleProperties.clientId)
+                    add(googleProperties.webClientId)
+                    add(googleProperties.iosClientId)
                     if (environment.acceptsProfiles(Profiles.of("local | test"))) {
                         googleProperties.playground?.let { add(it) }
                     }

@@ -12,7 +12,6 @@ import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.exception.AuthTokenExpiredException
 import com.kou.kouappapi.exception.AuthUnauthorizedTokenAccessException
-import com.kou.kouappapi.manager.couple.CoupleManager
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.security.AuthUser
@@ -27,7 +26,6 @@ class AuthService(
     private val socialAuthStrategyFactory: SocialAuthStrategyFactory,
     private val jwtTokenProvider: JwtTokenProvider,
     private val userRepository: UserRepository,
-    private val coupleManager: CoupleManager,
     private val refreshTokenRepository: RefreshTokenRepository,
 ) {
     @Transactional
@@ -49,10 +47,6 @@ class AuthService(
                 expiresAt = jwtTokenProvider.getExpiration(refreshToken),
             ),
         )
-
-        if (requestDto.inviteCode != null) {
-            coupleManager.completeCoupleConnection(user.id, requestDto.inviteCode)
-        }
 
         return SocialLoginResponseDto(
             accessToken = accessToken,
