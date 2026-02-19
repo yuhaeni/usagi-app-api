@@ -24,8 +24,8 @@ class UserService(
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
 
         var profileImageUrl: String? = null
-        user.profileImageId?.let {
-            profileImageUrl = imageManager.getProfileImageUrl(user.profileImageId!!)
+        user.profileImageId?.let { profileImageId ->
+            profileImageUrl = imageManager.getImageUrl(profileImageId, 200, 200)
         }
 
         return GetUserProfileResponseDto(
@@ -50,7 +50,7 @@ class UserService(
 
         val resultUploadImage =
             requestDto.profileImageFile?.let { file ->
-                imageManager.uploadImage(file, cloudinaryProperties.folder.profile)
+                imageManager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
             }
 
         user.updateUser(

@@ -13,6 +13,8 @@ class ImageManager(
     fun uploadImage(
         file: MultipartFile,
         uploadFolder: String,
+        width: Int,
+        height: Int,
     ): ImageUploadResult {
         if (file.isEmpty) {
             throw InvalidImageFileException()
@@ -30,17 +32,21 @@ class ImageManager(
             cloudinary.uploader().upload(file.bytes, params)
                 ?: throw ImageUploadFailedException()
         return ImageUploadResult(
-            url = getProfileImageUrl(uploadResult["public_id"] as String),
+            url = getImageUrl(uploadResult["public_id"] as String, width, height),
             publicId = uploadResult["public_id"] as String,
         )
     }
 
-    fun getProfileImageUrl(publicId: String): String =
+    fun getImageUrl(
+        publicId: String,
+        width: Int,
+        height: Int,
+    ): String =
         cloudinary
             .url()
             .transformation(
                 Transformation<Transformation<*>>()
-                    .width(200) // TODO 수정 필요?
-                    .height(200),
+                    .width(width)
+                    .height(height),
             ).generate(publicId)
 }

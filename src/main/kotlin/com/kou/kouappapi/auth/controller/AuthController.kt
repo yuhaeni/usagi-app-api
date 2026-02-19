@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@Tag(name = "🔐인증", description = "인증 관련 API")
+@Tag(name = "🔐 인증")
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
@@ -47,7 +47,7 @@ class AuthController(
         summary = "토큰 검증",
         description = "유효한 access token 검증",
     )
-    @PostMapping("/validate/token")
+    @PostMapping("/validate/token") // TODO 만료시 401로, 메세지만 추가.
     fun validateToken(
         @AuthenticationPrincipal authUser: AuthUser?,
     ): ApiResponse<ValidateTokenResponse> = ApiResponse.success(service.validateToken(authUser).toResponse())

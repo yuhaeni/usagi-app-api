@@ -44,7 +44,7 @@ class ImageManagerTest(
                             }
 
                         shouldThrow<InvalidImageFileException> {
-                            manager.uploadImage(emptyFile, cloudinaryProperties.folder.profile)
+                            manager.uploadImage(emptyFile, cloudinaryProperties.folder.profile, 200, 200)
                         }
                     }
                 }
@@ -70,7 +70,7 @@ class ImageManagerTest(
                             urlBuilder.generate(publicId)
                         } returns transformedUrl
 
-                        val result = manager.uploadImage(file, cloudinaryProperties.folder.profile)
+                        val result = manager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
 
                         result.url shouldBe transformedUrl
                         result.publicId shouldBe publicId
