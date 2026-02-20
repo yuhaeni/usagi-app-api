@@ -18,7 +18,7 @@ spring:
 
 jwt:
     secret: ${USAGI_LOCAL_JWT_SECRET}
-    access-token-expire-duration: 480000
+    access-token-expire-duration: 960000
     refresh-token-expire-duration: 1209600000
 
 logging:

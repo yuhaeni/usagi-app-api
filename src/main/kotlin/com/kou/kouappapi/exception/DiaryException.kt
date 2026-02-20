@@ -1,13 +1,15 @@
 package com.kou.kouappapi.exception
 
+import org.springframework.http.HttpStatus
 import java.time.LocalDate
 
 open class DiaryException(
     message: String,
-) : RuntimeException(message)
+    status: HttpStatus,
+) : GlobalException(status = status, message = message)
 
-class DiaryNotFoundException : DiaryException("일기를 찾을 수 없습니다.")
+class DiaryNotFoundException : DiaryException(status = HttpStatus.NOT_FOUND, message = "존재하지 않는 일기입니다.")
 
 class DiaryAlreadyExistsException(
     date: LocalDate,
-) : DiaryException("${date}에 이미 일기가 존재합니다.")
+) : DiaryException(status = HttpStatus.CONFLICT, message = "${date}에 이미 일기가 존재합니다.")

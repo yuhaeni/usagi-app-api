@@ -1,7 +1,10 @@
 package com.kou.kouappapi.exception
 
-open class UserException(
-    message: String,
-) : RuntimeException(message)
+import org.springframework.http.HttpStatus
 
-class UserNotFoundException : UserException("사용자를 찾을 수 없습니다.")
+open class UserException(
+    status: HttpStatus,
+    message: String,
+) : GlobalException(status, message)
+
+class UserNotFoundException : UserException(status = HttpStatus.NOT_FOUND, message = "사용자를 찾을 수 없습니다.")
