@@ -56,6 +56,7 @@ class AuthService(
         )
     }
 
+    @Transactional
     private fun createNewUser(socialUserInfo: SocialUserInfo): User =
         userRepository.save(
             User(
@@ -66,6 +67,7 @@ class AuthService(
             ),
         )
 
+    @Transactional
     fun refreshToken(requestDto: RefreshTokenRequestDto): RefreshTokenResponseDto {
         jwtTokenProvider.validateToken(requestDto.refreshToken)
 
@@ -105,9 +107,8 @@ class AuthService(
         authUser: AuthUser?,
         request: HttpServletRequest?,
     ) {
-        val authHeader =
-            request?.getHeader(HttpHeaders.AUTHORIZATION)
-                ?: throw AuthLoginRequiredException()
+        request?.getHeader(HttpHeaders.AUTHORIZATION)
+            ?: throw AuthLoginRequiredException()
         authUser ?: throw AuthTokenExpiredException()
     }
 }
