@@ -41,7 +41,7 @@ class ImageManager(
         publicId: String,
         width: Int,
         height: Int,
-    ): String =
+    ): String? =
         cloudinary
             .url()
             .transformation(

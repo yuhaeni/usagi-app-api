@@ -84,4 +84,15 @@ class DiaryServiceTest(
                 }
             }
         }
+
+        describe("일기(감정) 상세 조회") {
+            context("올바른 userId,diaryId를 입력한 경우") {
+                it("저장된 일기와 일치하는 데이터가 반환된다.") {
+                    val response = service.getDiary(savedUser.id, savedDiary.id)
+                    response.date shouldBe savedDiary.date
+                    response.emotion shouldBe savedDiary.emotion
+                    response.content shouldBe savedDiary.content
+                }
+            }
+        }
     })

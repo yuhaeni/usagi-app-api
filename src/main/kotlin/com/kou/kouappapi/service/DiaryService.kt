@@ -2,6 +2,8 @@ package com.kou.kouappapi.service
 
 import com.kou.kouappapi.entity.Diary
 import com.kou.kouappapi.exception.DiaryAlreadyExistsException
+import com.kou.kouappapi.exception.DiaryNotFoundException
+import com.kou.kouappapi.exception.NotDiaryOwnerException
 import com.kou.kouappapi.exception.UserNotFoundException
 import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.manager.image.ImageUploadResult
@@ -10,23 +12,26 @@ import com.kou.kouappapi.repository.DiaryRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
 import com.kou.kouappapi.service.dto.CreateDiaryResponseDto
+import com.kou.kouappapi.service.dto.GetDiaryResponseDto
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional(readOnly = true)
 class DiaryService(
     val diaryRepository: DiaryRepository,
     val userRepository: UserRepository,
     val imageManager: ImageManager,
     val cloudinaryProperties: CloudinaryProperties,
 ) {
+    @Transactional
     fun createDiary(
         userId: Long,
         requestDto: CreateDiaryRequestDto,
     ): CreateDiaryResponseDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
 
-        // TODO GlobalExceptionHandler 추가  -> @ExceptionHandler
         val savedDiaryList = diaryRepository.findDiariesByUserIdAndDate(userId, requestDto.date)
         if (savedDiaryList.isNotEmpty()) {
             throw DiaryAlreadyExistsException(requestDto.date)
@@ -59,6 +64,31 @@ class DiaryService(
             date = diary.date,
             emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
+            content = diary.content,
+        )
+    }
+
+    fun getDiary(
+        userId: Long,
+        diaryId: Long,
+    ): GetDiaryResponseDto {
+        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
+
+        val diary = diaryRepository.findByIdOrNull(diaryId) ?: throw DiaryNotFoundException()
+        if (diary.user != user) {
+            throw NotDiaryOwnerException()
+        }
+
+        var imageUrl = null
+        diary.imageId?.let { imageId ->
+            imageUrl = imageManager.getImageUrl(imageId, 500, 300) as Nothing?
+        }
+
+        return GetDiaryResponseDto(
+            diaryId = diary.id,
+            date = diary.date,
+            emotion = diary.emotion,
+            imageUrl = imageUrl,
             content = diary.content,
         )
     }

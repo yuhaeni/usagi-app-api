@@ -1,9 +1,12 @@
 package com.kou.kouappapi.controller
 
 import com.kou.kouappapi.controller.dto.CreateDiaryRequest
+import com.kou.kouappapi.controller.dto.CreateDiaryResponse
+import com.kou.kouappapi.controller.dto.GetDiaryResponse
 import com.kou.kouappapi.controller.dto.toDto
 import com.kou.kouappapi.security.AuthUser
 import com.kou.kouappapi.service.DiaryService
+import com.kou.kouappapi.service.dto.toResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -27,15 +30,12 @@ class DiaryController(
     fun createDiary(
         @AuthenticationPrincipal user: AuthUser,
         @Valid @ModelAttribute request: CreateDiaryRequest,
-    ) = service.createDiary(user.id, request.toDto())
+    ): CreateDiaryResponse = service.createDiary(user.id, request.toDto()).toResponse()
 
-    // TODO 일기 상세 조회
     @Operation(summary = "일기 상세 조회")
     @GetMapping("{diaryId}")
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-    ) {
-        // TODO
-    }
+    ): GetDiaryResponse = service.getDiary(user.id, diaryId).toResponse()
 }
