@@ -11,7 +11,6 @@ import com.kou.kouappapi.auth.social.SocialAuthStrategyFactory
 import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.entity.RefreshToken
 import com.kou.kouappapi.entity.User
-import com.kou.kouappapi.enums.Role
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.security.AuthUser
@@ -56,7 +55,6 @@ class AuthService(
         )
     }
 
-    @Transactional
     private fun createNewUser(socialUserInfo: SocialUserInfo): User =
         userRepository.save(
             User(
@@ -69,23 +67,24 @@ class AuthService(
 
     @Transactional
     fun refreshToken(requestDto: RefreshTokenRequestDto): RefreshTokenResponseDto {
-        jwtTokenProvider.validateToken(requestDto.refreshToken)
+        val savedRefreshToken =
+            refreshTokenRepository.findByTokenHash(requestDto.refreshToken) ?: throw AuthTokenExpiredException()
 
-        refreshTokenRepository.findByTokenHash(requestDto.refreshToken) ?: throw AuthTokenExpiredException()
+        jwtTokenProvider.validateToken(savedRefreshToken.tokenHash)
 
-        val authUser = jwtTokenProvider.getAuthUser(requestDto.refreshToken)
-        userRepository.findByIdOrNull(authUser.id) ?: throw AuthUnauthorizedTokenAccessException()
+        val authUser = jwtTokenProvider.getAuthUser(savedRefreshToken.tokenHash)
+        val user = userRepository.findByIdOrNull(authUser.id) ?: throw AuthUnauthorizedTokenAccessException()
 
-        val accessToken = jwtTokenProvider.generateAccessToken(authUser.id, authUser.email, Role.valueOf(authUser.role))
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id, user.email, user.role)
 
         val shouldRefreshToken =
-            jwtTokenProvider.shouldRefreshToken(requestDto.refreshToken, 7)
+            jwtTokenProvider.shouldRefreshToken(savedRefreshToken.tokenHash, 7)
         if (shouldRefreshToken) {
             val newRefreshToken =
-                jwtTokenProvider.generateRefreshToken(authUser.id, authUser.email, Role.valueOf(authUser.role))
+                jwtTokenProvider.generateRefreshToken(user.id, user.email, user.role)
             refreshTokenRepository.save(
                 RefreshToken(
-                    userId = authUser.id,
+                    userId = user.id,
                     tokenHash = newRefreshToken,
                     expiresAt = jwtTokenProvider.getExpiration(newRefreshToken),
                 ),

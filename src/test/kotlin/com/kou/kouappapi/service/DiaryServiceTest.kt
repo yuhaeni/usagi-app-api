@@ -6,6 +6,8 @@ import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.Emotion
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.exception.DiaryAlreadyExistsException
+import com.kou.kouappapi.exception.DiaryNotFoundException
+import com.kou.kouappapi.exception.NotDiaryOwnerException
 import com.kou.kouappapi.repository.DiaryRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
@@ -13,6 +15,7 @@ import com.kou.kouappapi.service.dto.UpdateDiaryRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -27,6 +30,7 @@ class DiaryServiceTest(
 ) : IntegrationTestSupport({
 
         lateinit var savedUser: User
+        lateinit var otherUser: User
         lateinit var savedDiary: Diary
 
         beforeEach {
@@ -37,6 +41,15 @@ class DiaryServiceTest(
                         email = "test@gmail.com",
                         provider = SocialProvider.GOOGLE,
                         providerId = "123456789877",
+                    ),
+                )
+            otherUser =
+                userRepository.save(
+                    User(
+                        name = "test2",
+                        email = "test2@gmail.com",
+                        provider = SocialProvider.GOOGLE,
+                        providerId = "987654321",
                     ),
                 )
             savedDiary =
@@ -87,6 +100,7 @@ class DiaryServiceTest(
         }
 
         describe("일기(감정) 상세 조회") {
+
             context("올바른 userId,diaryId를 입력한 경우") {
                 it("저장된 일기와 일치하는 데이터가 반환된다.") {
                     val response = service.getDiary(savedUser.id, savedDiary.id)
@@ -96,9 +110,18 @@ class DiaryServiceTest(
                     response.content shouldBe savedDiary.content
                 }
             }
+
+            context("다른 사용자의 조회하려는 경우") {
+                it("NotDiaryOwnerException이 발생한다") {
+                    shouldThrow<NotDiaryOwnerException> {
+                        service.getDiary(otherUser.id, savedDiary.id)
+                    }
+                }
+            }
         }
 
         describe("일기(감정) 수정") {
+
             context("감정을 입력한 경우") {
                 it("감정만 변경된다.") {
                     val request = UpdateDiaryRequestDto(emotion = Emotion.HOPELESS)
@@ -111,12 +134,48 @@ class DiaryServiceTest(
 
             context("감정,내용을 입력한 경우") {
                 it("감정,내용이 변경된다.") {
-                    val request = UpdateDiaryRequestDto(emotion = Emotion.HAPPY, content = "")
+                    val request = UpdateDiaryRequestDto(emotion = Emotion.HAPPY)
                     val response = service.updateDiary(savedUser.id, savedDiary.id, request)
 
                     response.date shouldBe savedDiary.date
                     response.emotion shouldBe request.emotion
                     response.content shouldBe request.content
+                }
+            }
+
+            context("다른 사용자의 수정하려는 경우") {
+                it("NotDiaryOwnerException이 발생한다") {
+                    val request = UpdateDiaryRequestDto(emotion = Emotion.NEUTRAL)
+                    shouldThrow<NotDiaryOwnerException> {
+                        service.updateDiary(otherUser.id, savedDiary.id, request)
+                    }
+                }
+            }
+        }
+
+        describe("일기(감정) 삭제") {
+
+            context("다른 사용자의 일기를 삭제하려는 경우") {
+                it("NotDiaryOwnerException이 발생한다") {
+                    shouldThrow<NotDiaryOwnerException> {
+                        service.deleteDiary(otherUser.id, savedDiary.id)
+                    }
+                }
+            }
+
+            context("존재하지 않는 일기를 삭제하는 경우") {
+                it("DiaryNotFoundException이 발생한다.") {
+                    shouldThrow<DiaryNotFoundException> {
+                        service.deleteDiary(savedUser.id, 99999999L)
+                    }
+                }
+            }
+
+            context("존재하는 일기를 삭제하는 경우") {
+                it("일기가 DB에서 삭제된다") {
+                    service.deleteDiary(savedUser.id, savedDiary.id)
+
+                    diaryRepository.findByIdOrNull(savedDiary.id) shouldBe null
                 }
             }
         }

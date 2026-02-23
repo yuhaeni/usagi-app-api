@@ -1,5 +1,6 @@
 package com.kou.kouappapi.controller
 
+import com.kou.kouappapi.common.dto.ApiResponse
 import com.kou.kouappapi.controller.dto.CreateDiaryRequest
 import com.kou.kouappapi.controller.dto.CreateDiaryResponse
 import com.kou.kouappapi.controller.dto.GetDiaryResponse
@@ -35,14 +36,15 @@ class DiaryController(
     fun createDiary(
         @AuthenticationPrincipal user: AuthUser,
         @Valid @ModelAttribute request: CreateDiaryRequest,
-    ): CreateDiaryResponse = service.createDiary(user.id, request.toDto()).toResponse()
+    ): ApiResponse<CreateDiaryResponse> =
+        ApiResponse.success(service.createDiary(user.id, request.toDto()).toResponse())
 
     @Operation(summary = "일기 상세 조회")
     @GetMapping("{diaryId}")
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-    ): GetDiaryResponse = service.getDiary(user.id, diaryId).toResponse()
+    ): ApiResponse<GetDiaryResponse> = ApiResponse.success(service.getDiary(user.id, diaryId).toResponse())
 
     @Operation(summary = "일기 목록 조회")
     @GetMapping("/list")
@@ -58,14 +60,16 @@ class DiaryController(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
         @RequestBody request: UpdateDiaryRequest,
-    ): UpdateDiaryResponse = service.updateDiary(user.id, diaryId, request.toDto()).toResponse()
+    ): ApiResponse<UpdateDiaryResponse> =
+        ApiResponse.success(service.updateDiary(user.id, diaryId, request.toDto()).toResponse())
 
     @Operation(summary = "일기 삭제")
     @DeleteMapping("{diaryId}")
     fun deleteDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-    ) {
-        // TODO
+    ): ApiResponse<Unit> {
+        service.deleteDiary(userId = user.id, diaryId = diaryId)
+        return ApiResponse.success(Unit, "일기가 삭제되었습니다.")
     }
 }

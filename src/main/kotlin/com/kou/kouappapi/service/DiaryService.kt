@@ -33,7 +33,6 @@ class DiaryService(
         requestDto: CreateDiaryRequestDto,
     ): CreateDiaryResponseDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-
         val savedDiaryList = diaryRepository.findDiariesByUserIdAndDate(userId, requestDto.date)
         if (savedDiaryList.isNotEmpty()) {
             throw DiaryAlreadyExistsException(requestDto.date)
@@ -74,8 +73,7 @@ class DiaryService(
         userId: Long,
         diaryId: Long,
     ): GetDiaryResponseDto {
-        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-        val diary = getValidatedDiary(user.id, diaryId)
+        val diary = getValidatedDiary(userId, diaryId)
         var imageUrl = null
         diary.imageId?.let { imageId ->
             imageUrl = imageManager.getImageUrl(imageId, 500, 300) as Nothing?
@@ -96,8 +94,7 @@ class DiaryService(
         diaryId: Long,
         request: UpdateDiaryRequestDto,
     ): UpdateDiaryResponseDto {
-        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-        val diary = getValidatedDiary(user.id, diaryId)
+        val diary = getValidatedDiary(userId, diaryId)
 
         var resultUploadImage: ImageUploadResult? = null
         request.imageFile?.let { file ->
@@ -123,6 +120,15 @@ class DiaryService(
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
         )
+    }
+
+    @Transactional
+    fun deleteDiary(
+        userId: Long,
+        diaryId: Long,
+    ) {
+        val diary = getValidatedDiary(userId, diaryId)
+        diaryRepository.delete(diary)
     }
 
     private fun getValidatedDiary(
