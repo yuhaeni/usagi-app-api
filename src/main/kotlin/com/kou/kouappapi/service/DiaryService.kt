@@ -15,9 +15,11 @@ import com.kou.kouappapi.service.dto.CreateDiaryResponseDto
 import com.kou.kouappapi.service.dto.GetDiaryResponseDto
 import com.kou.kouappapi.service.dto.UpdateDiaryRequestDto
 import com.kou.kouappapi.service.dto.UpdateDiaryResponseDto
+import com.kou.kouappapi.tool.DateTool
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 @Transactional(readOnly = true)
@@ -67,6 +69,19 @@ class DiaryService(
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
         )
+    }
+
+    fun getDiaryList(
+        userId: Long,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): List<GetDiaryListResponseDto> {
+        val start = startDate ?: DateTool.getFirstDayOfCurrentMonth()
+        val end = endDate ?: DateTool.getLastDayOfCurrentMonth()
+        val diaryList = diaryRepository.findByUserIdAndDateBetween(userId, start, end)
+        return diaryList.map {
+            GetDiaryListResponseDto(diaryId = it.id, date = it.date, emotion = it.emotion)
+        }
     }
 
     fun getDiary(

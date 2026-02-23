@@ -9,4 +9,10 @@ interface DiaryRepository : JpaRepository<Diary, Long> {
         userId: Long,
         date: LocalDate,
     ): List<Diary>
+
+    fun findByUserIdAndDateBetween(
+        userId: Long,
+        dateAfter: LocalDate,
+        dateBefore: LocalDate,
+    ): MutableList<Diary>
 }

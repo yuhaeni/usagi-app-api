@@ -3,6 +3,7 @@ package com.kou.kouappapi.controller
 import com.kou.kouappapi.common.dto.ApiResponse
 import com.kou.kouappapi.controller.dto.CreateDiaryRequest
 import com.kou.kouappapi.controller.dto.CreateDiaryResponse
+import com.kou.kouappapi.controller.dto.GetDiaryListResponse
 import com.kou.kouappapi.controller.dto.GetDiaryResponse
 import com.kou.kouappapi.controller.dto.UpdateDiaryRequest
 import com.kou.kouappapi.controller.dto.UpdateDiaryResponse
@@ -10,6 +11,7 @@ import com.kou.kouappapi.controller.dto.toDto
 import com.kou.kouappapi.security.AuthUser
 import com.kou.kouappapi.service.DiaryService
 import com.kou.kouappapi.service.dto.toResponse
+import com.kou.kouappapi.service.toResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -23,7 +25,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 @Tag(name = "📔 일기")
 @RestController
@@ -50,9 +54,12 @@ class DiaryController(
     @GetMapping("/list")
     fun getDiaryList(
         @AuthenticationPrincipal user: AuthUser,
-    ) {
-        // TODO
-    }
+        @RequestParam startDate: LocalDate?,
+        @RequestParam endDate: LocalDate?,
+    ): ApiResponse<List<GetDiaryListResponse>> =
+        ApiResponse.success(
+            service.getDiaryList(userId = user.id, startDate = startDate, endDate = endDate).toResponse(),
+        )
 
     @Operation(summary = "일기 수정")
     @PutMapping("{diaryId}")

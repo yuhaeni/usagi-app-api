@@ -14,6 +14,7 @@ import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
 import com.kou.kouappapi.service.dto.UpdateDiaryRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.ActiveProfiles
@@ -32,6 +33,12 @@ class DiaryServiceTest(
         lateinit var savedUser: User
         lateinit var otherUser: User
         lateinit var savedDiary: Diary
+        lateinit var savedDiary2: Diary
+        lateinit var savedDiary3: Diary
+        lateinit var savedDiary4: Diary
+        lateinit var savedDiary5: Diary
+        lateinit var savedDiary6: Diary
+        lateinit var savedDiary7: Diary
 
         beforeEach {
             savedUser =
@@ -58,6 +65,60 @@ class DiaryServiceTest(
                         user = savedUser,
                         date = LocalDate.now(),
                         emotion = Emotion.NEUTRAL,
+                    ),
+                )
+
+            savedDiary2 =
+                diaryRepository.save(
+                    Diary(
+                        user = savedUser,
+                        date = LocalDate.parse("2026-02-01"),
+                        emotion = Emotion.NEUTRAL,
+                    ),
+                )
+
+            savedDiary3 =
+                diaryRepository.save(
+                    Diary(
+                        user = savedUser,
+                        date = LocalDate.parse("2026-02-22"),
+                        emotion = Emotion.HOPELESS,
+                    ),
+                )
+
+            savedDiary4 =
+                diaryRepository.save(
+                    Diary(
+                        user = savedUser,
+                        date = LocalDate.parse("2026-01-02"),
+                        emotion = Emotion.HOPELESS,
+                    ),
+                )
+
+            savedDiary5 =
+                diaryRepository.save(
+                    Diary(
+                        user = savedUser,
+                        date = LocalDate.parse("2026-01-03"),
+                        emotion = Emotion.HOPELESS,
+                    ),
+                )
+
+            savedDiary6 =
+                diaryRepository.save(
+                    Diary(
+                        user = savedUser,
+                        date = LocalDate.parse("2026-01-08"),
+                        emotion = Emotion.HOPELESS,
+                    ),
+                )
+
+            savedDiary7 =
+                diaryRepository.save(
+                    Diary(
+                        user = savedUser,
+                        date = LocalDate.parse("2026-01-30"),
+                        emotion = Emotion.HOPELESS,
                     ),
                 )
         }
@@ -176,6 +237,26 @@ class DiaryServiceTest(
                     service.deleteDiary(savedUser.id, savedDiary.id)
 
                     diaryRepository.findByIdOrNull(savedDiary.id) shouldBe null
+                }
+            }
+        }
+
+        describe("일기 목록 조회") {
+            context("요청 날짜가 없는 경우") {
+                it("현재 월 기준으로 일기 목록이 조회된다.") {
+                    val response = service.getDiaryList(savedUser.id)
+                    response.size shouldNotBe 0
+                }
+            }
+            context("요청 날짜가 있는 경우") {
+                it("해당 날짜 기준으로 일기 목록이 조회된다.") {
+                    val response =
+                        service.getDiaryList(
+                            savedUser.id,
+                            LocalDate.parse("2026-01-01"),
+                            LocalDate.parse("2026-01-31"),
+                        )
+                    response.size shouldBe 4
                 }
             }
         }
