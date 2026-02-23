@@ -3,11 +3,11 @@ package com.kou.kouappapi.auth.social.google
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
+import com.kou.kouappapi.auth.exception.AuthEmailNotVerifiedException
+import com.kou.kouappapi.auth.exception.AuthInvalidIdTokenException
 import com.kou.kouappapi.auth.social.SocialAuthStrategy
 import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.enums.SocialProvider
-import com.kou.kouappapi.exception.AuthEmailNotVerifiedException
-import com.kou.kouappapi.exception.AuthInvalidIdTokenException
 import org.springframework.core.env.Environment
 import org.springframework.core.env.Profiles
 import org.springframework.stereotype.Component

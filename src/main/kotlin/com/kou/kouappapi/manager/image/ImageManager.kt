@@ -17,7 +17,7 @@ class ImageManager(
         height: Int,
     ): ImageUploadResult {
         if (file.isEmpty) {
-            throw InvalidImageFileException()
+            throw ImageMissingException()
         }
 
         val params =
@@ -49,4 +49,11 @@ class ImageManager(
                     .width(width)
                     .height(height),
             ).generate(publicId)
+
+    fun deleteImage(publicId: String) {
+        val result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap())
+        if (result["result"] != "ok") {
+            throw ImageDeleteFailedException()
+        }
+    }
 }

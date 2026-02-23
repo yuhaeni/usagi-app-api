@@ -1,4 +1,4 @@
-package com.kou.kouappapi.enums
+package com.kou.kouappapi.auth.enums
 
 import org.springframework.http.HttpStatus
 

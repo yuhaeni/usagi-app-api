@@ -1,6 +1,7 @@
-package com.kou.kouappapi.exception
+package com.kou.kouappapi.auth.exception
 
-import com.kou.kouappapi.enums.AuthError
+import com.kou.kouappapi.auth.enums.AuthError
+import com.kou.kouappapi.exception.GlobalException
 
 open class AuthException(
     authError: AuthError,

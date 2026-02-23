@@ -23,4 +23,14 @@ class Diary(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
+
+    fun update(
+        emotion: Emotion,
+        imageId: String? = null,
+        content: String? = null,
+    ) {
+        this.emotion = emotion
+        imageId?.let { this.imageId = imageId }
+        content?.let { this.content = content }
+    }
 }

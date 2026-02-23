@@ -3,6 +3,8 @@ package com.kou.kouappapi.controller
 import com.kou.kouappapi.controller.dto.CreateDiaryRequest
 import com.kou.kouappapi.controller.dto.CreateDiaryResponse
 import com.kou.kouappapi.controller.dto.GetDiaryResponse
+import com.kou.kouappapi.controller.dto.UpdateDiaryRequest
+import com.kou.kouappapi.controller.dto.UpdateDiaryResponse
 import com.kou.kouappapi.controller.dto.toDto
 import com.kou.kouappapi.security.AuthUser
 import com.kou.kouappapi.service.DiaryService
@@ -12,10 +14,13 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -38,4 +43,29 @@ class DiaryController(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
     ): GetDiaryResponse = service.getDiary(user.id, diaryId).toResponse()
+
+    @Operation(summary = "일기 목록 조회")
+    @GetMapping("/list")
+    fun getDiaryList(
+        @AuthenticationPrincipal user: AuthUser,
+    ) {
+        // TODO
+    }
+
+    @Operation(summary = "일기 수정")
+    @PutMapping("{diaryId}")
+    fun updateDiary(
+        @AuthenticationPrincipal user: AuthUser,
+        @PathVariable("diaryId") diaryId: Long,
+        @RequestBody request: UpdateDiaryRequest,
+    ): UpdateDiaryResponse = service.updateDiary(user.id, diaryId, request.toDto()).toResponse()
+
+    @Operation(summary = "일기 삭제")
+    @DeleteMapping("{diaryId}")
+    fun deleteDiary(
+        @AuthenticationPrincipal user: AuthUser,
+        @PathVariable("diaryId") diaryId: Long,
+    ) {
+        // TODO
+    }
 }

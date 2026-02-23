@@ -9,6 +9,7 @@ import com.kou.kouappapi.exception.DiaryAlreadyExistsException
 import com.kou.kouappapi.repository.DiaryRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
+import com.kou.kouappapi.service.dto.UpdateDiaryRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.springframework.boot.test.context.SpringBootTest
@@ -43,7 +44,7 @@ class DiaryServiceTest(
                     Diary(
                         user = savedUser,
                         date = LocalDate.now(),
-                        emotion = Emotion.TIRED,
+                        emotion = Emotion.NEUTRAL,
                     ),
                 )
         }
@@ -89,9 +90,33 @@ class DiaryServiceTest(
             context("올바른 userId,diaryId를 입력한 경우") {
                 it("저장된 일기와 일치하는 데이터가 반환된다.") {
                     val response = service.getDiary(savedUser.id, savedDiary.id)
+
                     response.date shouldBe savedDiary.date
                     response.emotion shouldBe savedDiary.emotion
                     response.content shouldBe savedDiary.content
+                }
+            }
+        }
+
+        describe("일기(감정) 수정") {
+            context("감정을 입력한 경우") {
+                it("감정만 변경된다.") {
+                    val request = UpdateDiaryRequestDto(emotion = Emotion.HOPELESS)
+                    val response = service.updateDiary(savedUser.id, savedDiary.id, request)
+
+                    response.date shouldBe savedDiary.date
+                    response.emotion shouldBe request.emotion
+                }
+            }
+
+            context("감정,내용을 입력한 경우") {
+                it("감정,내용이 변경된다.") {
+                    val request = UpdateDiaryRequestDto(emotion = Emotion.HAPPY, content = "")
+                    val response = service.updateDiary(savedUser.id, savedDiary.id, request)
+
+                    response.date shouldBe savedDiary.date
+                    response.emotion shouldBe request.emotion
+                    response.content shouldBe request.content
                 }
             }
         }

@@ -13,6 +13,8 @@ import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
 import com.kou.kouappapi.service.dto.CreateDiaryResponseDto
 import com.kou.kouappapi.service.dto.GetDiaryResponseDto
+import com.kou.kouappapi.service.dto.UpdateDiaryRequestDto
+import com.kou.kouappapi.service.dto.UpdateDiaryResponseDto
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -73,12 +75,7 @@ class DiaryService(
         diaryId: Long,
     ): GetDiaryResponseDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-
-        val diary = diaryRepository.findByIdOrNull(diaryId) ?: throw DiaryNotFoundException()
-        if (diary.user != user) {
-            throw NotDiaryOwnerException()
-        }
-
+        val diary = getValidatedDiary(user.id, diaryId)
         var imageUrl = null
         diary.imageId?.let { imageId ->
             imageUrl = imageManager.getImageUrl(imageId, 500, 300) as Nothing?
@@ -91,5 +88,52 @@ class DiaryService(
             imageUrl = imageUrl,
             content = diary.content,
         )
+    }
+
+    @Transactional
+    fun updateDiary(
+        userId: Long,
+        diaryId: Long,
+        request: UpdateDiaryRequestDto,
+    ): UpdateDiaryResponseDto {
+        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
+        val diary = getValidatedDiary(user.id, diaryId)
+
+        var resultUploadImage: ImageUploadResult? = null
+        request.imageFile?.let { file ->
+            resultUploadImage =
+                imageManager.uploadImage(
+                    file = file,
+                    uploadFolder = cloudinaryProperties.folder.diary,
+                    width = 500,
+                    height = 300,
+                )
+
+            diary.imageId?.let { imageId ->
+                imageManager.deleteImage(imageId)
+            }
+        }
+
+        diary.update(emotion = request.emotion, imageId = resultUploadImage?.publicId, content = request.content)
+
+        return UpdateDiaryResponseDto(
+            diaryId = diary.id,
+            date = diary.date,
+            emotion = request.emotion,
+            imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
+            content = diary.content,
+        )
+    }
+
+    private fun getValidatedDiary(
+        userId: Long,
+        diaryId: Long,
+    ): Diary {
+        val diary = diaryRepository.findByIdOrNull(diaryId) ?: throw DiaryNotFoundException()
+        if (diary.user.id != userId) {
+            throw NotDiaryOwnerException()
+        }
+
+        return diary
     }
 }
