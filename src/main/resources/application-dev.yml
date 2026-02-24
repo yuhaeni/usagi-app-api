@@ -32,7 +32,8 @@ cloudinary:
     api-key: ${CLOUDINARY_API_KEY}
     api-secret: ${CLOUDINARY_API_SECRET}
     folder:
-        profile: usagi-app/dev/individual/profile
+        profile: usagi-app/dev/profile
+        diary: usagi-app/dev/diary
 
 springdoc:
     api-docs:

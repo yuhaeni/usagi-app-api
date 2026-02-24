@@ -1,13 +1,13 @@
 package com.kou.kouappapi.service
 
 import com.kou.kouappapi.IntegrationTestSupport
+import com.kou.kouappapi.auth.exception.AuthInvalidIdTokenException
 import com.kou.kouappapi.auth.service.AuthService
 import com.kou.kouappapi.auth.service.dto.RefreshTokenRequestDto
 import com.kou.kouappapi.auth.service.dto.SocialLoginRequestDto
 import com.kou.kouappapi.entity.RefreshToken
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.SocialProvider
-import com.kou.kouappapi.exception.AuthInvalidIdTokenException
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.security.jwt.JwtTokenProvider

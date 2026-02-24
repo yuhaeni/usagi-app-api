@@ -3,6 +3,7 @@ package com.kou.kouappapi.service
 import com.kou.kouappapi.controller.dto.ModifyUserProfileResponse
 import com.kou.kouappapi.exception.UserNotFoundException
 import com.kou.kouappapi.manager.image.ImageManager
+import com.kou.kouappapi.manager.image.ImageUploadResult
 import com.kou.kouappapi.property.CloudinaryProperties
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.GetUserProfileResponseDto
@@ -24,8 +25,8 @@ class UserService(
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
 
         var profileImageUrl: String? = null
-        user.profileImageId?.let {
-            profileImageUrl = imageManager.getProfileImageUrl(user.profileImageId!!)
+        user.profileImageId?.let { profileImageId ->
+            profileImageUrl = imageManager.getImageUrl(profileImageId, 200, 200)
         }
 
         return GetUserProfileResponseDto(
@@ -48,12 +49,16 @@ class UserService(
                 passwordEncoder.encode(password)
             }
 
-        val resultUploadImage =
-            requestDto.profileImageFile?.let { file ->
-                imageManager.uploadImage(file, cloudinaryProperties.folder.profile)
-            }
+        var resultUploadImage: ImageUploadResult? = null
+        requestDto.profileImageFile?.let { file ->
+            resultUploadImage = imageManager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
 
-        user.updateUser(
+            user.profileImageId?.let { profileImageId ->
+                imageManager.deleteImage(profileImageId)
+            }
+        }
+
+        user.update(
             name = requestDto.name,
             encodedPassword = encodedPassword,
             profileImageId = resultUploadImage?.publicId,

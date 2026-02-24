@@ -32,7 +32,7 @@ class ImageManagerIntegrationTest(
                         "image/jpeg",
                         inputStream,
                     )
-                val result = imageManager.uploadImage(file, cloudinaryProperties.folder.profile)
+                val result = imageManager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
 
                 result.url shouldContain "res.cloudinary.com"
                 result.publicId shouldContain "usagi-app/test/individual/profile"
