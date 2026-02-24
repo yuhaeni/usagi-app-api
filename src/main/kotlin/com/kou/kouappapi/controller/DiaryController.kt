@@ -35,22 +35,7 @@ import java.time.LocalDate
 class DiaryController(
     val service: DiaryService,
 ) {
-    @Operation(summary = "일기 작성")
-    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun createDiary(
-        @AuthenticationPrincipal user: AuthUser,
-        @Valid @ModelAttribute request: CreateDiaryRequest,
-    ): ApiResponse<CreateDiaryResponse> =
-        ApiResponse.success(service.createDiary(user.id, request.toDto()).toResponse())
-
-    @Operation(summary = "일기 상세 조회")
-    @GetMapping("{diaryId}")
-    fun getDiary(
-        @AuthenticationPrincipal user: AuthUser,
-        @PathVariable("diaryId") diaryId: Long,
-    ): ApiResponse<GetDiaryResponse> = ApiResponse.success(service.getDiary(user.id, diaryId).toResponse())
-
-    @Operation(summary = "일기 목록 조회")
+    @Operation(summary = "일기 목록 조회", description = "요청 날짜가 없는 경우 현재 월 기준으로 조회")
     @GetMapping("/list")
     fun getDiaryList(
         @AuthenticationPrincipal user: AuthUser,
@@ -61,8 +46,23 @@ class DiaryController(
             service.getDiaryList(userId = user.id, startDate = startDate, endDate = endDate).toResponse(),
         )
 
+    @Operation(summary = "일기 상세 조회")
+    @GetMapping("{diaryId}")
+    fun getDiary(
+        @AuthenticationPrincipal user: AuthUser,
+        @PathVariable("diaryId") diaryId: Long,
+    ): ApiResponse<GetDiaryResponse> = ApiResponse.success(service.getDiary(user.id, diaryId).toResponse())
+
+    @Operation(summary = "일기 작성")
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun createDiary(
+        @AuthenticationPrincipal user: AuthUser,
+        @Valid @ModelAttribute request: CreateDiaryRequest,
+    ): ApiResponse<CreateDiaryResponse> =
+        ApiResponse.success(service.createDiary(user.id, request.toDto()).toResponse())
+
     @Operation(summary = "일기 수정")
-    @PutMapping("{diaryId}")
+    @PutMapping("{diaryId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,

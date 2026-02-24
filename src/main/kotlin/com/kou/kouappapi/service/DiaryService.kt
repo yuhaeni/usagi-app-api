@@ -29,6 +29,38 @@ class DiaryService(
     val imageManager: ImageManager,
     val cloudinaryProperties: CloudinaryProperties,
 ) {
+    fun getDiaryList(
+        userId: Long,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): List<GetDiaryListResponseDto> {
+        val start = startDate ?: DateTool.getFirstDayOfCurrentMonth()
+        val end = endDate ?: DateTool.getLastDayOfCurrentMonth()
+        val diaryList = diaryRepository.findByUserIdAndDateBetweenOrderByDateAsc(userId, start, end)
+        return diaryList.map {
+            GetDiaryListResponseDto(diaryId = it.id, date = it.date, emotion = it.emotion)
+        }
+    }
+
+    fun getDiary(
+        userId: Long,
+        diaryId: Long,
+    ): GetDiaryResponseDto {
+        val diary = getValidatedDiary(userId, diaryId)
+        var imageUrl = null
+        diary.imageId?.let { imageId ->
+            imageUrl = imageManager.getImageUrl(imageId, 500, 300) as Nothing?
+        }
+
+        return GetDiaryResponseDto(
+            diaryId = diary.id,
+            date = diary.date,
+            emotion = diary.emotion,
+            imageUrl = imageUrl,
+            content = diary.content,
+        )
+    }
+
     @Transactional
     fun createDiary(
         userId: Long,
@@ -67,38 +99,6 @@ class DiaryService(
             date = diary.date,
             emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
-            content = diary.content,
-        )
-    }
-
-    fun getDiaryList(
-        userId: Long,
-        startDate: LocalDate? = null,
-        endDate: LocalDate? = null,
-    ): List<GetDiaryListResponseDto> {
-        val start = startDate ?: DateTool.getFirstDayOfCurrentMonth()
-        val end = endDate ?: DateTool.getLastDayOfCurrentMonth()
-        val diaryList = diaryRepository.findByUserIdAndDateBetween(userId, start, end)
-        return diaryList.map {
-            GetDiaryListResponseDto(diaryId = it.id, date = it.date, emotion = it.emotion)
-        }
-    }
-
-    fun getDiary(
-        userId: Long,
-        diaryId: Long,
-    ): GetDiaryResponseDto {
-        val diary = getValidatedDiary(userId, diaryId)
-        var imageUrl = null
-        diary.imageId?.let { imageId ->
-            imageUrl = imageManager.getImageUrl(imageId, 500, 300) as Nothing?
-        }
-
-        return GetDiaryResponseDto(
-            diaryId = diary.id,
-            date = diary.date,
-            emotion = diary.emotion,
-            imageUrl = imageUrl,
             content = diary.content,
         )
     }
@@ -142,6 +142,7 @@ class DiaryService(
         userId: Long,
         diaryId: Long,
     ) {
+        // TODO 이미지 있는 경우, 클라우디 너리 서버 이미지도 삭제
         val diary = getValidatedDiary(userId, diaryId)
         diaryRepository.delete(diary)
     }

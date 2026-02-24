@@ -10,7 +10,7 @@ interface DiaryRepository : JpaRepository<Diary, Long> {
         date: LocalDate,
     ): List<Diary>
 
-    fun findByUserIdAndDateBetween(
+    fun findByUserIdAndDateBetweenOrderByDateAsc(
         userId: Long,
         dateAfter: LocalDate,
         dateBefore: LocalDate,
