@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -66,7 +65,7 @@ class DiaryController(
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-        @RequestBody request: UpdateDiaryRequest,
+        @ModelAttribute request: UpdateDiaryRequest,
     ): ApiResponse<UpdateDiaryResponse> =
         ApiResponse.success(service.updateDiary(user.id, diaryId, request.toDto()).toResponse())
 

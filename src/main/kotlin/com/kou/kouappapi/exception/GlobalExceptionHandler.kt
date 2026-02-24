@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -24,6 +25,19 @@ class GlobalExceptionHandler {
                 fieldError == null -> "잘못된 요청입니다."
                 fieldError.field == "date" && fieldError.code == "typeMismatch" -> "날짜는 'yyyy-MM-dd' 형식만 가능합니다."
                 else -> fieldError.defaultMessage ?: "요청 값이 올바르지 않습니다."
+            }
+
+        return ResponseEntity
+            .badRequest()
+            .body(ApiResponse.failure(message = errorMessage))
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleTypeMismatchException(e: MethodArgumentTypeMismatchException): ResponseEntity<ApiResponse<Unit>> {
+        val errorMessage =
+            when (e.name) {
+                "date" -> "날짜는 'yyyy-MM-dd' 형식만 가능합니다."
+                else -> "${e.name} 값이 올바르지 않습니다."
             }
 
         return ResponseEntity
