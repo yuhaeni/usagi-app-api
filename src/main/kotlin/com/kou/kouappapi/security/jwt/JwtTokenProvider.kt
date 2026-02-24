@@ -1,7 +1,7 @@
 package com.kou.kouappapi.security.jwt
 
+import com.kou.kouappapi.auth.exception.AuthGenerateTokenFailedException
 import com.kou.kouappapi.enums.Role
-import com.kou.kouappapi.exception.AuthGenerateTokenFailedException
 import com.kou.kouappapi.security.AuthUser
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException

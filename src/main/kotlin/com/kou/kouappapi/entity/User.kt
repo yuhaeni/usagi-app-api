@@ -40,7 +40,7 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
 
-    fun updateUser(
+    fun update(
         name: String? = null,
         encodedPassword: String? = null,
         profileImageId: String? = null,

@@ -4,7 +4,7 @@ import com.cloudinary.Cloudinary
 import com.cloudinary.Url
 import com.kou.kouappapi.IntegrationTestSupport
 import com.kou.kouappapi.manager.image.ImageManager
-import com.kou.kouappapi.manager.image.InvalidImageFileException
+import com.kou.kouappapi.manager.image.ImageMissingException
 import com.kou.kouappapi.property.CloudinaryProperties
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -37,14 +37,14 @@ class ImageManagerTest(
             describe("이미지 업로드") {
 
                 context("요청 파일이 비어있으면") {
-                    it("InvalidImageFileException을 발생시킨다.") {
+                    it("ImageMissingException을 발생시킨다.") {
                         val emptyFile =
                             mockk<MultipartFile> {
                                 every { isEmpty } returns true
                             }
 
-                        shouldThrow<InvalidImageFileException> {
-                            manager.uploadImage(emptyFile, cloudinaryProperties.folder.profile)
+                        shouldThrow<ImageMissingException> {
+                            manager.uploadImage(emptyFile, cloudinaryProperties.folder.profile, 200, 200)
                         }
                     }
                 }
@@ -70,7 +70,7 @@ class ImageManagerTest(
                             urlBuilder.generate(publicId)
                         } returns transformedUrl
 
-                        val result = manager.uploadImage(file, cloudinaryProperties.folder.profile)
+                        val result = manager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
 
                         result.url shouldBe transformedUrl
                         result.publicId shouldBe publicId

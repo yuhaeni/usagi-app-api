@@ -13,5 +13,6 @@ data class CloudinaryProperties(
 ) {
     data class Folder(
         var profile: String = "",
+        var diary: String = "",
     )
 }

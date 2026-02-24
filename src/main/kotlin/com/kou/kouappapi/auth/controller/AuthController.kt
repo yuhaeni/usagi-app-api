@@ -4,7 +4,6 @@ import com.kou.kouappapi.auth.controller.dto.RefreshTokenRequest
 import com.kou.kouappapi.auth.controller.dto.RefreshTokenResponse
 import com.kou.kouappapi.auth.controller.dto.SocialLoginRequest
 import com.kou.kouappapi.auth.controller.dto.SocialLoginResponse
-import com.kou.kouappapi.auth.controller.dto.ValidateTokenResponse
 import com.kou.kouappapi.auth.controller.dto.toDto
 import com.kou.kouappapi.auth.controller.dto.toResponse
 import com.kou.kouappapi.auth.service.AuthService
@@ -12,6 +11,7 @@ import com.kou.kouappapi.common.dto.ApiResponse
 import com.kou.kouappapi.security.AuthUser
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@Tag(name = "🔐인증", description = "인증 관련 API")
+@Tag(name = "🔐 인증")
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
@@ -50,5 +50,6 @@ class AuthController(
     @PostMapping("/validate/token")
     fun validateToken(
         @AuthenticationPrincipal authUser: AuthUser?,
-    ): ApiResponse<ValidateTokenResponse> = ApiResponse.success(service.validateToken(authUser).toResponse())
+        request: HttpServletRequest,
+    ): ApiResponse<Unit> = ApiResponse.success(service.validateToken(authUser, request))
 }
