@@ -25,7 +25,7 @@ class SwaggerConfig {
                         1. `/api/auth/google/login` 으로 로그인하여 JWT 토큰 발급
                         2. 응답의 `accessToken` 복사
                         3. 우측 상단 🔓 **Authorize** 버튼 클릭
-                        4. `Bearer {토큰}` 형식으로 입력 (Bearer 포함!)
+                        4. `{토큰}` 형식으로 입력 (Bearer 제외)
                         5. **Authorize** 클릭
                         6. 이제 인증이 필요한 API 호출 가능! 🚀
                         """.trimIndent(),
