@@ -191,4 +191,12 @@ class JwtTokenProvider(
             email = getEmailFromToken(token),
             role = getRoleFromToken(token),
         )
+
+    /**
+     * 토큰 만료까지 남은 시간 추출
+     * */
+    fun getRemainingTime(token: String): Long {
+        val expiration = getExpiration(token)
+        return expiration.time - Date().time
+    }
 }

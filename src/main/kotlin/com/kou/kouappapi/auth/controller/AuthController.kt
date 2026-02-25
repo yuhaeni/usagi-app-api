@@ -52,4 +52,11 @@ class AuthController(
         @AuthenticationPrincipal authUser: AuthUser?,
         request: HttpServletRequest,
     ): ApiResponse<Unit> = ApiResponse.success(service.validateToken(authUser, request))
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    fun logout(
+        @AuthenticationPrincipal authUser: AuthUser,
+        request: HttpServletRequest,
+    ): ApiResponse<Unit> = ApiResponse.success(service.logout(authUser.id, request))
 }

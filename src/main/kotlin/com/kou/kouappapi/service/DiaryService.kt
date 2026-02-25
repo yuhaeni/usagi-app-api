@@ -111,7 +111,6 @@ class DiaryService(
     ): UpdateDiaryResponseDto {
         val diary = getValidatedDiary(userId, diaryId)
 
-        // TODO 기존 이미지 있는 경우, 클라우디 너리 서버 이미지도 삭제
         var resultUploadImage: ImageUploadResult? = null
         request.imageFile?.let { file ->
             resultUploadImage =
@@ -143,8 +142,11 @@ class DiaryService(
         userId: Long,
         diaryId: Long,
     ) {
-        // TODO 기존 이미지 있는 경우, 클라우디 너리 서버 이미지도 삭제
         val diary = getValidatedDiary(userId, diaryId)
+        diary.imageId?.let { imageId ->
+            imageManager.deleteImage(imageId)
+        }
+
         diaryRepository.delete(diary)
     }
 
