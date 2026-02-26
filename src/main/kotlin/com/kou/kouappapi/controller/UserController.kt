@@ -1,16 +1,19 @@
 package com.kou.kouappapi.controller
 
+import com.kou.kouappapi.common.dto.ApiResponse
 import com.kou.kouappapi.controller.dto.GetUserProfileResponse
-import com.kou.kouappapi.controller.dto.ModifyUserProfileRequest
-import com.kou.kouappapi.controller.dto.ModifyUserProfileResponse
+import com.kou.kouappapi.controller.dto.UpdateUserProfileRequest
+import com.kou.kouappapi.controller.dto.UpdateUserProfileResponse
 import com.kou.kouappapi.controller.dto.toDto
 import com.kou.kouappapi.controller.dto.toResponse
 import com.kou.kouappapi.security.AuthUser
 import com.kou.kouappapi.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PutMapping
@@ -31,8 +34,15 @@ class UserController(
 
     @Operation(summary = "유저 프로필 수정")
     @PutMapping("/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun modifyUserProfile(
+    fun updateUserProfile(
         @AuthenticationPrincipal user: AuthUser,
-        @ModelAttribute request: ModifyUserProfileRequest,
-    ): ModifyUserProfileResponse = service.modifyUserProfile(user.id, request.toDto())
+        @ModelAttribute request: UpdateUserProfileRequest,
+    ): UpdateUserProfileResponse = service.updateUserProfile(user.id, request.toDto())
+
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/me")
+    fun withdrawUser(
+        @AuthenticationPrincipal user: AuthUser,
+        request: HttpServletRequest,
+    ): ApiResponse<Unit> = ApiResponse.success(service.withdrawUser(user.id, request))
 }

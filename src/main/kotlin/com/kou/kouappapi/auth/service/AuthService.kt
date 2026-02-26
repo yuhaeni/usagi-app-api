@@ -11,6 +11,7 @@ import com.kou.kouappapi.auth.social.SocialAuthStrategyFactory
 import com.kou.kouappapi.auth.social.SocialUserInfo
 import com.kou.kouappapi.entity.RefreshToken
 import com.kou.kouappapi.entity.User
+import com.kou.kouappapi.enums.UserStatus
 import com.kou.kouappapi.manager.RedisManager
 import com.kou.kouappapi.repository.RefreshTokenRepository
 import com.kou.kouappapi.repository.UserRepository
@@ -29,7 +30,7 @@ class AuthService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val redisManger: RedisManager,
+    private val redisManager: RedisManager,
 ) {
     companion object {
         private const val BEARER_PREFIX = "Bearer "
@@ -41,8 +42,11 @@ class AuthService(
         val socialUserInfo = strategy.authenticate(requestDto.token)
 
         val user =
-            userRepository.findByProviderAndProviderId(socialUserInfo.provider, socialUserInfo.providerId)
-                ?: createNewUser(socialUserInfo)
+            userRepository.findByProviderAndProviderIdAndStatus(
+                provider = socialUserInfo.provider,
+                providerId = socialUserInfo.providerId,
+                status = UserStatus.ACTIVE,
+            ) ?: createNewUser(socialUserInfo)
         // TODO deleteAllById 성능 체크 필요
         //  https://programmer-chocho.tistory.com/102
         refreshTokenRepository.deleteAllByUserId(user.id)
@@ -130,6 +134,7 @@ class AuthService(
         userId: Long,
         request: HttpServletRequest,
     ) {
+        // TODO  @AccessToken 커스텀 어노테이션 구현
         val authHeader =
             request.getHeader(HttpHeaders.AUTHORIZATION)
                 ?: throw AuthLoginRequiredException()
@@ -140,7 +145,7 @@ class AuthService(
         val accessToken = authHeader.replace(BEARER_PREFIX, "").trim()
         val remainingTime = jwtTokenProvider.getRemainingTime(accessToken)
         if (remainingTime > 0) {
-            redisManger.setBlackList(accessToken, remainingTime)
+            redisManager.setBlackList(accessToken, remainingTime)
         }
 
         // TODO deleteAllById 성능 체크 필요

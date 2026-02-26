@@ -11,15 +11,11 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
+import java.time.LocalDateTime
 
 @Entity
 @Table(
     name = "users",
-    uniqueConstraints = [
-        UniqueConstraint(columnNames = ["provider", "provider_id"]),
-        UniqueConstraint(columnNames = ["email"]),
-    ],
 )
 class User(
     var name: String? = null,
@@ -34,7 +30,7 @@ class User(
     var role: Role = Role.USER,
     @Enumerated(EnumType.STRING)
     var status: UserStatus = UserStatus.ACTIVE,
-    var coupleId: Long? = null,
+    var deletedAt: LocalDateTime? = null,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,13 +40,13 @@ class User(
         name: String? = null,
         encodedPassword: String? = null,
         profileImageId: String? = null,
+        status: UserStatus? = null,
+        deletedAt: LocalDateTime? = null,
     ) {
         name?.let { this.name = name }
         encodedPassword?.let { this.password = it }
         profileImageId?.let { this.profileImageId = it }
-    }
-
-    fun completeCoupleConnection(coupleId: Long) {
-        this.coupleId = coupleId
+        status?.let { this.status = status }
+        deletedAt?.let { this.deletedAt = deletedAt }
     }
 }

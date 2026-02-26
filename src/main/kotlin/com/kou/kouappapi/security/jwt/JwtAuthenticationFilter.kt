@@ -26,7 +26,7 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
-        val accessToken = extractJwtFromRequest(request)
+        val accessToken = resolveToken(request)
         if (
             accessToken != null &&
             jwtTokenProvider.validateToken(accessToken)
@@ -53,7 +53,7 @@ class JwtAuthenticationFilter(
         filterChain.doFilter(request, response)
     }
 
-    private fun extractJwtFromRequest(request: HttpServletRequest): String? =
+    private fun resolveToken(request: HttpServletRequest): String? =
         request
             .getHeader(AUTHORIZATION_HEADER)
             ?.takeIf { it.startsWith(BEARER_PREFIX) }
