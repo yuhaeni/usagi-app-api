@@ -47,7 +47,9 @@ class ImageManager(
             .transformation(
                 Transformation<Transformation<*>>()
                     .width(width)
-                    .height(height),
+                    .height(height)
+                    .quality("auto")
+                    .fetchFormat("auto"),
             ).generate(publicId)
 
     fun deleteImage(publicId: String) {
