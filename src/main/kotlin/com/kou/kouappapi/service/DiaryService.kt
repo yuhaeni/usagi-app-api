@@ -110,10 +110,20 @@ class DiaryService(
         request: UpdateDiaryRequestDto,
     ): UpdateDiaryResponseDto {
         val diary = getValidatedDiary(userId, diaryId)
+        diary.update(emotion = request.emotion, content = request.content)
 
-        var resultUploadImage: ImageUploadResult? = null
+        if (
+            request.deleteImage ||
+            request.imageFile != null
+        ) {
+            diary.imageId?.let { imageId ->
+                imageManager.deleteImage(imageId)
+                diary.update(deleteImage = true)
+            }
+        }
+
         request.imageFile?.let { file ->
-            resultUploadImage =
+            val resultUploadImage =
                 imageManager.uploadImage(
                     file = file,
                     uploadFolder = cloudinaryProperties.folder.diary,
@@ -121,12 +131,8 @@ class DiaryService(
                     height = 300,
                 )
 
-            diary.imageId?.let { imageId ->
-                imageManager.deleteImage(imageId)
-            }
+            diary.update(imageId = resultUploadImage.publicId)
         }
-
-        diary.update(emotion = request.emotion, imageId = resultUploadImage?.publicId, content = request.content)
 
         return UpdateDiaryResponseDto(
             diaryId = diary.id,

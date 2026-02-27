@@ -7,4 +7,5 @@ data class UpdateDiaryRequestDto(
     val emotion: Emotion,
     val imageFile: MultipartFile? = null,
     val content: String? = null,
+    val deleteImage: Boolean = false,
 )
