@@ -49,4 +49,8 @@ class User(
         status?.let { this.status = status }
         deletedAt?.let { this.deletedAt = deletedAt }
     }
+
+    fun delete(profileImageId: String? = null) {
+        profileImageId?.let { this.profileImageId = null }
+    }
 }

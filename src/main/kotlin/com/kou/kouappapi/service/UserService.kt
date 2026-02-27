@@ -92,8 +92,13 @@ class UserService(
         request: HttpServletRequest,
     ) {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-        // TODO 추후에 배치 돌면서 물리적 삭제 (관련 테이블들도)
+        // TODO 추후에 배치 돌면서 물리적 삭제 -> 관련 데이터 처리(일기, 이미지)
         user.update(status = UserStatus.WITHDRAWN, deletedAt = LocalDateTime.now())
+
+        user.profileImageId?.let { profileImageId ->
+            imageManager.deleteImage(profileImageId)
+            user.delete(profileImageId = profileImageId)
+        }
 
         // TODO Filter / Interceptor 레벨에서 처리
         val authHeader =
