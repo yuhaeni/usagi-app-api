@@ -7,6 +7,7 @@ data class UpdateUserProfileRequest(
     val name: String? = null,
     val password: String? = null,
     val profileImageFile: MultipartFile? = null,
+    val deleteProfileImage: Boolean = false,
 )
 
 fun UpdateUserProfileRequest.toDto(): UpdateUserProfileRequestDto =
@@ -14,4 +15,5 @@ fun UpdateUserProfileRequest.toDto(): UpdateUserProfileRequestDto =
         name = name,
         password = password,
         profileImageFile = profileImageFile,
+        deleteProfileImage = deleteProfileImage,
     )

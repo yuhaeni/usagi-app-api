@@ -65,24 +65,30 @@ class UserService(
                 passwordEncoder.encode(password)
             }
 
-        var resultUploadImage: ImageUploadResult? = null
-        requestDto.profileImageFile?.let { file ->
-            resultUploadImage = imageManager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
-
+        if (
+            requestDto.deleteProfileImage ||
+            requestDto.profileImageFile != null
+        ) {
             user.profileImageId?.let { profileImageId ->
                 imageManager.deleteImage(profileImageId)
             }
+        }
+
+        var resultUploadImage: ImageUploadResult? = null
+        requestDto.profileImageFile?.let { file ->
+            resultUploadImage = imageManager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
         }
 
         user.update(
             name = requestDto.name,
             encodedPassword = encodedPassword,
             profileImageId = resultUploadImage?.publicId,
+            deleteProfileImage = requestDto.deleteProfileImage,
         )
 
         return UpdateUserProfileResponse(
             userId = user.id,
-            profileImageUrl = resultUploadImage?.url,
+            profileImageUrl = user.profileImageId?.let { imageId -> imageManager.getImageUrl(imageId, 200, 200) },
         )
     }
 

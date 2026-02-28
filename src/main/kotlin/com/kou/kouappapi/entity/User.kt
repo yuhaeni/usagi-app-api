@@ -42,7 +42,11 @@ class User(
         profileImageId: String? = null,
         status: UserStatus? = null,
         deletedAt: LocalDateTime? = null,
+        deleteProfileImage: Boolean = false,
     ) {
+        if (deleteProfileImage) {
+            this.profileImageId = null
+        }
         name?.let { this.name = name }
         encodedPassword?.let { this.password = it }
         profileImageId?.let { this.profileImageId = it }
