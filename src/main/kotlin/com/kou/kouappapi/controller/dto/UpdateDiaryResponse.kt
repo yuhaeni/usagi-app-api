@@ -9,5 +9,4 @@ data class UpdateDiaryResponse(
     val emotion: Emotion,
     val imageUrl: String? = null,
     val content: String? = null,
-    val deleteImage: Boolean? = false,
 )

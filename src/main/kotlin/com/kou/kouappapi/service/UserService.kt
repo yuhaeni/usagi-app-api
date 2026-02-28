@@ -66,7 +66,7 @@ class UserService(
             }
 
         if (
-            requestDto.deleteProfileImage ||
+            requestDto.deleteProfileImage == true ||
             requestDto.profileImageFile != null
         ) {
             user.profileImageId?.let { profileImageId ->
@@ -83,7 +83,7 @@ class UserService(
             name = requestDto.name,
             encodedPassword = encodedPassword,
             profileImageId = resultUploadImage?.publicId,
-            deleteProfileImage = requestDto.deleteProfileImage,
+            deleteProfileImage = requestDto.deleteProfileImage ?: false,
         )
 
         return UpdateUserProfileResponse(

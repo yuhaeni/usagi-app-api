@@ -30,12 +30,19 @@ class Diary(
         content: String? = null,
         deleteImage: Boolean = false,
     ) {
-        if (deleteImage) {
-            this.imageId = null
+        emotion?.let { this.emotion = it }
+
+        content?.let {
+            if (it.isNotBlank()) {
+                this.content = it
+            } else {
+                this.content = null
+            }
         }
 
-        emotion?.let { this.emotion = it }
+        if (deleteImage == true) {
+            this.imageId = null
+        }
         imageId?.let { this.imageId = it }
-        content?.let { this.content = it }
     }
 }

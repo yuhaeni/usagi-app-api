@@ -42,9 +42,9 @@ class User(
         profileImageId: String? = null,
         status: UserStatus? = null,
         deletedAt: LocalDateTime? = null,
-        deleteProfileImage: Boolean = false,
+        deleteProfileImage: Boolean? = null,
     ) {
-        if (deleteProfileImage) {
+        if (deleteProfileImage == true) {
             this.profileImageId = null
         }
         name?.let { this.name = name }
