@@ -25,12 +25,24 @@ class Diary(
     var id: Long = 0L
 
     fun update(
-        emotion: Emotion,
+        emotion: Emotion? = null,
         imageId: String? = null,
         content: String? = null,
+        deleteImage: Boolean = false,
     ) {
-        this.emotion = emotion
-        imageId?.let { this.imageId = imageId }
-        content?.let { this.content = content }
+        emotion?.let { this.emotion = it }
+
+        content?.let {
+            if (it.isNotBlank()) {
+                this.content = it
+            } else {
+                this.content = null
+            }
+        }
+
+        if (deleteImage == true) {
+            this.imageId = null
+        }
+        imageId?.let { this.imageId = it }
     }
 }

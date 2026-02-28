@@ -1,5 +1,6 @@
 package com.kou.kouappapi.security.jwt
 
+import com.kou.kouappapi.manager.RedisManager
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider,
+    private val redisManager: RedisManager,
 ) : OncePerRequestFilter() {
     companion object {
         private const val AUTHORIZATION_HEADER = "Authorization"
@@ -24,13 +26,17 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
-        val jwt = extractJwtFromRequest(request)
+        val accessToken = resolveToken(request)
         if (
-            jwt != null &&
-            jwtTokenProvider.validateToken(jwt)
+            accessToken != null &&
+            jwtTokenProvider.validateToken(accessToken)
         ) {
-            val authUser = jwtTokenProvider.getAuthUser(jwt)
+            if (redisManager.isBlackList(accessToken)) {
+                filterChain.doFilter(request, response)
+                return
+            }
 
+            val authUser = jwtTokenProvider.getAuthUser(accessToken)
             val authorities = listOf(SimpleGrantedAuthority("ROLE_${authUser.role}"))
             val authentication =
                 UsernamePasswordAuthenticationToken(
@@ -47,7 +53,7 @@ class JwtAuthenticationFilter(
         filterChain.doFilter(request, response)
     }
 
-    private fun extractJwtFromRequest(request: HttpServletRequest): String? =
+    private fun resolveToken(request: HttpServletRequest): String? =
         request
             .getHeader(AUTHORIZATION_HEADER)
             ?.takeIf { it.startsWith(BEARER_PREFIX) }

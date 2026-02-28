@@ -111,7 +111,15 @@ class DiaryService(
     ): UpdateDiaryResponseDto {
         val diary = getValidatedDiary(userId, diaryId)
 
-        // TODO 기존 이미지 있는 경우, 클라우디 너리 서버 이미지도 삭제
+        if (
+            request.deleteImage == true ||
+            request.imageFile != null
+        ) {
+            diary.imageId?.let { imageId ->
+                imageManager.deleteImage(imageId)
+            }
+        }
+
         var resultUploadImage: ImageUploadResult? = null
         request.imageFile?.let { file ->
             resultUploadImage =
@@ -121,18 +129,19 @@ class DiaryService(
                     width = 500,
                     height = 300,
                 )
-
-            diary.imageId?.let { imageId ->
-                imageManager.deleteImage(imageId)
-            }
         }
 
-        diary.update(emotion = request.emotion, imageId = resultUploadImage?.publicId, content = request.content)
+        diary.update(
+            emotion = request.emotion,
+            content = request.content,
+            deleteImage = request.deleteImage ?: false,
+            imageId = resultUploadImage?.publicId,
+        )
 
         return UpdateDiaryResponseDto(
             diaryId = diary.id,
             date = diary.date,
-            emotion = request.emotion,
+            emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
         )
@@ -143,8 +152,11 @@ class DiaryService(
         userId: Long,
         diaryId: Long,
     ) {
-        // TODO 기존 이미지 있는 경우, 클라우디 너리 서버 이미지도 삭제
         val diary = getValidatedDiary(userId, diaryId)
+        diary.imageId?.let { imageId ->
+            imageManager.deleteImage(imageId)
+        }
+
         diaryRepository.delete(diary)
     }
 

@@ -5,9 +5,10 @@ import com.kou.kouappapi.service.dto.UpdateDiaryRequestDto
 import org.springframework.web.multipart.MultipartFile
 
 data class UpdateDiaryRequest(
-    val emotion: Emotion,
+    val emotion: Emotion? = null,
     val imageFile: MultipartFile? = null,
     val content: String? = null,
+    val deleteImage: Boolean? = null,
 )
 
 fun UpdateDiaryRequest.toDto() =
@@ -15,4 +16,5 @@ fun UpdateDiaryRequest.toDto() =
         emotion = emotion,
         imageFile = imageFile,
         content = content,
+        deleteImage = deleteImage,
     )
