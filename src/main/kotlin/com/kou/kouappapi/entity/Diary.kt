@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 import java.time.LocalDate
 
 @Entity
@@ -17,6 +18,8 @@ class Diary(
     val user: User,
     val date: LocalDate,
     var emotion: Emotion,
+    @OneToMany(mappedBy = "diary")
+    var diaryActivityCategory: MutableList<DiaryActivityCategory>,
     var imageId: String? = null,
     var content: String? = null,
 ) : BaseEntity() {
