@@ -18,14 +18,16 @@ class Diary(
     val user: User,
     val date: LocalDate,
     var emotion: Emotion,
-    @OneToMany(mappedBy = "diary")
-    var diaryActivityCategory: MutableList<DiaryActivityCategory>,
     var imageId: String? = null,
     var content: String? = null,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
+
+    @OneToMany(mappedBy = "diary")
+    var diaryActivityCategory: MutableList<DiaryActivityCategory>? = mutableListOf()
+        protected set
 
     fun update(
         emotion: Emotion? = null,
