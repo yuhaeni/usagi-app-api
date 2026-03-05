@@ -1,5 +1,6 @@
 package com.kou.kouappapi.entity
 
+import com.kou.kouappapi.service.dto.ActivityCategoryResponseDto
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -19,3 +20,11 @@ class ActivityCategory(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 }
+
+fun List<ActivityCategory>.toResponseDto(): List<ActivityCategoryResponseDto> =
+    map {
+        ActivityCategoryResponseDto(
+            id = it.id,
+            name = it.name,
+        )
+    }

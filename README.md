@@ -61,6 +61,7 @@ AWS Lightsail Container Service
 - [ ] 기간별 감정 통계 조회
 
 ### 🚧 개발 예정
+- [ ] DDD 설계 적용
 - [ ] 푸시 알림 연동
 - [ ] 액션 카테고리 유저별 커스텀
 

@@ -1,6 +1,9 @@
 package com.kou.kouappapi.service
 
 import com.kou.kouappapi.entity.Diary
+import com.kou.kouappapi.entity.DiaryActivityCategory
+import com.kou.kouappapi.entity.toResponseDto
+import com.kou.kouappapi.exception.ActivityCategoryNotFoundException
 import com.kou.kouappapi.exception.DiaryAlreadyExistsException
 import com.kou.kouappapi.exception.DiaryNotFoundException
 import com.kou.kouappapi.exception.NotDiaryOwnerException
@@ -8,6 +11,8 @@ import com.kou.kouappapi.exception.UserNotFoundException
 import com.kou.kouappapi.manager.image.ImageManager
 import com.kou.kouappapi.manager.image.ImageUploadResult
 import com.kou.kouappapi.property.CloudinaryProperties
+import com.kou.kouappapi.repository.ActivityCategoryRepository
+import com.kou.kouappapi.repository.DiaryActivityCategoryRepository
 import com.kou.kouappapi.repository.DiaryRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
@@ -26,6 +31,8 @@ import java.time.LocalDate
 class DiaryService(
     val diaryRepository: DiaryRepository,
     val userRepository: UserRepository,
+    val activityCategoryRepository: ActivityCategoryRepository,
+    val diaryActivityCategoryRepository: DiaryActivityCategoryRepository,
     val imageManager: ImageManager,
     val cloudinaryProperties: CloudinaryProperties,
 ) {
@@ -51,7 +58,7 @@ class DiaryService(
         diary.imageId?.let { imageId ->
             imageUrl = imageManager.getImageUrl(imageId, 500, 300)
         }
-
+        // TODO 활동 카테고리 추가
         return GetDiaryResponseDto(
             diaryId = diary.id,
             date = diary.date,
@@ -83,6 +90,7 @@ class DiaryService(
                 )
         }
 
+        // TODO 활동 카테고리 추가
         val diary =
             diaryRepository.save(
                 Diary(
@@ -94,12 +102,28 @@ class DiaryService(
                 ),
             )
 
+        val activityCategoryList = activityCategoryRepository.findAllById(requestDto.activityCategoryIdList)
+        if (requestDto.activityCategoryIdList.isNotEmpty()) {
+            if (requestDto.activityCategoryIdList.size != activityCategoryList.size) {
+                throw ActivityCategoryNotFoundException()
+            }
+
+            val diaryActivityCategoryList =
+                activityCategoryList.map {
+                    DiaryActivityCategory(activityCategory = it, diary = diary)
+                }
+
+            diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(diaryActivityCategoryList)
+            diary.update(diaryActivityCategoryList = diaryActivityCategoryList)
+        }
+
         return CreateDiaryResponseDto(
             diaryId = diary.id,
             date = diary.date,
             emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
+            activityCategoryList = activityCategoryList.toResponseDto(),
         )
     }
 
@@ -131,6 +155,7 @@ class DiaryService(
                 )
         }
 
+        // TODO 활동 카테고리 추가
         diary.update(
             emotion = request.emotion,
             content = request.content,
