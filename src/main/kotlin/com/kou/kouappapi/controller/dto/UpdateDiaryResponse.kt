@@ -1,6 +1,7 @@
 package com.kou.kouappapi.controller.dto
 
 import com.kou.kouappapi.enums.Emotion
+import com.kou.kouappapi.service.dto.ActivityCategoryResponseDto
 import java.time.LocalDate
 
 data class UpdateDiaryResponse(
@@ -9,4 +10,5 @@ data class UpdateDiaryResponse(
     val emotion: Emotion,
     val imageUrl: String? = null,
     val content: String? = null,
+    val activityCategoryList: List<ActivityCategoryResponseDto> = emptyList(),
 )

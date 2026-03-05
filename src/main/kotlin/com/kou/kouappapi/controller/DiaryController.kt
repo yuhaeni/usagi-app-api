@@ -50,6 +50,7 @@ class DiaryController(
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
+        // TODO 활동 카테고리 추가
     ): ApiResponse<GetDiaryResponse> = ApiResponse.success(service.getDiary(user.id, diaryId).toResponse())
 
     @Operation(summary = "일기 작성")

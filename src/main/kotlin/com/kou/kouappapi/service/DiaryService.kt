@@ -90,7 +90,6 @@ class DiaryService(
                 )
         }
 
-        // TODO 활동 카테고리 추가
         val diary =
             diaryRepository.save(
                 Diary(
@@ -103,11 +102,11 @@ class DiaryService(
             )
 
         val activityCategoryList = activityCategoryRepository.findAllById(requestDto.activityCategoryIdList)
-        if (requestDto.activityCategoryIdList.isNotEmpty()) {
-            if (requestDto.activityCategoryIdList.size != activityCategoryList.size) {
-                throw ActivityCategoryNotFoundException()
-            }
+        if (requestDto.activityCategoryIdList.size != activityCategoryList.size) {
+            throw ActivityCategoryNotFoundException()
+        }
 
+        if (requestDto.activityCategoryIdList.isNotEmpty()) {
             val diaryActivityCategoryList =
                 activityCategoryList.map {
                     DiaryActivityCategory(activityCategory = it, diary = diary)
@@ -131,13 +130,13 @@ class DiaryService(
     fun updateDiary(
         userId: Long,
         diaryId: Long,
-        request: UpdateDiaryRequestDto,
+        requestDto: UpdateDiaryRequestDto,
     ): UpdateDiaryResponseDto {
         val diary = getValidatedDiary(userId, diaryId)
 
         if (
-            request.deleteImage == true ||
-            request.imageFile != null
+            requestDto.deleteImage == true ||
+            requestDto.imageFile != null
         ) {
             diary.imageId?.let { imageId ->
                 imageManager.deleteImage(imageId)
@@ -145,7 +144,7 @@ class DiaryService(
         }
 
         var resultUploadImage: ImageUploadResult? = null
-        request.imageFile?.let { file ->
+        requestDto.imageFile?.let { file ->
             resultUploadImage =
                 imageManager.uploadImage(
                     file = file,
@@ -155,12 +154,28 @@ class DiaryService(
                 )
         }
 
-        // TODO 활동 카테고리 추가
+        val activityCategoryList = activityCategoryRepository.findAllById(requestDto.activityCategoryIdList)
+        if (requestDto.activityCategoryIdList.size != activityCategoryList.size) {
+            throw ActivityCategoryNotFoundException()
+        }
+
+        val diaryActivityCategoryList =
+            if (activityCategoryList.isNotEmpty()) {
+                diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
+                    activityCategoryList.map {
+                        DiaryActivityCategory(activityCategory = it, diary = diary)
+                    },
+                )
+            } else {
+                emptyList()
+            }
+
         diary.update(
-            emotion = request.emotion,
-            content = request.content,
-            deleteImage = request.deleteImage ?: false,
+            emotion = requestDto.emotion,
+            content = requestDto.content,
+            deleteImage = requestDto.deleteImage ?: false,
             imageId = resultUploadImage?.publicId,
+            diaryActivityCategoryList = diaryActivityCategoryList,
         )
 
         return UpdateDiaryResponseDto(
@@ -169,6 +184,7 @@ class DiaryService(
             emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
+            activityCategoryList = activityCategoryList.toResponseDto(),
         )
     }
 

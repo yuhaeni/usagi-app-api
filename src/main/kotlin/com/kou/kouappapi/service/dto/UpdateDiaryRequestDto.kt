@@ -8,4 +8,5 @@ data class UpdateDiaryRequestDto(
     val imageFile: MultipartFile? = null,
     val content: String? = null,
     val deleteImage: Boolean? = null,
+    val activityCategoryIdList: List<Long> = emptyList(),
 )
