@@ -24,6 +24,7 @@ import com.kou.kouappapi.tool.DateTool
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @Service
@@ -134,47 +135,33 @@ class DiaryService(
     ): UpdateDiaryResponseDto {
         val diary = getValidatedDiary(userId, diaryId)
 
-        if (
-            requestDto.deleteImage == true ||
-            requestDto.imageFile != null
-        ) {
-            diary.imageId?.let { imageId ->
-                imageManager.deleteImage(imageId)
+        val image =
+            handleImageUpdate(imageFile = requestDto.imageFile, deleteImage = requestDto.deleteImage, diary = diary)
+
+        val activityCategoryList =
+            requestDto.activityCategoryIdList?.let {
+                val activityCategoryList = activityCategoryRepository.findAllById(it)
+                if (it.size != activityCategoryList.size) {
+                    throw ActivityCategoryNotFoundException()
+                }
+
+                activityCategoryList
             }
-        }
-
-        var resultUploadImage: ImageUploadResult? = null
-        requestDto.imageFile?.let { file ->
-            resultUploadImage =
-                imageManager.uploadImage(
-                    file = file,
-                    uploadFolder = cloudinaryProperties.folder.diary,
-                    width = 500,
-                    height = 300,
-                )
-        }
-
-        val activityCategoryList = activityCategoryRepository.findAllById(requestDto.activityCategoryIdList)
-        if (requestDto.activityCategoryIdList.size != activityCategoryList.size) {
-            throw ActivityCategoryNotFoundException()
-        }
 
         val diaryActivityCategoryList =
-            if (activityCategoryList.isNotEmpty()) {
+            activityCategoryList?.let {
                 diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
                     activityCategoryList.map {
                         DiaryActivityCategory(activityCategory = it, diary = diary)
                     },
                 )
-            } else {
-                emptyList()
             }
 
         diary.update(
             emotion = requestDto.emotion,
             content = requestDto.content,
             deleteImage = requestDto.deleteImage ?: false,
-            imageId = resultUploadImage?.publicId,
+            imageId = image?.publicId,
             diaryActivityCategoryList = diaryActivityCategoryList,
         )
 
@@ -184,8 +171,32 @@ class DiaryService(
             emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
-            activityCategoryList = activityCategoryList.toResponseDto(),
+            activityCategoryList = activityCategoryList?.toResponseDto() ?: emptyList(),
         )
+    }
+
+    private fun handleImageUpdate(
+        imageFile: MultipartFile?,
+        deleteImage: Boolean?,
+        diary: Diary,
+    ): ImageUploadResult? {
+        if (
+            deleteImage == true ||
+            imageFile != null
+        ) {
+            diary.imageId?.let { imageId ->
+                imageManager.deleteImage(imageId)
+            }
+        }
+
+        return imageFile?.let {
+            imageManager.uploadImage(
+                file = it,
+                uploadFolder = cloudinaryProperties.folder.diary,
+                width = 500,
+                height = 300,
+            )
+        }
     }
 
     @Transactional

@@ -25,7 +25,7 @@ class Diary(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
-    @OneToMany(mappedBy = "diary")
+    @OneToMany(mappedBy = "diary", orphanRemoval = true)
     var diaryActivityCategory: MutableList<DiaryActivityCategory> = mutableListOf()
         protected set
 
@@ -34,7 +34,7 @@ class Diary(
         imageId: String? = null,
         content: String? = null,
         deleteImage: Boolean = false,
-        diaryActivityCategoryList: List<DiaryActivityCategory> = emptyList(),
+        diaryActivityCategoryList: List<DiaryActivityCategory>?,
     ) {
         emotion?.let { this.emotion = it }
 
@@ -51,7 +51,7 @@ class Diary(
         }
         imageId?.let { this.imageId = it }
 
-        if (diaryActivityCategoryList.isNotEmpty()) {
+        diaryActivityCategoryList?.let {
             this.diaryActivityCategory.clear()
             this.diaryActivityCategory.addAll(diaryActivityCategoryList)
         }

@@ -9,7 +9,7 @@ data class UpdateDiaryRequest(
     val imageFile: MultipartFile? = null,
     val content: String? = null,
     val deleteImage: Boolean? = null,
-    val activityCategoryIdList: List<Long> = emptyList(),
+    val activityCategoryIdList: List<Long>? = emptyList(),
 )
 
 fun UpdateDiaryRequest.toDto() =
