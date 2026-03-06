@@ -26,7 +26,7 @@ class Diary(
     var id: Long = 0L
 
     @OneToMany(mappedBy = "diary", orphanRemoval = true)
-    var diaryActivityCategory: MutableList<DiaryActivityCategory> = mutableListOf()
+    var diaryActivityCategory: MutableList<DiaryActivityCategory>? = mutableListOf()
         protected set
 
     fun update(
@@ -52,8 +52,8 @@ class Diary(
         imageId?.let { this.imageId = it }
 
         diaryActivityCategoryList?.let {
-            this.diaryActivityCategory.clear()
-            this.diaryActivityCategory.addAll(diaryActivityCategoryList)
+            this.diaryActivityCategory?.clear()
+            this.diaryActivityCategory?.addAll(diaryActivityCategoryList)
         }
     }
 }

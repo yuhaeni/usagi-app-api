@@ -15,6 +15,7 @@ import com.kou.kouappapi.repository.ActivityCategoryRepository
 import com.kou.kouappapi.repository.DiaryActivityCategoryRepository
 import com.kou.kouappapi.repository.DiaryRepository
 import com.kou.kouappapi.repository.UserRepository
+import com.kou.kouappapi.service.dto.ActivityCategoryResponseDto
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
 import com.kou.kouappapi.service.dto.CreateDiaryResponseDto
 import com.kou.kouappapi.service.dto.GetDiaryResponseDto
@@ -55,17 +56,28 @@ class DiaryService(
         diaryId: Long,
     ): GetDiaryResponseDto {
         val diary = getValidatedDiary(userId, diaryId)
-        var imageUrl: String? = null
-        diary.imageId?.let { imageId ->
-            imageUrl = imageManager.getImageUrl(imageId, 500, 300)
-        }
-        // TODO 활동 카테고리 추가
+        val imageUrl =
+            diary.imageId?.let {
+                imageManager.getImageUrl(it, 500, 300)
+            }
+
+        val activityCategoryList =
+            diary.diaryActivityCategory?.map {
+                val activityCategory =
+                    activityCategoryRepository.findByIdOrNull(it.id) ?: throw NotDiaryOwnerException()
+                ActivityCategoryResponseDto(
+                    id = activityCategory.id,
+                    name = activityCategory.name,
+                )
+            }
+
         return GetDiaryResponseDto(
             diaryId = diary.id,
             date = diary.date,
             emotion = diary.emotion,
             imageUrl = imageUrl,
             content = diary.content,
+            activityCategoryList = activityCategoryList ?: emptyList(),
         )
     }
 
@@ -80,16 +92,15 @@ class DiaryService(
             throw DiaryAlreadyExistsException(requestDto.date)
         }
 
-        var imageResult: ImageUploadResult? = null
-        requestDto.imageFile?.let { file ->
-            imageResult =
+        val image =
+            requestDto.imageFile?.let {
                 imageManager.uploadImage(
-                    file = file,
+                    file = it,
                     uploadFolder = cloudinaryProperties.folder.diary,
                     width = 500,
                     height = 300,
                 )
-        }
+            }
 
         val diary =
             diaryRepository.save(
@@ -97,7 +108,7 @@ class DiaryService(
                     user = user,
                     emotion = requestDto.emotion,
                     date = requestDto.date,
-                    imageId = imageResult?.publicId,
+                    imageId = image?.publicId,
                     content = requestDto.content,
                 ),
             )
