@@ -34,7 +34,6 @@ class Diary(
         imageId: String? = null,
         content: String? = null,
         deleteImage: Boolean = false,
-        diaryActivityCategoryList: List<DiaryActivityCategory>?,
     ) {
         emotion?.let { this.emotion = it }
 
@@ -50,10 +49,5 @@ class Diary(
             this.imageId = null
         }
         imageId?.let { this.imageId = it }
-
-        diaryActivityCategoryList?.let {
-            this.diaryActivityCategory?.clear()
-            this.diaryActivityCategory?.addAll(diaryActivityCategoryList)
-        }
     }
 }

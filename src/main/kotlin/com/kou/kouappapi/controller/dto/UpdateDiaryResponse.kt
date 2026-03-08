@@ -10,5 +10,5 @@ data class UpdateDiaryResponse(
     val emotion: Emotion,
     val imageUrl: String? = null,
     val content: String? = null,
-    val activityCategoryList: List<ActivityCategoryResponseDto> = emptyList(),
+    val activityCategoryList: List<ActivityCategoryResponseDto>? = null,
 )

@@ -13,6 +13,8 @@ import com.kou.kouappapi.service.DiaryService
 import com.kou.kouappapi.service.dto.toResponse
 import com.kou.kouappapi.service.toResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
@@ -25,7 +27,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @Tag(name = "📔 일기")
@@ -50,7 +54,6 @@ class DiaryController(
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-        // TODO 활동 카테고리 추가
     ): ApiResponse<GetDiaryResponse> = ApiResponse.success(service.getDiary(user.id, diaryId).toResponse())
 
     @Operation(summary = "일기 작성")
@@ -66,9 +69,22 @@ class DiaryController(
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-        @ModelAttribute request: UpdateDiaryRequest,
+        @RequestPart("data")
+        @Parameter(
+            content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
+        )
+        request: UpdateDiaryRequest,
+        @RequestPart("imageFile", required = false) imageFile: MultipartFile?,
     ): ApiResponse<UpdateDiaryResponse> =
-        ApiResponse.success(service.updateDiary(user.id, diaryId, request.toDto()).toResponse())
+        ApiResponse.success(
+            service
+                .updateDiary(
+                    userId = user.id,
+                    diaryId = diaryId,
+                    requestDto = request.toDto(),
+                    imageFile = imageFile,
+                ).toResponse(),
+        )
 
     @Operation(summary = "일기 삭제")
     @DeleteMapping("{diaryId}")

@@ -10,8 +10,10 @@ class ActivityCategoryService(
 ) {
     fun getActivityCategoryList(userId: Long): List<GetActivityCategoryListResponseDto> {
         val activityCategoryList = activityCategoryRepository.findByUserIdIsNullOrUserIdOrderByName(userId)
-        return activityCategoryList.map {
+        val sortedActivityCategoryList = activityCategoryList.sortedBy { it.name }
+        return sortedActivityCategoryList.map {
             GetActivityCategoryListResponseDto(
+                activityCategoryId = it.id,
                 name = it.name,
                 userId = it.user?.id,
             )
