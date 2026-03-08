@@ -8,4 +8,4 @@ open class ActivityCategoryException(
 ) : GlobalException(status = status, message = message)
 
 class ActivityCategoryNotFoundException :
-    ActivityCategoryException(status = HttpStatus.NOT_FOUND, message = "재하지 않는 활동 카테고리 입니다.")
+    ActivityCategoryException(status = HttpStatus.NOT_FOUND, message = "존재하지 않는 활동 카테고리 입니다.")

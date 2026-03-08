@@ -1,13 +1,16 @@
 package com.kou.kouappapi.service
 
 import com.kou.kouappapi.IntegrationTestSupport
+import com.kou.kouappapi.entity.ActivityCategory
 import com.kou.kouappapi.entity.Diary
+import com.kou.kouappapi.entity.DiaryActivityCategory
 import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.Emotion
 import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.exception.DiaryAlreadyExistsException
 import com.kou.kouappapi.exception.DiaryNotFoundException
 import com.kou.kouappapi.exception.NotDiaryOwnerException
+import com.kou.kouappapi.repository.ActivityCategoryRepository
 import com.kou.kouappapi.repository.DiaryRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
@@ -28,6 +31,7 @@ class DiaryServiceTest(
     private val service: DiaryService,
     private val userRepository: UserRepository,
     private val diaryRepository: DiaryRepository,
+    private val activityCategoryRepository: ActivityCategoryRepository,
 ) : IntegrationTestSupport({
 
         lateinit var savedUser: User
@@ -39,8 +43,21 @@ class DiaryServiceTest(
         lateinit var savedDiary5: Diary
         lateinit var savedDiary6: Diary
         lateinit var savedDiary7: Diary
+        lateinit var defaultActivityCategoryList: List<ActivityCategory>
 
         beforeEach {
+
+            defaultActivityCategoryList =
+                activityCategoryRepository.saveAll<ActivityCategory>(
+                    listOf(
+                        ActivityCategory(name = "데이트"),
+                        ActivityCategory(name = "친구 모임"),
+                        ActivityCategory(name = "가족 행사"),
+                        ActivityCategory(name = "업무"),
+                        ActivityCategory(name = "혼자만의 시간"),
+                    ),
+                )
+
             savedUser =
                 userRepository.save(
                     User(
@@ -121,6 +138,16 @@ class DiaryServiceTest(
                         emotion = Emotion.HOPELESS,
                     ),
                 )
+
+            savedDiary7.update(
+                diaryActivityCategoryList =
+                    listOf(
+                        DiaryActivityCategory(
+                            diary = savedDiary7,
+                            activityCategory = defaultActivityCategoryList.get(0),
+                        ),
+                    ),
+            )
         }
 
         describe("일기(감정) 작성") {
@@ -135,8 +162,9 @@ class DiaryServiceTest(
             }
 
             context("날짜와 감정만 입력한 경우") {
-                val requestDto = CreateDiaryRequestDto(date = LocalDate.parse("2026-02-18"), emotion = Emotion.NEUTRAL)
                 it("날짜, 감정이 저장된다") {
+                    val requestDto =
+                        CreateDiaryRequestDto(date = LocalDate.parse("2026-02-18"), emotion = Emotion.NEUTRAL)
                     val response = service.createDiary(savedUser.id, requestDto)
                     response.date shouldBe LocalDate.parse("2026-02-18")
                     response.emotion shouldBe Emotion.NEUTRAL
@@ -145,17 +173,38 @@ class DiaryServiceTest(
             }
 
             context("날짜, 감정, 내용을 입력한 경우") {
-                val requestDto =
-                    CreateDiaryRequestDto(
-                        date = LocalDate.parse("2026-02-10"),
-                        emotion = Emotion.HOPELESS,
-                        content = "에잇 몰라!",
-                    )
                 it("날짜, 감정, 내용이 저장된다") {
+                    val requestDto =
+                        CreateDiaryRequestDto(
+                            date = LocalDate.parse("2026-02-10"),
+                            emotion = Emotion.HOPELESS,
+                            content = "에잇 몰라!",
+                        )
                     val response = service.createDiary(savedUser.id, requestDto)
                     response.date shouldBe LocalDate.parse("2026-02-10")
                     response.emotion shouldBe Emotion.HOPELESS
                     response.content shouldBe "에잇 몰라!"
+                }
+            }
+
+            context("날짜, 감정, 활동 카테고리를 입력한 경우") {
+                it("날짜, 감정, 활동이 저장된다") {
+                    val requestDto =
+                        CreateDiaryRequestDto(
+                            date = LocalDate.parse("2026-03-05"),
+                            emotion = Emotion.NEUTRAL,
+                            content = "이너피스",
+                            activityCategoryIdList =
+                                listOf(
+                                    defaultActivityCategoryList.get(3).id,
+                                    defaultActivityCategoryList.get(4).id,
+                                ),
+                        )
+                    val response = service.createDiary(savedUser.id, requestDto)
+                    response.date shouldBe requestDto.date
+                    response.emotion shouldBe requestDto.emotion
+                    response.content shouldBe requestDto.content
+                    response.activityCategoryList.size shouldBe 2
                 }
             }
         }
@@ -210,6 +259,44 @@ class DiaryServiceTest(
                     shouldThrow<NotDiaryOwnerException> {
                         service.updateDiary(otherUser.id, savedDiary.id, request)
                     }
+                }
+            }
+
+            context("활동 카테고리가 없던 일기에 새로운 활동 카테고리를 추가하는 경우") {
+                it("활동 카테고리 내용이 추가된다.") {
+                    val request =
+                        UpdateDiaryRequestDto(
+                            activityCategoryIdList =
+                                listOf(
+                                    defaultActivityCategoryList.get(3).id,
+                                ),
+                        )
+                    val response = service.updateDiary(savedUser.id, savedDiary6.id, request)
+                    response.activityCategoryList.get(0).id shouldBe defaultActivityCategoryList.get(3).id
+                }
+            }
+            context("이미 있던 활동 카테고리를 변경하는 경우") {
+                it("활동 카테고리 내용이 변경된다.") {
+                    val request =
+                        UpdateDiaryRequestDto(
+                            activityCategoryIdList =
+                                listOf(
+                                    defaultActivityCategoryList.get(1).id,
+                                ),
+                        )
+                    val response = service.updateDiary(savedUser.id, savedDiary7.id, request)
+                    response.activityCategoryList.get(0).id shouldBe defaultActivityCategoryList.get(1).id
+                }
+            }
+
+            context("이미 있던 활동 카테고리를 제거하는 경우") {
+                it("활동 카테고리 내용이 삭제된다.") {
+                    val request =
+                        UpdateDiaryRequestDto(
+                            activityCategoryIdList = emptyList(),
+                        )
+                    val response = service.updateDiary(savedUser.id, savedDiary7.id, request)
+                    response.activityCategoryList shouldBe emptyList()
                 }
             }
         }
