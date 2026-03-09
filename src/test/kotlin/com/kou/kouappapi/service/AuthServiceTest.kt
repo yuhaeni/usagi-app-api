@@ -15,14 +15,10 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.Tags
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldNotBe
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.util.Date
 
 @Tags("local-only")
-@SpringBootTest
-@ActiveProfiles("test")
 @Transactional
 class AuthServiceTest(
     private val authService: AuthService,

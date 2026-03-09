@@ -19,14 +19,10 @@ import com.kou.kouappapi.service.dto.UpdateDiaryRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
-@SpringBootTest
-@ActiveProfiles("test")
 @Transactional
 class DiaryServiceTest(
     private val service: DiaryService,

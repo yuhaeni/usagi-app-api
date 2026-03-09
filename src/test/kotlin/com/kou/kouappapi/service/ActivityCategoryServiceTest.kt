@@ -7,12 +7,8 @@ import com.kou.kouappapi.enums.SocialProvider
 import com.kou.kouappapi.repository.ActivityCategoryRepository
 import com.kou.kouappapi.repository.UserRepository
 import io.kotest.matchers.shouldBe
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
-@ActiveProfiles("test")
 @Transactional
 class ActivityCategoryServiceTest(
     val userRepository: UserRepository,

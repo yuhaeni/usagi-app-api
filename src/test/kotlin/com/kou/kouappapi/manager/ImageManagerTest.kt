@@ -10,13 +10,9 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.multipart.MultipartFile
 
-@SpringBootTest
-@ActiveProfiles("test")
 class ImageManagerTest(
     private val cloudinaryProperties: CloudinaryProperties,
 ) : IntegrationTestSupport(

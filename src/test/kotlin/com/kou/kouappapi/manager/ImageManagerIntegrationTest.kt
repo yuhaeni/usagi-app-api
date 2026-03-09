@@ -6,12 +6,8 @@ import com.kou.kouappapi.manager.image.ImageNotFoundException
 import com.kou.kouappapi.property.CloudinaryProperties
 import io.kotest.core.annotation.Tags
 import io.kotest.matchers.string.shouldContain
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.context.ActiveProfiles
 
-@SpringBootTest
-@ActiveProfiles("test")
 @Tags("local-only")
 class ImageManagerIntegrationTest(
     private val imageManager: ImageManager,
