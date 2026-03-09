@@ -13,6 +13,8 @@ import com.kou.kouappapi.service.DiaryService
 import com.kou.kouappapi.service.dto.toResponse
 import com.kou.kouappapi.service.toResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
@@ -20,12 +22,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @Tag(name = "📔 일기")
@@ -46,7 +50,7 @@ class DiaryController(
         )
 
     @Operation(summary = "일기 상세 조회")
-    @GetMapping("{diaryId}")
+    @GetMapping("/{diaryId}")
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
@@ -61,16 +65,29 @@ class DiaryController(
         ApiResponse.success(service.createDiary(user.id, request.toDto()).toResponse())
 
     @Operation(summary = "일기 수정")
-    @PutMapping("{diaryId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PatchMapping("/{diaryId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-        @ModelAttribute request: UpdateDiaryRequest,
+        @RequestPart("data")
+        @Parameter(
+            content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
+        )
+        request: UpdateDiaryRequest,
+        @RequestPart("imageFile", required = false) imageFile: MultipartFile?,
     ): ApiResponse<UpdateDiaryResponse> =
-        ApiResponse.success(service.updateDiary(user.id, diaryId, request.toDto()).toResponse())
+        ApiResponse.success(
+            service
+                .updateDiary(
+                    userId = user.id,
+                    diaryId = diaryId,
+                    requestDto = request.toDto(),
+                    imageFile = imageFile,
+                ).toResponse(),
+        )
 
     @Operation(summary = "일기 삭제")
-    @DeleteMapping("{diaryId}")
+    @DeleteMapping("/{diaryId}")
     fun deleteDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,

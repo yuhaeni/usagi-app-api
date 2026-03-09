@@ -3,6 +3,7 @@ package com.kou.kouappapi.service
 import com.kou.kouappapi.auth.exception.AuthLoginRequiredException
 import com.kou.kouappapi.auth.exception.AuthUnauthorizedTokenAccessException
 import com.kou.kouappapi.controller.dto.UpdateUserProfileResponse
+import com.kou.kouappapi.entity.User
 import com.kou.kouappapi.enums.UserStatus
 import com.kou.kouappapi.exception.UserNotFoundException
 import com.kou.kouappapi.manager.RedisManager
@@ -20,6 +21,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 
 @Service
@@ -65,24 +67,17 @@ class UserService(
                 passwordEncoder.encode(password)
             }
 
-        if (
-            requestDto.deleteProfileImage == true ||
-            requestDto.profileImageFile != null
-        ) {
-            user.profileImageId?.let { profileImageId ->
-                imageManager.deleteImage(profileImageId)
-            }
-        }
-
-        var resultUploadImage: ImageUploadResult? = null
-        requestDto.profileImageFile?.let { file ->
-            resultUploadImage = imageManager.uploadImage(file, cloudinaryProperties.folder.profile, 200, 200)
-        }
+        val profileImage =
+            handleProfileImage(
+                profileImageFile = requestDto.profileImageFile,
+                deleteProfileImage = requestDto.deleteProfileImage,
+                user = user,
+            )
 
         user.update(
             name = requestDto.name,
             encodedPassword = encodedPassword,
-            profileImageId = resultUploadImage?.publicId,
+            profileImageId = profileImage?.publicId,
             deleteProfileImage = requestDto.deleteProfileImage ?: false,
         )
 
@@ -92,14 +87,33 @@ class UserService(
         )
     }
 
+    private fun handleProfileImage(
+        profileImageFile: MultipartFile?,
+        deleteProfileImage: Boolean?,
+        user: User,
+    ): ImageUploadResult? {
+        if (
+            deleteProfileImage == true ||
+            profileImageFile != null
+        ) {
+            user.profileImageId?.let { profileImageId ->
+                imageManager.deleteImage(profileImageId)
+            }
+        }
+
+        return profileImageFile?.let {
+            imageManager.uploadImage(it, cloudinaryProperties.folder.profile, 200, 200)
+        }
+    }
+
     @Transactional
     fun withdrawUser(
         userId: Long,
         request: HttpServletRequest,
     ) {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-        // TODO 추후에 배치 돌면서 물리적 삭제 -> 관련 데이터 처리(일기, 이미지)
         user.update(status = UserStatus.WITHDRAWN, deletedAt = LocalDateTime.now())
+        // TODO 유저 관련 데이터 즉시 삭제로 변경
 
         user.profileImageId?.let { profileImageId ->
             imageManager.deleteImage(profileImageId)

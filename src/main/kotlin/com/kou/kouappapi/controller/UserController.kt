@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -33,7 +33,7 @@ class UserController(
     ): GetUserProfileResponse = service.getUserProfile(user.id).toResponse()
 
     @Operation(summary = "유저 프로필 수정")
-    @PutMapping("/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PatchMapping("/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateUserProfile(
         @AuthenticationPrincipal user: AuthUser,
         @ModelAttribute request: UpdateUserProfileRequest,
