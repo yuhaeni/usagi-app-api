@@ -11,6 +11,7 @@ import com.kou.kouappapi.exception.DiaryAlreadyExistsException
 import com.kou.kouappapi.exception.DiaryNotFoundException
 import com.kou.kouappapi.exception.NotDiaryOwnerException
 import com.kou.kouappapi.repository.ActivityCategoryRepository
+import com.kou.kouappapi.repository.DiaryActivityCategoryRepository
 import com.kou.kouappapi.repository.DiaryRepository
 import com.kou.kouappapi.repository.UserRepository
 import com.kou.kouappapi.service.dto.CreateDiaryRequestDto
@@ -32,6 +33,7 @@ class DiaryServiceTest(
     private val userRepository: UserRepository,
     private val diaryRepository: DiaryRepository,
     private val activityCategoryRepository: ActivityCategoryRepository,
+    private val diaryActivityCategoryRepository: DiaryActivityCategoryRepository,
 ) : IntegrationTestSupport({
 
         lateinit var savedUser: User
@@ -139,15 +141,16 @@ class DiaryServiceTest(
                     ),
                 )
 
-            savedDiary7.update(
-                diaryActivityCategoryList =
-                    listOf(
-                        DiaryActivityCategory(
-                            diary = savedDiary7,
-                            activityCategory = defaultActivityCategoryList.get(0),
-                        ),
-                    ),
-            )
+            val activityCategories = listOf(defaultActivityCategoryList[0], defaultActivityCategoryList[1])
+            val diaryActivityCategories =
+                activityCategories.map {
+                    DiaryActivityCategory(activityCategory = it, diary = savedDiary7)
+                }
+            val savedDiaryActivityCategories =
+                diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
+                    diaryActivityCategories,
+                )
+            savedDiary7.diaryActivityCategories.addAll(savedDiaryActivityCategories)
         }
 
         describe("일기(감정) 작성") {
@@ -194,7 +197,7 @@ class DiaryServiceTest(
                             date = LocalDate.parse("2026-03-05"),
                             emotion = Emotion.NEUTRAL,
                             content = "이너피스",
-                            activityCategoryIdList =
+                            activityCategoryIds =
                                 listOf(
                                     defaultActivityCategoryList.get(3).id,
                                     defaultActivityCategoryList.get(4).id,
@@ -204,7 +207,7 @@ class DiaryServiceTest(
                     response.date shouldBe requestDto.date
                     response.emotion shouldBe requestDto.emotion
                     response.content shouldBe requestDto.content
-                    response.activityCategoryList.size shouldBe 2
+                    response.diaryActivityCategories.size shouldBe 2
                 }
             }
         }
@@ -272,7 +275,7 @@ class DiaryServiceTest(
                                 ),
                         )
                     val response = service.updateDiary(savedUser.id, savedDiary6.id, request)
-                    response.activityCategoryList.get(0).id shouldBe defaultActivityCategoryList.get(3).id
+                    response.diaryActivityCategories[0].id shouldBe defaultActivityCategoryList.get(3).id
                 }
             }
             context("이미 있던 활동 카테고리를 변경하는 경우") {
@@ -281,11 +284,11 @@ class DiaryServiceTest(
                         UpdateDiaryRequestDto(
                             activityCategoryIdList =
                                 listOf(
-                                    defaultActivityCategoryList.get(1).id,
+                                    defaultActivityCategoryList[4].id,
                                 ),
                         )
                     val response = service.updateDiary(savedUser.id, savedDiary7.id, request)
-                    response.activityCategoryList.get(0).id shouldBe defaultActivityCategoryList.get(1).id
+                    response.diaryActivityCategories[0].id shouldBe defaultActivityCategoryList[4].id
                 }
             }
 
@@ -296,7 +299,7 @@ class DiaryServiceTest(
                             activityCategoryIdList = emptyList(),
                         )
                     val response = service.updateDiary(savedUser.id, savedDiary7.id, request)
-                    response.activityCategoryList shouldBe emptyList()
+                    response.diaryActivityCategories shouldBe emptyList()
                 }
             }
         }
