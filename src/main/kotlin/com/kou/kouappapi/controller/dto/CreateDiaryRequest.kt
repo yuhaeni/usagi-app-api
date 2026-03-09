@@ -16,7 +16,7 @@ data class CreateDiaryRequest(
     val imageFile: MultipartFile? = null,
     @field:Size(max = 300, message = "내용은 최대 300자까지 작성 가능합니다.")
     val content: String? = null,
-    val activityCategoryIdList: List<Long> = emptyList(),
+    val activityCategoryIds: List<Long> = emptyList(),
 )
 
 fun CreateDiaryRequest.toDto(): CreateDiaryRequestDto =
@@ -25,5 +25,5 @@ fun CreateDiaryRequest.toDto(): CreateDiaryRequestDto =
         emotion = emotion,
         imageFile = imageFile,
         content = content,
-        activityCategoryIdList = activityCategoryIdList,
+        activityCategoryIds = activityCategoryIds,
     )

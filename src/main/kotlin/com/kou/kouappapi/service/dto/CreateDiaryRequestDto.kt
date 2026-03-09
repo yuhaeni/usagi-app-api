@@ -9,5 +9,5 @@ data class CreateDiaryRequestDto(
     val emotion: Emotion,
     val imageFile: MultipartFile? = null,
     val content: String? = null,
-    val activityCategoryIdList: List<Long> = emptyList(),
+    val activityCategoryIds: List<Long> = emptyList(),
 )

@@ -86,8 +86,8 @@ class DiaryService(
         requestDto: CreateDiaryRequestDto,
     ): CreateDiaryResponseDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
-        val savedDiaryList = diaryRepository.findDiariesByUserIdAndDate(userId, requestDto.date)
-        if (savedDiaryList.isNotEmpty()) {
+        val savedDiaries = diaryRepository.findDiariesByUserIdAndDate(userId, requestDto.date)
+        if (savedDiaries.isNotEmpty()) {
             throw DiaryAlreadyExistsException(requestDto.date)
         }
 
@@ -104,7 +104,7 @@ class DiaryService(
                 ),
             )
 
-        handleActivityCategory(activityCategoryIdList = requestDto.activityCategoryIdList, diary = diary)
+        handleActivityCategory(activityCategoryIds = requestDto.activityCategoryIds, diary = diary)
 
         return CreateDiaryResponseDto(
             diaryId = diary.id,
@@ -127,7 +127,7 @@ class DiaryService(
         val diary = getValidatedDiary(userId, diaryId)
         val image =
             handleImage(imageFile = imageFile, deleteImage = requestDto.deleteImage, diary = diary)
-        handleActivityCategory(activityCategoryIdList = requestDto.activityCategoryIdList, diary = diary)
+        handleActivityCategory(activityCategoryIds = requestDto.activityCategoryIdList, diary = diary)
 
         diary.update(
             emotion = requestDto.emotion,
@@ -172,32 +172,32 @@ class DiaryService(
     }
 
     private fun handleActivityCategory(
-        activityCategoryIdList: List<Long>?,
+        activityCategoryIds: List<Long>?,
         diary: Diary,
     ) {
-        val activityCategoryList =
-            activityCategoryIdList?.let {
-                val activityCategoryList = activityCategoryRepository.findAllById(it)
-                if (it.size != activityCategoryList.size) {
+        val activityCategories =
+            activityCategoryIds?.let {
+                val activityCategories = activityCategoryRepository.findAllById(it)
+                if (it.size != activityCategories.size) {
                     throw ActivityCategoryNotFoundException()
                 }
 
-                activityCategoryList
+                activityCategories
             }
 
-        val diaryActivityCategoryList =
-            activityCategoryList?.let {
+        val diaryActivityCategories =
+            activityCategories?.let {
                 // TODO  diff 기반으로 추가/삭제만 처리하는 방식 고려
                 diary.diaryActivityCategories.clear()
                 diaryActivityCategoryRepository.flush()
                 diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
-                    activityCategoryList.map {
+                    activityCategories.map {
                         DiaryActivityCategory(activityCategory = it, diary = diary)
                     },
                 )
             }
 
-        diaryActivityCategoryList?.let {
+        diaryActivityCategories?.let {
             diary.diaryActivityCategories.addAll(it)
         }
     }
