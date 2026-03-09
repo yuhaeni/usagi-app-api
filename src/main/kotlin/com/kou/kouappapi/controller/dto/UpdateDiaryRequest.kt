@@ -7,7 +7,7 @@ data class UpdateDiaryRequest(
     val emotion: Emotion? = null,
     val content: String? = null,
     val deleteImage: Boolean? = null,
-    val activityCategoryIdList: List<Long>? = emptyList(),
+    val activityCategoryIdList: List<Long>? = null,
 )
 
 fun UpdateDiaryRequest.toDto() =

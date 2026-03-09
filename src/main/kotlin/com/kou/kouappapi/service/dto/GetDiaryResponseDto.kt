@@ -10,7 +10,7 @@ data class GetDiaryResponseDto(
     val emotion: Emotion,
     val imageUrl: String? = null,
     val content: String? = null,
-    val activityCategoryList: List<ActivityCategoryResponseDto> = emptyList(),
+    val diaryActivityCategories: List<ActivityCategoryResponseDto> = emptyList(),
 )
 
 fun GetDiaryResponseDto.toResponse(): GetDiaryResponse =
@@ -20,5 +20,5 @@ fun GetDiaryResponseDto.toResponse(): GetDiaryResponse =
         emotion = emotion,
         imageUrl = imageUrl,
         content = content,
-        activityCategoryList = activityCategoryList,
+        diaryActivityCategories = diaryActivityCategories,
     )

@@ -1,6 +1,7 @@
 package com.kou.kouappapi.entity
 
 import com.kou.kouappapi.enums.Emotion
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -25,8 +26,8 @@ class Diary(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
-    @OneToMany(mappedBy = "diary", orphanRemoval = true)
-    var diaryActivityCategory: MutableList<DiaryActivityCategory>? = mutableListOf()
+    @OneToMany(mappedBy = "diary", orphanRemoval = true, cascade = [CascadeType.ALL])
+    var diaryActivityCategories: MutableList<DiaryActivityCategory> = mutableListOf()
         protected set
 
     fun update(
@@ -45,7 +46,7 @@ class Diary(
             }
         }
 
-        if (deleteImage == true) {
+        if (deleteImage) {
             this.imageId = null
         }
         imageId?.let { this.imageId = it }

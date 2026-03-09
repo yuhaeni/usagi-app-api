@@ -50,7 +50,7 @@ class DiaryController(
         )
 
     @Operation(summary = "일기 상세 조회")
-    @GetMapping("{diaryId}")
+    @GetMapping("/{diaryId}")
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
@@ -65,7 +65,7 @@ class DiaryController(
         ApiResponse.success(service.createDiary(user.id, request.toDto()).toResponse())
 
     @Operation(summary = "일기 수정")
-    @PatchMapping("{diaryId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PatchMapping("/{diaryId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
@@ -87,7 +87,7 @@ class DiaryController(
         )
 
     @Operation(summary = "일기 삭제")
-    @DeleteMapping("{diaryId}")
+    @DeleteMapping("/{diaryId}")
     fun deleteDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,

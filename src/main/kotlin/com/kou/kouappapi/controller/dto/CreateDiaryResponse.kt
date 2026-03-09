@@ -9,5 +9,5 @@ data class CreateDiaryResponse(
     val emotion: Emotion,
     val imageUrl: String? = null,
     val content: String? = null,
-    val activityCategoryList: List<ActivityCategoryResponse> = emptyList(),
+    val diaryActivityCategories: List<ActivityCategoryResponse> = emptyList(),
 )

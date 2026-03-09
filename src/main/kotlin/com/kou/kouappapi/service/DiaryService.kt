@@ -46,8 +46,8 @@ class DiaryService(
     ): List<GetDiaryListResponseDto> {
         val start = startDate ?: DateTool.getFirstDayOfCurrentMonth()
         val end = endDate ?: DateTool.getLastDayOfCurrentMonth()
-        val diaryList = diaryRepository.findByUserIdAndDateBetweenOrderByDateAsc(userId, start, end)
-        return diaryList.map {
+        val diaries = diaryRepository.findByUserIdAndDateBetweenOrderByDateAsc(userId, start, end)
+        return diaries.map {
             GetDiaryListResponseDto(diaryId = it.id, date = it.date, emotion = it.emotion)
         }
     }
@@ -62,13 +62,11 @@ class DiaryService(
                 imageManager.getImageUrl(it, 500, 300)
             }
 
-        val activityCategoryList =
-            diary.diaryActivityCategory?.map {
-                val activityCategory =
-                    activityCategoryRepository.findByIdOrNull(it.activityCategory.id) ?: throw NotDiaryOwnerException()
+        val diaryActivityCategories =
+            diary.diaryActivityCategories.map {
                 ActivityCategoryResponseDto(
-                    id = activityCategory.id,
-                    name = activityCategory.name,
+                    id = it.activityCategory.id,
+                    name = it.activityCategory.name,
                 )
             }
 
@@ -78,7 +76,7 @@ class DiaryService(
             emotion = diary.emotion,
             imageUrl = imageUrl,
             content = diary.content,
-            activityCategoryList = activityCategoryList ?: emptyList(),
+            diaryActivityCategories = diaryActivityCategories,
         )
     }
 
@@ -114,9 +112,8 @@ class DiaryService(
             emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
-            activityCategoryList =
-                diary.diaryActivityCategory?.map { it.activityCategory }?.toResponseDto()
-                    ?: emptyList(),
+            diaryActivityCategories =
+                diary.diaryActivityCategories.map { it.activityCategory }.toResponseDto(),
         )
     }
 
@@ -145,9 +142,8 @@ class DiaryService(
             emotion = diary.emotion,
             imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
             content = diary.content,
-            activityCategoryList =
-                diary.diaryActivityCategory?.map { it.activityCategory }?.toResponseDto()
-                    ?: emptyList(),
+            diaryActivityCategories =
+                diary.diaryActivityCategories.map { it.activityCategory }.toResponseDto(),
         )
     }
 
@@ -191,7 +187,8 @@ class DiaryService(
 
         val diaryActivityCategoryList =
             activityCategoryList?.let {
-                diary.diaryActivityCategory?.clear()
+                // TODO  diff 기반으로 추가/삭제만 처리하는 방식 고려
+                diary.diaryActivityCategories.clear()
                 diaryActivityCategoryRepository.flush()
                 diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
                     activityCategoryList.map {
@@ -201,7 +198,7 @@ class DiaryService(
             }
 
         diaryActivityCategoryList?.let {
-            diary.diaryActivityCategory?.addAll(it)
+            diary.diaryActivityCategories.addAll(it)
         }
     }
 
