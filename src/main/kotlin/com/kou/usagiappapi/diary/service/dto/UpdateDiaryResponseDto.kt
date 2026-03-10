@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.diary.service.dto
 
-import com.kou.usagiappapi.activityCategory.service.ActivityCategoryResponseDto
+import com.kou.usagiappapi.activityCategory.service.dto.ActivityCategoryResponseDto
 import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryResponse
 import com.kou.usagiappapi.enums.Emotion
 import java.time.LocalDate

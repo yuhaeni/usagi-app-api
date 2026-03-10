@@ -1,18 +1,18 @@
-package com.kou.usagiappapi.service
+package com.kou.usagiappapi.activityCategory.service
 
 import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
-import com.kou.usagiappapi.service.dto.GetActivityCategoryListResponseDto
+import com.kou.usagiappapi.activityCategory.service.dto.GetActivityCategoriesResponseDto
 import org.springframework.stereotype.Service
 
 @Service
 class ActivityCategoryService(
     val activityCategoryRepository: ActivityCategoryRepository,
 ) {
-    fun getActivityCategoryList(userId: Long): List<GetActivityCategoryListResponseDto> {
+    fun getActivityCategories(userId: Long): List<GetActivityCategoriesResponseDto> {
         val activityCategoryList = activityCategoryRepository.findByUserIdIsNullOrUserIdOrderByName(userId)
         val sortedActivityCategoryList = activityCategoryList.sortedBy { it.name }
         return sortedActivityCategoryList.map {
-            GetActivityCategoryListResponseDto(
+            GetActivityCategoriesResponseDto(
                 activityCategoryId = it.id,
                 name = it.name,
                 userId = it.user?.id,

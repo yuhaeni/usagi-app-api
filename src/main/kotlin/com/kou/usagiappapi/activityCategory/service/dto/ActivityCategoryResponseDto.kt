@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.activityCategory.service
+package com.kou.usagiappapi.activityCategory.service.dto
 
 import com.kou.usagiappapi.activityCategory.controller.dto.ActivityCategoryResponse
 

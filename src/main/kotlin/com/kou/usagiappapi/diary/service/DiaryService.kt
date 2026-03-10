@@ -2,7 +2,7 @@ package com.kou.usagiappapi.diary.service
 
 import com.kou.usagiappapi.activityCategory.entity.toResponseDto
 import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
-import com.kou.usagiappapi.activityCategory.service.ActivityCategoryResponseDto
+import com.kou.usagiappapi.activityCategory.service.dto.ActivityCategoryResponseDto
 import com.kou.usagiappapi.diary.entity.Diary
 import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
 import com.kou.usagiappapi.diary.exception.DiaryNotFoundException
