@@ -1,8 +1,8 @@
-package com.kou.usagiappapi.controller
+package com.kou.usagiappapi.system.controller
 
-import com.kou.usagiappapi.controller.dto.GetEnumsResponse
-import com.kou.usagiappapi.service.SystemService
-import com.kou.usagiappapi.service.dto.toResponse
+import com.kou.usagiappapi.system.controller.dto.GetEnumsResponse
+import com.kou.usagiappapi.system.service.SystemService
+import com.kou.usagiappapi.system.service.dto.toResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -18,7 +18,7 @@ class SystemController(
     val service: SystemService,
 ) {
     @Operation(summary = "상수 조회")
-    @GetMapping("/enum")
+    @GetMapping("/enums")
     fun getEnums(
         @Schema(
             description = "조회할 상수 타입",

@@ -1,6 +1,6 @@
-package com.kou.usagiappapi.service.dto
+package com.kou.usagiappapi.system.service.dto
 
-import com.kou.usagiappapi.controller.dto.GetEnumsResponse
+import com.kou.usagiappapi.system.controller.dto.GetEnumsResponse
 
 data class GetEnumsResponseDto(
     val name: String,

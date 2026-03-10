@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.controller.dto
+package com.kou.usagiappapi.system.controller.dto
 
 data class GetEnumsResponse(
     val name: String,
