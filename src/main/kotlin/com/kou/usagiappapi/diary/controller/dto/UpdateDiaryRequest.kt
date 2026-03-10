@@ -15,5 +15,5 @@ fun UpdateDiaryRequest.toDto() =
         emotion = emotion,
         content = content,
         deleteImage = deleteImage,
-        activityCategoryIdList = activityCategoryIdList,
+        activityCategoryIds = activityCategoryIdList,
     )

@@ -1,9 +1,8 @@
 package com.kou.usagiappapi.controller
 
-import com.kou.usagiappapi.activityCategory.service.toResponse
 import com.kou.usagiappapi.controller.dto.GetEnumsResponse
-import com.kou.usagiappapi.diary.service.dto.toResponse
 import com.kou.usagiappapi.service.SystemService
+import com.kou.usagiappapi.service.dto.toResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
