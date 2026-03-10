@@ -4,9 +4,11 @@ import com.kou.usagiappapi.activityCategory.entity.toResponseDto
 import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.activityCategory.service.dto.ActivityCategoryResponseDto
 import com.kou.usagiappapi.diary.entity.Diary
+import com.kou.usagiappapi.diary.entity.DiaryActivityCategory
 import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
 import com.kou.usagiappapi.diary.exception.DiaryNotFoundException
 import com.kou.usagiappapi.diary.exception.NotDiaryOwnerException
+import com.kou.usagiappapi.diary.repository.DiaryActivityCategoryRepository
 import com.kou.usagiappapi.diary.repository.DiaryRepository
 import com.kou.usagiappapi.diary.service.dto.CreateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.CreateDiaryResponseDto
@@ -14,12 +16,10 @@ import com.kou.usagiappapi.diary.service.dto.GetDiariesResponseDto
 import com.kou.usagiappapi.diary.service.dto.GetDiaryResponseDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryResponseDto
-import com.kou.usagiappapi.entity.DiaryActivityCategory
 import com.kou.usagiappapi.exception.ActivityCategoryNotFoundException
 import com.kou.usagiappapi.manager.image.ImageManager
 import com.kou.usagiappapi.manager.image.ImageUploadResult
 import com.kou.usagiappapi.property.CloudinaryProperties
-import com.kou.usagiappapi.repository.DiaryActivityCategoryRepository
 import com.kou.usagiappapi.tool.DateTool
 import com.kou.usagiappapi.user.exception.UserNotFoundException
 import com.kou.usagiappapi.user.repository.UserRepository
