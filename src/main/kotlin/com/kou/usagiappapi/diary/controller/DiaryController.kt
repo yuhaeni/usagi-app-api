@@ -9,6 +9,7 @@ import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryRequest
 import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryResponse
 import com.kou.usagiappapi.diary.controller.dto.toDto
 import com.kou.usagiappapi.diary.service.DiaryService
+import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.toResponse
 import com.kou.usagiappapi.security.AuthUser
 import io.swagger.v3.oas.annotations.Operation
@@ -68,11 +69,11 @@ class DiaryController(
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("id") id: Long,
-        @RequestPart("data")
+        @RequestPart("data", required = false)
         @Parameter(
             content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
         )
-        request: UpdateDiaryRequest,
+        request: UpdateDiaryRequest?,
         @RequestPart("imageFile", required = false) imageFile: MultipartFile?,
     ): ApiResponse<UpdateDiaryResponse> =
         ApiResponse.success(
@@ -80,7 +81,7 @@ class DiaryController(
                 .updateDiary(
                     userId = user.id,
                     diaryId = id,
-                    requestDto = request.toDto(),
+                    requestDto = request?.toDto() ?: UpdateDiaryRequestDto(),
                     imageFile = imageFile,
                 ).toResponse(),
         )

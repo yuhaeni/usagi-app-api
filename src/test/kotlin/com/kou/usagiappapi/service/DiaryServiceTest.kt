@@ -266,7 +266,7 @@ class DiaryServiceTest(
                 it("활동 카테고리 내용이 추가된다.") {
                     val request =
                         UpdateDiaryRequestDto(
-                            activityCategoryIdList =
+                            activityCategoryIds =
                                 listOf(
                                     defaultActivityCategoryList.get(3).id,
                                 ),
@@ -279,7 +279,7 @@ class DiaryServiceTest(
                 it("활동 카테고리 내용이 변경된다.") {
                     val request =
                         UpdateDiaryRequestDto(
-                            activityCategoryIdList =
+                            activityCategoryIds =
                                 listOf(
                                     defaultActivityCategoryList[4].id,
                                 ),
@@ -293,7 +293,7 @@ class DiaryServiceTest(
                 it("활동 카테고리 내용이 삭제된다.") {
                     val request =
                         UpdateDiaryRequestDto(
-                            activityCategoryIdList = emptyList(),
+                            activityCategoryIds = emptyList(),
                         )
                     val response = service.updateDiary(savedUser.id, savedDiary7.id, request)
                     response.diaryActivityCategories shouldBe emptyList()
@@ -331,14 +331,14 @@ class DiaryServiceTest(
         describe("일기 목록 조회") {
             context("요청 날짜가 없는 경우") {
                 it("현재 월 기준으로 일기 목록이 조회된다.") {
-                    val response = service.getDiaryList(savedUser.id)
+                    val response = service.getDiaries(savedUser.id)
                     response.size shouldNotBe 0
                 }
             }
             context("요청 날짜가 있는 경우") {
                 it("해당 날짜 기준으로 일기 목록이 조회된다.") {
                     val response =
-                        service.getDiaryList(
+                        service.getDiaries(
                             savedUser.id,
                             LocalDate.parse("2026-01-01"),
                             LocalDate.parse("2026-01-31"),
