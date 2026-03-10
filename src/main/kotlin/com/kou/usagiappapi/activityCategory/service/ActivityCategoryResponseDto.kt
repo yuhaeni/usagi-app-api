@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.activityCategory.service
 
-import com.kou.usagiappapi.controller.dto.ActivityCategoryResponse
+import com.kou.usagiappapi.activityCategory.controller.dto.ActivityCategoryResponse
 
 data class ActivityCategoryResponseDto(
     val id: Long,

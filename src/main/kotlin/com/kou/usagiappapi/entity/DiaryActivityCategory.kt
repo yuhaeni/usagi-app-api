@@ -1,5 +1,6 @@
 package com.kou.usagiappapi.entity
 
+import com.kou.usagiappapi.activityCategory.entity.ActivityCategory
 import com.kou.usagiappapi.diary.entity.Diary
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

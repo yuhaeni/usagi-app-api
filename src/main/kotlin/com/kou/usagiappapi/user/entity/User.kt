@@ -1,5 +1,6 @@
-package com.kou.usagiappapi.entity
+package com.kou.usagiappapi.user.entity
 
+import com.kou.usagiappapi.entity.BaseEntity
 import com.kou.usagiappapi.enums.Role
 import com.kou.usagiappapi.enums.SocialProvider
 import com.kou.usagiappapi.enums.UserStatus

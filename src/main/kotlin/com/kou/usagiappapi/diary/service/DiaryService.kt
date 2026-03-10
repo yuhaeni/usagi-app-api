@@ -1,5 +1,7 @@
 package com.kou.usagiappapi.diary.service
 
+import com.kou.usagiappapi.activityCategory.entity.toResponseDto
+import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.activityCategory.service.ActivityCategoryResponseDto
 import com.kou.usagiappapi.diary.entity.Diary
 import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
@@ -13,16 +15,14 @@ import com.kou.usagiappapi.diary.service.dto.GetDiaryResponseDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryResponseDto
 import com.kou.usagiappapi.entity.DiaryActivityCategory
-import com.kou.usagiappapi.entity.toResponseDto
 import com.kou.usagiappapi.exception.ActivityCategoryNotFoundException
-import com.kou.usagiappapi.exception.UserNotFoundException
 import com.kou.usagiappapi.manager.image.ImageManager
 import com.kou.usagiappapi.manager.image.ImageUploadResult
 import com.kou.usagiappapi.property.CloudinaryProperties
-import com.kou.usagiappapi.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.repository.DiaryActivityCategoryRepository
-import com.kou.usagiappapi.repository.UserRepository
 import com.kou.usagiappapi.tool.DateTool
+import com.kou.usagiappapi.user.exception.UserNotFoundException
+import com.kou.usagiappapi.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

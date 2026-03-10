@@ -1,6 +1,6 @@
-package com.kou.usagiappapi.controller.dto
+package com.kou.usagiappapi.user.controller.dto
 
-import com.kou.usagiappapi.service.dto.UpdateUserProfileRequestDto
+import com.kou.usagiappapi.user.service.dto.UpdateUserProfileRequestDto
 import org.springframework.web.multipart.MultipartFile
 
 data class UpdateUserProfileRequest(

@@ -1,11 +1,11 @@
 package com.kou.usagiappapi.service
 
 import com.kou.usagiappapi.IntegrationTestSupport
-import com.kou.usagiappapi.entity.ActivityCategory
-import com.kou.usagiappapi.entity.User
+import com.kou.usagiappapi.activityCategory.entity.ActivityCategory
+import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.enums.SocialProvider
-import com.kou.usagiappapi.repository.ActivityCategoryRepository
-import com.kou.usagiappapi.repository.UserRepository
+import com.kou.usagiappapi.user.entity.User
+import com.kou.usagiappapi.user.repository.UserRepository
 import io.kotest.matchers.shouldBe
 import org.springframework.transaction.annotation.Transactional
 

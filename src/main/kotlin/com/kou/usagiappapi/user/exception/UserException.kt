@@ -1,5 +1,6 @@
-package com.kou.usagiappapi.exception
+package com.kou.usagiappapi.user.exception
 
+import com.kou.usagiappapi.exception.GlobalException
 import org.springframework.http.HttpStatus
 
 open class UserException(

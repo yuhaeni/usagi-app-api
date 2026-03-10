@@ -1,6 +1,6 @@
-package com.kou.usagiappapi.controller.dto
+package com.kou.usagiappapi.user.controller.dto
 
-import com.kou.usagiappapi.service.dto.GetUserProfileResponseDto
+import com.kou.usagiappapi.user.service.dto.GetUserProfileResponseDto
 import kotlin.String
 
 data class GetUserProfileResponse(

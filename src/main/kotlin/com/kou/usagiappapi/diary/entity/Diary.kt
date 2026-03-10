@@ -2,8 +2,8 @@ package com.kou.usagiappapi.diary.entity
 
 import com.kou.usagiappapi.entity.BaseEntity
 import com.kou.usagiappapi.entity.DiaryActivityCategory
-import com.kou.usagiappapi.entity.User
 import com.kou.usagiappapi.enums.Emotion
+import com.kou.usagiappapi.user.entity.User
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

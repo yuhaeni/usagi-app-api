@@ -10,13 +10,13 @@ import com.kou.usagiappapi.auth.service.dto.SocialLoginResponseDto
 import com.kou.usagiappapi.auth.social.SocialAuthStrategyFactory
 import com.kou.usagiappapi.auth.social.SocialUserInfo
 import com.kou.usagiappapi.entity.RefreshToken
-import com.kou.usagiappapi.entity.User
 import com.kou.usagiappapi.enums.UserStatus
 import com.kou.usagiappapi.manager.RedisManager
 import com.kou.usagiappapi.repository.RefreshTokenRepository
-import com.kou.usagiappapi.repository.UserRepository
 import com.kou.usagiappapi.security.AuthUser
 import com.kou.usagiappapi.security.jwt.JwtTokenProvider
+import com.kou.usagiappapi.user.entity.User
+import com.kou.usagiappapi.user.repository.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpHeaders

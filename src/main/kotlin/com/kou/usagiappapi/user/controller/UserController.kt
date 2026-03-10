@@ -1,14 +1,13 @@
-package com.kou.usagiappapi.controller
+package com.kou.usagiappapi.user.controller
 
 import com.kou.usagiappapi.common.dto.ApiResponse
-import com.kou.usagiappapi.controller.dto.GetUserProfileResponse
-import com.kou.usagiappapi.controller.dto.UpdateUserProfileRequest
-import com.kou.usagiappapi.controller.dto.UpdateUserProfileResponse
-import com.kou.usagiappapi.controller.dto.toDto
-import com.kou.usagiappapi.controller.dto.toResponse
-import com.kou.usagiappapi.diary.controller.dto.toDto
 import com.kou.usagiappapi.security.AuthUser
-import com.kou.usagiappapi.service.UserService
+import com.kou.usagiappapi.user.controller.dto.GetUserProfileResponse
+import com.kou.usagiappapi.user.controller.dto.UpdateUserProfileRequest
+import com.kou.usagiappapi.user.controller.dto.UpdateUserProfileResponse
+import com.kou.usagiappapi.user.controller.dto.toDto
+import com.kou.usagiappapi.user.controller.dto.toResponse
+import com.kou.usagiappapi.user.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest

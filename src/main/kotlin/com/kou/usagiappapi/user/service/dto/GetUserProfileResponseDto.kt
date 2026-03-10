@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.service.dto
+package com.kou.usagiappapi.user.service.dto
 
 data class GetUserProfileResponseDto(
     val userId: Long,

@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.service.dto
+package com.kou.usagiappapi.user.service.dto
 
 import org.springframework.web.multipart.MultipartFile
 

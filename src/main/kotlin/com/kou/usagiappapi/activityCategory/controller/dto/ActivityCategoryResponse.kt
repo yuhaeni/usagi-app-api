@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.controller.dto
+package com.kou.usagiappapi.activityCategory.controller.dto
 
 data class ActivityCategoryResponse(
     val id: Long,

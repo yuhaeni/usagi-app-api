@@ -1,7 +1,7 @@
-package com.kou.usagiappapi.controller
+package com.kou.usagiappapi.activityCategory.controller
 
 import com.kou.usagiappapi.common.dto.ApiResponse
-import com.kou.usagiappapi.controller.dto.GetActivityCategoryListResponse
+import com.kou.usagiappapi.activityCategory.controller.dto.GetActivityCategoryListResponse
 import com.kou.usagiappapi.security.AuthUser
 import com.kou.usagiappapi.service.ActivityCategoryService
 import com.kou.usagiappapi.service.dto.toResponse
@@ -23,5 +23,5 @@ class ActivityCategoryController(
     fun getActivityCategoryList(
         @AuthenticationPrincipal user: AuthUser,
     ): ApiResponse<List<GetActivityCategoryListResponse>> =
-        ApiResponse.success(service.getActivityCategoryList(user.id).toResponse())
+        ApiResponse.Companion.success(service.getActivityCategoryList(user.id).toResponse())
 }

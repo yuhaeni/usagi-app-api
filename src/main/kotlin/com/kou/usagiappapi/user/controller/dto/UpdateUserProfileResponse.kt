@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.controller.dto
+package com.kou.usagiappapi.user.controller.dto
 
 data class UpdateUserProfileResponse(
     val userId: Long,

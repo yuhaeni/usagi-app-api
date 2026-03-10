@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.service
 
-import com.kou.usagiappapi.repository.ActivityCategoryRepository
+import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.service.dto.GetActivityCategoryListResponseDto
 import org.springframework.stereotype.Service
 
