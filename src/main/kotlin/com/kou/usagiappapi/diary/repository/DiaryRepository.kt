@@ -1,6 +1,6 @@
-package com.kou.usagiappapi.repository
+package com.kou.usagiappapi.diary.repository
 
-import com.kou.usagiappapi.entity.Diary
+import com.kou.usagiappapi.diary.entity.Diary
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.LocalDate
 

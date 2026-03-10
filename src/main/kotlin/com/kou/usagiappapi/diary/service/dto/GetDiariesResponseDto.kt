@@ -1,18 +1,18 @@
-package com.kou.usagiappapi.service
+package com.kou.usagiappapi.diary.service.dto
 
-import com.kou.usagiappapi.diary.controller.dto.GetDiaryListResponse
+import com.kou.usagiappapi.diary.controller.dto.GetDiariesResponse
 import com.kou.usagiappapi.enums.Emotion
 import java.time.LocalDate
 
-data class GetDiaryListResponseDto(
+data class GetDiariesResponseDto(
     val diaryId: Long,
     val date: LocalDate,
     val emotion: Emotion,
 )
 
-fun List<GetDiaryListResponseDto>.toResponse(): List<GetDiaryListResponse> =
+fun List<GetDiariesResponseDto>.toResponse(): List<GetDiariesResponse> =
     map {
-        GetDiaryListResponse(
+        GetDiariesResponse(
             diaryId = it.diaryId,
             date = it.date,
             emotion = it.emotion,

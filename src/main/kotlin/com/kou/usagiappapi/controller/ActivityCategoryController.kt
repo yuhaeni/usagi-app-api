@@ -1,10 +1,10 @@
 package com.kou.usagiappapi.controller
 
+import com.kou.usagiappapi.activityCategory.service.toResponse
 import com.kou.usagiappapi.common.dto.ApiResponse
 import com.kou.usagiappapi.controller.dto.GetActivityCategoryListResponse
 import com.kou.usagiappapi.security.AuthUser
 import com.kou.usagiappapi.service.ActivityCategoryService
-import com.kou.usagiappapi.service.dto.toResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.annotation.AuthenticationPrincipal

@@ -1,9 +1,9 @@
 package com.kou.usagiappapi.diary.service.dto
 
+import com.kou.usagiappapi.activityCategory.service.ActivityCategoryResponseDto
+import com.kou.usagiappapi.activityCategory.service.toResponse
 import com.kou.usagiappapi.diary.controller.dto.CreateDiaryResponse
 import com.kou.usagiappapi.enums.Emotion
-import com.kou.usagiappapi.service.dto.ActivityCategoryResponseDto
-import com.kou.usagiappapi.service.dto.toResponse
 import java.time.LocalDate
 
 data class CreateDiaryResponseDto(

@@ -1,5 +1,6 @@
-package com.kou.usagiappapi.exception
+package com.kou.usagiappapi.diary.exception
 
+import com.kou.usagiappapi.exception.GlobalException
 import org.springframework.http.HttpStatus
 import java.time.LocalDate
 

@@ -1,21 +1,21 @@
 package com.kou.usagiappapi.service
 
 import com.kou.usagiappapi.IntegrationTestSupport
+import com.kou.usagiappapi.diary.entity.Diary
+import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
+import com.kou.usagiappapi.diary.exception.DiaryNotFoundException
+import com.kou.usagiappapi.diary.exception.NotDiaryOwnerException
+import com.kou.usagiappapi.diary.repository.DiaryRepository
 import com.kou.usagiappapi.diary.service.DiaryService
 import com.kou.usagiappapi.diary.service.dto.CreateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.entity.ActivityCategory
-import com.kou.usagiappapi.entity.Diary
 import com.kou.usagiappapi.entity.DiaryActivityCategory
 import com.kou.usagiappapi.entity.User
 import com.kou.usagiappapi.enums.Emotion
 import com.kou.usagiappapi.enums.SocialProvider
-import com.kou.usagiappapi.exception.DiaryAlreadyExistsException
-import com.kou.usagiappapi.exception.DiaryNotFoundException
-import com.kou.usagiappapi.exception.NotDiaryOwnerException
 import com.kou.usagiappapi.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.repository.DiaryActivityCategoryRepository
-import com.kou.usagiappapi.repository.DiaryRepository
 import com.kou.usagiappapi.repository.UserRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe

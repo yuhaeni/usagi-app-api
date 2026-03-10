@@ -3,7 +3,7 @@ package com.kou.usagiappapi.diary.controller
 import com.kou.usagiappapi.common.dto.ApiResponse
 import com.kou.usagiappapi.diary.controller.dto.CreateDiaryRequest
 import com.kou.usagiappapi.diary.controller.dto.CreateDiaryResponse
-import com.kou.usagiappapi.diary.controller.dto.GetDiaryListResponse
+import com.kou.usagiappapi.diary.controller.dto.GetDiariesResponse
 import com.kou.usagiappapi.diary.controller.dto.GetDiaryResponse
 import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryRequest
 import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryResponse
@@ -11,7 +11,6 @@ import com.kou.usagiappapi.diary.controller.dto.toDto
 import com.kou.usagiappapi.diary.service.DiaryService
 import com.kou.usagiappapi.diary.service.dto.toResponse
 import com.kou.usagiappapi.security.AuthUser
-import com.kou.usagiappapi.service.toResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -34,27 +33,27 @@ import java.time.LocalDate
 
 @Tag(name = "📔 일기")
 @RestController
-@RequestMapping("/api/v1/diary")
+@RequestMapping("/api/v1/diaries")
 class DiaryController(
-    val service: DiaryService,
+    private val service: DiaryService,
 ) {
     @Operation(summary = "일기 목록 조회", description = "요청 날짜가 없는 경우 현재 월 기준으로 조회")
-    @GetMapping("/list")
-    fun getDiaryList(
+    @GetMapping
+    fun getDiaries(
         @AuthenticationPrincipal user: AuthUser,
         @RequestParam startDate: LocalDate?,
         @RequestParam endDate: LocalDate?,
-    ): ApiResponse<List<GetDiaryListResponse>> =
+    ): ApiResponse<List<GetDiariesResponse>> =
         ApiResponse.success(
-            service.getDiaryList(userId = user.id, startDate = startDate, endDate = endDate).toResponse(),
+            service.getDiaries(userId = user.id, startDate = startDate, endDate = endDate).toResponse(),
         )
 
     @Operation(summary = "일기 상세 조회")
-    @GetMapping("/{diaryId}")
+    @GetMapping("/{id}")
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
-        @PathVariable("diaryId") diaryId: Long,
-    ): ApiResponse<GetDiaryResponse> = ApiResponse.Companion.success(service.getDiary(user.id, diaryId).toResponse())
+        @PathVariable("id") id: Long,
+    ): ApiResponse<GetDiaryResponse> = ApiResponse.success(service.getDiary(user.id, id).toResponse())
 
     @Operation(summary = "일기 작성")
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -65,10 +64,10 @@ class DiaryController(
         ApiResponse.success(service.createDiary(user.id, request.toDto()).toResponse())
 
     @Operation(summary = "일기 수정")
-    @PatchMapping("/{diaryId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PatchMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
-        @PathVariable("diaryId") diaryId: Long,
+        @PathVariable("id") id: Long,
         @RequestPart("data")
         @Parameter(
             content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
@@ -80,19 +79,19 @@ class DiaryController(
             service
                 .updateDiary(
                     userId = user.id,
-                    diaryId = diaryId,
+                    diaryId = id,
                     requestDto = request.toDto(),
                     imageFile = imageFile,
                 ).toResponse(),
         )
 
     @Operation(summary = "일기 삭제")
-    @DeleteMapping("/{diaryId}")
+    @DeleteMapping("/{id}")
     fun deleteDiary(
         @AuthenticationPrincipal user: AuthUser,
-        @PathVariable("diaryId") diaryId: Long,
+        @PathVariable("id") id: Long,
     ): ApiResponse<Unit> {
-        service.deleteDiary(userId = user.id, diaryId = diaryId)
+        service.deleteDiary(userId = user.id, diaryId = id)
         return ApiResponse.success(Unit, "일기가 삭제되었습니다.")
     }
 }

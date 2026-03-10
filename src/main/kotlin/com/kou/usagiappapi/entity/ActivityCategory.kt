@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.entity
 
-import com.kou.usagiappapi.service.dto.ActivityCategoryResponseDto
+import com.kou.usagiappapi.activityCategory.service.ActivityCategoryResponseDto
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue

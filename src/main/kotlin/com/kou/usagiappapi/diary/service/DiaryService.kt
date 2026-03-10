@@ -1,27 +1,27 @@
 package com.kou.usagiappapi.diary.service
 
+import com.kou.usagiappapi.activityCategory.service.ActivityCategoryResponseDto
+import com.kou.usagiappapi.diary.entity.Diary
+import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
+import com.kou.usagiappapi.diary.exception.DiaryNotFoundException
+import com.kou.usagiappapi.diary.exception.NotDiaryOwnerException
+import com.kou.usagiappapi.diary.repository.DiaryRepository
 import com.kou.usagiappapi.diary.service.dto.CreateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.CreateDiaryResponseDto
+import com.kou.usagiappapi.diary.service.dto.GetDiariesResponseDto
 import com.kou.usagiappapi.diary.service.dto.GetDiaryResponseDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryResponseDto
-import com.kou.usagiappapi.entity.Diary
 import com.kou.usagiappapi.entity.DiaryActivityCategory
 import com.kou.usagiappapi.entity.toResponseDto
 import com.kou.usagiappapi.exception.ActivityCategoryNotFoundException
-import com.kou.usagiappapi.exception.DiaryAlreadyExistsException
-import com.kou.usagiappapi.exception.DiaryNotFoundException
-import com.kou.usagiappapi.exception.NotDiaryOwnerException
 import com.kou.usagiappapi.exception.UserNotFoundException
 import com.kou.usagiappapi.manager.image.ImageManager
 import com.kou.usagiappapi.manager.image.ImageUploadResult
 import com.kou.usagiappapi.property.CloudinaryProperties
 import com.kou.usagiappapi.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.repository.DiaryActivityCategoryRepository
-import com.kou.usagiappapi.repository.DiaryRepository
 import com.kou.usagiappapi.repository.UserRepository
-import com.kou.usagiappapi.service.GetDiaryListResponseDto
-import com.kou.usagiappapi.service.dto.ActivityCategoryResponseDto
 import com.kou.usagiappapi.tool.DateTool
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -32,23 +32,28 @@ import java.time.LocalDate
 @Service
 @Transactional(readOnly = true)
 class DiaryService(
-    val diaryRepository: DiaryRepository,
-    val userRepository: UserRepository,
-    val activityCategoryRepository: ActivityCategoryRepository,
-    val diaryActivityCategoryRepository: DiaryActivityCategoryRepository,
-    val imageManager: ImageManager,
-    val cloudinaryProperties: CloudinaryProperties,
+    private val diaryRepository: DiaryRepository,
+    private val userRepository: UserRepository,
+    private val activityCategoryRepository: ActivityCategoryRepository,
+    private val diaryActivityCategoryRepository: DiaryActivityCategoryRepository,
+    private val imageManager: ImageManager,
+    private val cloudinaryProperties: CloudinaryProperties,
 ) {
-    fun getDiaryList(
+    companion object {
+        private const val DIARY_IMAGE_WIDTH = 500
+        private const val DIARY_IMAGE_HEIGHT = 300
+    }
+
+    fun getDiaries(
         userId: Long,
         startDate: LocalDate? = null,
         endDate: LocalDate? = null,
-    ): List<GetDiaryListResponseDto> {
-        val start = startDate ?: DateTool.Companion.getFirstDayOfCurrentMonth()
-        val end = endDate ?: DateTool.Companion.getLastDayOfCurrentMonth()
+    ): List<GetDiariesResponseDto> {
+        val start = startDate ?: DateTool.getFirstDayOfCurrentMonth()
+        val end = endDate ?: DateTool.getLastDayOfCurrentMonth()
         val diaries = diaryRepository.findByUserIdAndDateBetweenOrderByDateAsc(userId, start, end)
         return diaries.map {
-            GetDiaryListResponseDto(diaryId = it.id, date = it.date, emotion = it.emotion)
+            GetDiariesResponseDto(diaryId = it.id, date = it.date, emotion = it.emotion)
         }
     }
 
@@ -59,7 +64,7 @@ class DiaryService(
         val diary = getValidatedDiary(userId, diaryId)
         val imageUrl =
             diary.imageId?.let {
-                imageManager.getImageUrl(it, 500, 300)
+                imageManager.getImageUrl(publicId = it, width = DIARY_IMAGE_WIDTH, height = DIARY_IMAGE_HEIGHT)
             }
 
         val diaryActivityCategories =
@@ -110,7 +115,14 @@ class DiaryService(
             diaryId = diary.id,
             date = diary.date,
             emotion = diary.emotion,
-            imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
+            imageUrl =
+                diary.imageId?.let {
+                    imageManager.getImageUrl(
+                        publicId = it,
+                        width = DIARY_IMAGE_WIDTH,
+                        height = DIARY_IMAGE_HEIGHT,
+                    )
+                },
             content = diary.content,
             diaryActivityCategories =
                 diary.diaryActivityCategories.map { it.activityCategory }.toResponseDto(),
@@ -126,8 +138,8 @@ class DiaryService(
     ): UpdateDiaryResponseDto {
         val diary = getValidatedDiary(userId, diaryId)
         val image =
-            handleImage(imageFile = imageFile, deleteImage = requestDto.deleteImage, diary = diary)
-        handleActivityCategory(activityCategoryIds = requestDto.activityCategoryIdList, diary = diary)
+            handleImage(imageFile = imageFile, deleteImage = requestDto.deleteImage ?: false, diary = diary)
+        handleActivityCategory(activityCategoryIds = requestDto.activityCategoryIds, diary = diary)
 
         diary.update(
             emotion = requestDto.emotion,
@@ -140,7 +152,14 @@ class DiaryService(
             diaryId = diary.id,
             date = diary.date,
             emotion = diary.emotion,
-            imageUrl = diary.imageId?.let { imageId -> imageManager.getImageUrl(imageId, 500, 300) },
+            imageUrl =
+                diary.imageId?.let {
+                    imageManager.getImageUrl(
+                        publicId = it,
+                        width = DIARY_IMAGE_WIDTH,
+                        height = DIARY_IMAGE_HEIGHT,
+                    )
+                },
             content = diary.content,
             diaryActivityCategories =
                 diary.diaryActivityCategories.map { it.activityCategory }.toResponseDto(),
@@ -149,15 +168,15 @@ class DiaryService(
 
     private fun handleImage(
         imageFile: MultipartFile?,
-        deleteImage: Boolean? = false,
+        deleteImage: Boolean = false,
         diary: Diary? = null,
     ): ImageUploadResult? {
         if (
-            deleteImage == true ||
+            deleteImage ||
             imageFile != null
         ) {
-            diary?.imageId?.let { imageId ->
-                imageManager.deleteImage(imageId)
+            diary?.imageId?.let {
+                imageManager.deleteImage(it)
             }
         }
 
@@ -165,8 +184,8 @@ class DiaryService(
             imageManager.uploadImage(
                 file = it,
                 uploadFolder = cloudinaryProperties.folder.diary,
-                width = 500,
-                height = 300,
+                width = DIARY_IMAGE_WIDTH,
+                height = DIARY_IMAGE_HEIGHT,
             )
         }
     }
@@ -175,31 +194,24 @@ class DiaryService(
         activityCategoryIds: List<Long>?,
         diary: Diary,
     ) {
-        val activityCategories =
-            activityCategoryIds?.let {
-                val activityCategories = activityCategoryRepository.findAllById(it)
-                if (it.size != activityCategories.size) {
-                    throw ActivityCategoryNotFoundException()
-                }
+        activityCategoryIds ?: return
 
-                activityCategories
-            }
+        val activityCategories = activityCategoryRepository.findAllById(activityCategoryIds)
+        if (activityCategoryIds.size != activityCategories.size) {
+            throw ActivityCategoryNotFoundException()
+        }
+
+        diary.diaryActivityCategories.clear()
+        diaryActivityCategoryRepository.flush()
 
         val diaryActivityCategories =
-            activityCategories?.let {
-                // TODO  diff 기반으로 추가/삭제만 처리하는 방식 고려
-                diary.diaryActivityCategories.clear()
-                diaryActivityCategoryRepository.flush()
-                diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
-                    activityCategories.map {
-                        DiaryActivityCategory(activityCategory = it, diary = diary)
-                    },
-                )
-            }
+            diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
+                activityCategories.map {
+                    DiaryActivityCategory(activityCategory = it, diary = diary)
+                },
+            )
 
-        diaryActivityCategories?.let {
-            diary.diaryActivityCategories.addAll(it)
-        }
+        diary.diaryActivityCategories.addAll(diaryActivityCategories)
     }
 
     @Transactional
