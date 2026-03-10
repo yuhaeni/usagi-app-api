@@ -1,16 +1,16 @@
-package com.kou.usagiappapi.controller
+package com.kou.usagiappapi.diary.controller
 
 import com.kou.usagiappapi.common.dto.ApiResponse
-import com.kou.usagiappapi.controller.dto.CreateDiaryRequest
-import com.kou.usagiappapi.controller.dto.CreateDiaryResponse
-import com.kou.usagiappapi.controller.dto.GetDiaryListResponse
-import com.kou.usagiappapi.controller.dto.GetDiaryResponse
-import com.kou.usagiappapi.controller.dto.UpdateDiaryRequest
-import com.kou.usagiappapi.controller.dto.UpdateDiaryResponse
-import com.kou.usagiappapi.controller.dto.toDto
+import com.kou.usagiappapi.diary.controller.dto.CreateDiaryRequest
+import com.kou.usagiappapi.diary.controller.dto.CreateDiaryResponse
+import com.kou.usagiappapi.diary.controller.dto.GetDiaryListResponse
+import com.kou.usagiappapi.diary.controller.dto.GetDiaryResponse
+import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryRequest
+import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryResponse
+import com.kou.usagiappapi.diary.controller.dto.toDto
+import com.kou.usagiappapi.diary.service.DiaryService
+import com.kou.usagiappapi.diary.service.dto.toResponse
 import com.kou.usagiappapi.security.AuthUser
-import com.kou.usagiappapi.service.DiaryService
-import com.kou.usagiappapi.service.dto.toResponse
 import com.kou.usagiappapi.service.toResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -54,7 +54,7 @@ class DiaryController(
     fun getDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("diaryId") diaryId: Long,
-    ): ApiResponse<GetDiaryResponse> = ApiResponse.success(service.getDiary(user.id, diaryId).toResponse())
+    ): ApiResponse<GetDiaryResponse> = ApiResponse.Companion.success(service.getDiary(user.id, diaryId).toResponse())
 
     @Operation(summary = "일기 작성")
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])

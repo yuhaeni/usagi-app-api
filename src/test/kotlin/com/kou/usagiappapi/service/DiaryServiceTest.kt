@@ -1,6 +1,9 @@
 package com.kou.usagiappapi.service
 
 import com.kou.usagiappapi.IntegrationTestSupport
+import com.kou.usagiappapi.diary.service.DiaryService
+import com.kou.usagiappapi.diary.service.dto.CreateDiaryRequestDto
+import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.entity.ActivityCategory
 import com.kou.usagiappapi.entity.Diary
 import com.kou.usagiappapi.entity.DiaryActivityCategory
@@ -14,8 +17,6 @@ import com.kou.usagiappapi.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.repository.DiaryActivityCategoryRepository
 import com.kou.usagiappapi.repository.DiaryRepository
 import com.kou.usagiappapi.repository.UserRepository
-import com.kou.usagiappapi.service.dto.CreateDiaryRequestDto
-import com.kou.usagiappapi.service.dto.UpdateDiaryRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe

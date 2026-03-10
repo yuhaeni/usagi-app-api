@@ -1,7 +1,7 @@
-package com.kou.usagiappapi.controller.dto
+package com.kou.usagiappapi.diary.controller.dto
 
+import com.kou.usagiappapi.diary.service.dto.CreateDiaryRequestDto
 import com.kou.usagiappapi.enums.Emotion
-import com.kou.usagiappapi.service.dto.CreateDiaryRequestDto
 import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Size
 import org.springframework.web.bind.annotation.RequestPart

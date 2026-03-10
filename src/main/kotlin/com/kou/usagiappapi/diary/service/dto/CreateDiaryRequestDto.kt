@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.service.dto
+package com.kou.usagiappapi.diary.service.dto
 
 import com.kou.usagiappapi.enums.Emotion
 import org.springframework.web.multipart.MultipartFile

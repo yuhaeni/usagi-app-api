@@ -1,7 +1,8 @@
-package com.kou.usagiappapi.service.dto
+package com.kou.usagiappapi.diary.service.dto
 
-import com.kou.usagiappapi.controller.dto.UpdateDiaryResponse
+import com.kou.usagiappapi.diary.controller.dto.UpdateDiaryResponse
 import com.kou.usagiappapi.enums.Emotion
+import com.kou.usagiappapi.service.dto.ActivityCategoryResponseDto
 import java.time.LocalDate
 
 data class UpdateDiaryResponseDto(

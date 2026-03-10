@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.service
 
-import com.kou.usagiappapi.controller.dto.GetDiaryListResponse
+import com.kou.usagiappapi.diary.controller.dto.GetDiaryListResponse
 import com.kou.usagiappapi.enums.Emotion
 import java.time.LocalDate
 

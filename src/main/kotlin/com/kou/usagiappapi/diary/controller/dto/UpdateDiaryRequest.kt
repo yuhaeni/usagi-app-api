@@ -1,7 +1,7 @@
-package com.kou.usagiappapi.controller.dto
+package com.kou.usagiappapi.diary.controller.dto
 
+import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.enums.Emotion
-import com.kou.usagiappapi.service.dto.UpdateDiaryRequestDto
 
 data class UpdateDiaryRequest(
     val emotion: Emotion? = null,

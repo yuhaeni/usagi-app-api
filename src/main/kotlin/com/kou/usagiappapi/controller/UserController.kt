@@ -6,6 +6,7 @@ import com.kou.usagiappapi.controller.dto.UpdateUserProfileRequest
 import com.kou.usagiappapi.controller.dto.UpdateUserProfileResponse
 import com.kou.usagiappapi.controller.dto.toDto
 import com.kou.usagiappapi.controller.dto.toResponse
+import com.kou.usagiappapi.diary.controller.dto.toDto
 import com.kou.usagiappapi.security.AuthUser
 import com.kou.usagiappapi.service.UserService
 import io.swagger.v3.oas.annotations.Operation
