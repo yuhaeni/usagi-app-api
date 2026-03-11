@@ -1,9 +1,9 @@
 package com.kou.usagiappapi.user.entity
 
-import com.kou.usagiappapi.entity.BaseEntity
-import com.kou.usagiappapi.enums.Role
-import com.kou.usagiappapi.enums.SocialProvider
-import com.kou.usagiappapi.enums.UserStatus
+import com.kou.usagiappapi.common.entity.BaseEntity
+import com.kou.usagiappapi.user.enums.Role
+import com.kou.usagiappapi.user.enums.SocialProvider
+import com.kou.usagiappapi.user.enums.UserStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType

@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.diary.controller.dto
 
 import com.kou.usagiappapi.activityCategory.controller.dto.ActivityCategoryResponse
-import com.kou.usagiappapi.enums.Emotion
+import com.kou.usagiappapi.diary.enums.Emotion
 import java.time.LocalDate
 
 data class CreateDiaryResponse(

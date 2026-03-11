@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.auth.social
 
-import com.kou.usagiappapi.enums.SocialProvider
+import com.kou.usagiappapi.user.enums.SocialProvider
 
 data class SocialUserInfo(
     val provider: SocialProvider,

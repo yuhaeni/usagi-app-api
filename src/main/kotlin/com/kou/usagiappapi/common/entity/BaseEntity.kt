@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.entity
+package com.kou.usagiappapi.common.entity
 
 import jakarta.persistence.MappedSuperclass
 import java.time.LocalDateTime

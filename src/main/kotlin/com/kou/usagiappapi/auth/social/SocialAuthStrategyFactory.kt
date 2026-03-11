@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.auth.social
 
 import com.kou.usagiappapi.auth.exception.AuthProviderNotSupportedException
-import com.kou.usagiappapi.enums.SocialProvider
+import com.kou.usagiappapi.user.enums.SocialProvider
 import org.springframework.stereotype.Component
 
 @Component

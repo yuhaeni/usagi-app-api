@@ -1,4 +1,6 @@
-package com.kou.usagiappapi.enums
+package com.kou.usagiappapi.diary.enums
+
+import com.kou.usagiappapi.system.enums.EnumType
 
 enum class Emotion(
     override val description: String,

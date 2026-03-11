@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.system.service
 
-import com.kou.usagiappapi.enums.Emotion
-import com.kou.usagiappapi.enums.EnumType
+import com.kou.usagiappapi.diary.enums.Emotion
+import com.kou.usagiappapi.system.enums.EnumType
 import com.kou.usagiappapi.system.service.dto.GetEnumsResponseDto
 import org.springframework.stereotype.Service
 

@@ -7,7 +7,7 @@ import com.kou.usagiappapi.auth.exception.AuthEmailNotVerifiedException
 import com.kou.usagiappapi.auth.exception.AuthInvalidIdTokenException
 import com.kou.usagiappapi.auth.social.SocialAuthStrategy
 import com.kou.usagiappapi.auth.social.SocialUserInfo
-import com.kou.usagiappapi.enums.SocialProvider
+import com.kou.usagiappapi.user.enums.SocialProvider
 import org.springframework.core.env.Environment
 import org.springframework.core.env.Profiles
 import org.springframework.stereotype.Component

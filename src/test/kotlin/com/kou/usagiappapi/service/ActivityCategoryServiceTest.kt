@@ -4,8 +4,8 @@ import com.kou.usagiappapi.IntegrationTestSupport
 import com.kou.usagiappapi.activityCategory.entity.ActivityCategory
 import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.activityCategory.service.ActivityCategoryService
-import com.kou.usagiappapi.enums.SocialProvider
 import com.kou.usagiappapi.user.entity.User
+import com.kou.usagiappapi.user.enums.SocialProvider
 import com.kou.usagiappapi.user.repository.UserRepository
 import io.kotest.matchers.shouldBe
 import org.springframework.transaction.annotation.Transactional

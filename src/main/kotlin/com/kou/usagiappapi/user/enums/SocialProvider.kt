@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.enums
+package com.kou.usagiappapi.user.enums
 
 enum class SocialProvider(
     val registrationId: String,

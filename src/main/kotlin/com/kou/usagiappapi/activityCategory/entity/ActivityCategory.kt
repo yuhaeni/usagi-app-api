@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.activityCategory.entity
 
 import com.kou.usagiappapi.activityCategory.service.dto.ActivityCategoryResponseDto
-import com.kou.usagiappapi.entity.BaseEntity
+import com.kou.usagiappapi.common.entity.BaseEntity
 import com.kou.usagiappapi.user.entity.User
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

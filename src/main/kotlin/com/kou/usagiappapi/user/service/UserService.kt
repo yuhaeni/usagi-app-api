@@ -2,7 +2,6 @@ package com.kou.usagiappapi.user.service
 
 import com.kou.usagiappapi.auth.exception.AuthLoginRequiredException
 import com.kou.usagiappapi.auth.exception.AuthUnauthorizedTokenAccessException
-import com.kou.usagiappapi.enums.UserStatus
 import com.kou.usagiappapi.manager.RedisManager
 import com.kou.usagiappapi.manager.image.ImageManager
 import com.kou.usagiappapi.manager.image.ImageUploadResult
@@ -11,6 +10,7 @@ import com.kou.usagiappapi.repository.RefreshTokenRepository
 import com.kou.usagiappapi.security.jwt.JwtTokenProvider
 import com.kou.usagiappapi.user.controller.dto.UpdateUserProfileResponse
 import com.kou.usagiappapi.user.entity.User
+import com.kou.usagiappapi.user.enums.UserStatus
 import com.kou.usagiappapi.user.exception.UserNotFoundException
 import com.kou.usagiappapi.user.repository.UserRepository
 import com.kou.usagiappapi.user.service.dto.GetUserProfileResponseDto

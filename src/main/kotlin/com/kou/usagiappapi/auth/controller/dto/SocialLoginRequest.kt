@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.auth.controller.dto
 
 import com.kou.usagiappapi.auth.service.dto.SocialLoginRequestDto
-import com.kou.usagiappapi.enums.SocialProvider
+import com.kou.usagiappapi.user.enums.SocialProvider
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class SocialLoginRequest(

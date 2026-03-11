@@ -1,8 +1,8 @@
 package com.kou.usagiappapi.security.jwt
 
 import com.kou.usagiappapi.auth.exception.AuthGenerateTokenFailedException
-import com.kou.usagiappapi.enums.Role
 import com.kou.usagiappapi.security.AuthUser
+import com.kou.usagiappapi.user.enums.Role
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws

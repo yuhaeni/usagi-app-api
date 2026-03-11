@@ -1,4 +1,4 @@
-package com.kou.usagiappapi.enums
+package com.kou.usagiappapi.system.enums
 
 interface EnumType {
     val name: String
