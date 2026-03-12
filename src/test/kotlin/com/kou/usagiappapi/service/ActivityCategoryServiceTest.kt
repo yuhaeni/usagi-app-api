@@ -45,7 +45,7 @@ class ActivityCategoryServiceTest(
         describe("활동 카테고리 목록 조회") {
             context("올바른 유저 정보가 들어오면") {
                 it("기본 카테고리가 조회된다.)") {
-                    val response = activityCategoryService.getActivityCategoryList(savedUser.id)
+                    val response = activityCategoryService.getActivityCategories(savedUser.id)
                     response.size shouldBe 5
                 }
             }
