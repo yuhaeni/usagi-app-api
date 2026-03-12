@@ -21,7 +21,6 @@ import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -60,9 +59,14 @@ class DiaryController(
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createDiary(
         @AuthenticationPrincipal user: AuthUser,
-        @Valid @ModelAttribute request: CreateDiaryRequest,
+        @Valid
+        @Parameter(
+            content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
+        )
+        @RequestPart("data") request: CreateDiaryRequest,
+        @RequestPart("imageFile", required = false) imageFile: MultipartFile?,
     ): ApiResponse<CreateDiaryResponse> =
-        ApiResponse.success(service.createDiary(user.id, request.toDto()).toResponse())
+        ApiResponse.success(service.createDiary(user.id, request.toDto(), imageFile).toResponse())
 
     @Operation(summary = "일기 수정")
     @PatchMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])

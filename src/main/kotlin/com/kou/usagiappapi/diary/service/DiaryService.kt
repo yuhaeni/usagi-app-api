@@ -89,6 +89,7 @@ class DiaryService(
     fun createDiary(
         userId: Long,
         requestDto: CreateDiaryRequestDto,
+        imageFile: MultipartFile?,
     ): CreateDiaryResponseDto {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException()
         val savedDiaries = diaryRepository.findDiariesByUserIdAndDate(userId, requestDto.date)
@@ -96,7 +97,7 @@ class DiaryService(
             throw DiaryAlreadyExistsException(requestDto.date)
         }
 
-        val image = handleImage(imageFile = requestDto.imageFile)
+        val image = handleImage(imageFile = imageFile)
 
         val diary =
             diaryRepository.save(
