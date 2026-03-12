@@ -61,13 +61,66 @@ AWS Lightsail Container Service
 
 ### 🚧 개발 예정
 - [ ] 일기 인물 태그 기능 (누구와 하루를 보냈는지)
-- [ ] DDD 설계 적용
 - [ ] 푸시 알림 연동
 - [ ] 액션 카테고리 유저별 커스텀
 
 ## 📂 프로젝트 구조
-*** DDD 설계 적용 후 수정 추가 tree
-
+├── activityCategory
+│    ├── controller
+│    │    └── dto
+│    ├── entity
+│    ├── exception
+│    ├── repository
+│    └── service
+│        └── dto
+├── auth
+│    ├── controller
+│    │    └── dto
+│    ├── entity
+│    ├── enums
+│    ├── exception
+│    ├── repository
+│    ├── service
+│    │    └── dto
+│    └── social
+│        └── google
+├── diary
+│    ├── controller
+│    │    ├── DiaryController.kt
+│    │    └── dto
+│    ├── entity
+│    ├── enums
+│    ├── exception
+│    ├── repository
+│    └── service
+│        └── dto
+├── exception
+├── global
+│    ├── config
+│    ├── image
+│    ├── redis
+│    └── security
+│        └── jwt
+├── shared
+│    ├── dto
+│    ├── entity
+│    └── tool
+├── system
+│    ├── controller
+│    │    └── dto
+│    ├── enums
+│    └── service
+│        └── dto
+└── user
+    ├── controller
+    │    └── dto
+    ├── entity
+    ├── enums
+    ├── exception
+    ├── repository
+    └── service
+        ├── UserService.kt
+        └── dto
 
 ## 🔗 API 명세
 <img width="1423" height="231" alt="image" src="https://github.com/user-attachments/assets/3f04a171-d33e-4057-9f3c-c0c445c37dbe" />
