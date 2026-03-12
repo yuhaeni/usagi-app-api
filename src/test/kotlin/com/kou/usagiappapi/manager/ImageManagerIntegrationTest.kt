@@ -1,9 +1,9 @@
 package com.kou.usagiappapi.manager
 
 import com.kou.usagiappapi.IntegrationTestSupport
-import com.kou.usagiappapi.manager.image.ImageManager
-import com.kou.usagiappapi.manager.image.ImageNotFoundException
-import com.kou.usagiappapi.property.CloudinaryProperties
+import com.kou.usagiappapi.global.image.CloudinaryProperties
+import com.kou.usagiappapi.global.image.ImageManager
+import com.kou.usagiappapi.global.image.ImageNotFoundException
 import io.kotest.core.annotation.Tags
 import io.kotest.matchers.string.shouldContain
 import org.springframework.mock.web.MockMultipartFile

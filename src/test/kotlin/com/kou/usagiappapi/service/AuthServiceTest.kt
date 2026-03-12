@@ -3,11 +3,11 @@ package com.kou.usagiappapi.service
 import com.kou.usagiappapi.IntegrationTestSupport
 import com.kou.usagiappapi.auth.entity.RefreshToken
 import com.kou.usagiappapi.auth.exception.AuthInvalidIdTokenException
+import com.kou.usagiappapi.auth.repository.RefreshTokenRepository
 import com.kou.usagiappapi.auth.service.AuthService
 import com.kou.usagiappapi.auth.service.dto.RefreshTokenRequestDto
 import com.kou.usagiappapi.auth.service.dto.SocialLoginRequestDto
-import com.kou.usagiappapi.repository.RefreshTokenRepository
-import com.kou.usagiappapi.security.jwt.JwtTokenProvider
+import com.kou.usagiappapi.global.security.jwt.JwtTokenProvider
 import com.kou.usagiappapi.user.entity.User
 import com.kou.usagiappapi.user.enums.SocialProvider
 import com.kou.usagiappapi.user.repository.UserRepository

@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.exception
 
-import com.kou.usagiappapi.common.dto.ApiResponse
+import com.kou.usagiappapi.shared.dto.ApiResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler

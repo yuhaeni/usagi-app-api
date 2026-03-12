@@ -3,9 +3,9 @@ package com.kou.usagiappapi.manager
 import com.cloudinary.Cloudinary
 import com.cloudinary.Url
 import com.kou.usagiappapi.IntegrationTestSupport
-import com.kou.usagiappapi.manager.image.ImageManager
-import com.kou.usagiappapi.manager.image.ImageMissingException
-import com.kou.usagiappapi.property.CloudinaryProperties
+import com.kou.usagiappapi.global.image.CloudinaryProperties
+import com.kou.usagiappapi.global.image.ImageManager
+import com.kou.usagiappapi.global.image.ImageMissingException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every

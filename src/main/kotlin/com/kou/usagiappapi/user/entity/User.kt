@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.user.entity
 
-import com.kou.usagiappapi.common.entity.BaseEntity
+import com.kou.usagiappapi.shared.entity.BaseEntity
 import com.kou.usagiappapi.user.enums.Role
 import com.kou.usagiappapi.user.enums.SocialProvider
 import com.kou.usagiappapi.user.enums.UserStatus

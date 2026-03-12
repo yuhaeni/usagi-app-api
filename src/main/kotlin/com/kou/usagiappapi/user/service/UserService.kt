@@ -2,12 +2,12 @@ package com.kou.usagiappapi.user.service
 
 import com.kou.usagiappapi.auth.exception.AuthLoginRequiredException
 import com.kou.usagiappapi.auth.exception.AuthUnauthorizedTokenAccessException
-import com.kou.usagiappapi.manager.RedisManager
-import com.kou.usagiappapi.manager.image.ImageManager
-import com.kou.usagiappapi.manager.image.ImageUploadResult
-import com.kou.usagiappapi.property.CloudinaryProperties
-import com.kou.usagiappapi.repository.RefreshTokenRepository
-import com.kou.usagiappapi.security.jwt.JwtTokenProvider
+import com.kou.usagiappapi.auth.repository.RefreshTokenRepository
+import com.kou.usagiappapi.global.image.CloudinaryProperties
+import com.kou.usagiappapi.global.image.ImageManager
+import com.kou.usagiappapi.global.image.ImageUploadResult
+import com.kou.usagiappapi.global.redis.RedisManager
+import com.kou.usagiappapi.global.security.jwt.JwtTokenProvider
 import com.kou.usagiappapi.user.controller.dto.UpdateUserProfileResponse
 import com.kou.usagiappapi.user.entity.User
 import com.kou.usagiappapi.user.enums.UserStatus

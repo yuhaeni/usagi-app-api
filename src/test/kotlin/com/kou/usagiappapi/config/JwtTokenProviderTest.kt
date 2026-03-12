@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.config
 
-import com.kou.usagiappapi.security.jwt.JwtProperties
-import com.kou.usagiappapi.security.jwt.JwtTokenProvider
+import com.kou.usagiappapi.global.security.jwt.JwtProperties
+import com.kou.usagiappapi.global.security.jwt.JwtTokenProvider
 import com.kou.usagiappapi.user.enums.Role
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe

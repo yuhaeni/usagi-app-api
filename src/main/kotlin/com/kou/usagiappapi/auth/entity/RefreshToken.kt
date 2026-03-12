@@ -1,6 +1,6 @@
 package com.kou.usagiappapi.auth.entity
 
-import com.kou.usagiappapi.common.entity.BaseEntity
+import com.kou.usagiappapi.shared.entity.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

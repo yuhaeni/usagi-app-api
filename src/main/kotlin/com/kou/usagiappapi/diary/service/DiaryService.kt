@@ -1,9 +1,9 @@
 package com.kou.usagiappapi.diary.service
 
 import com.kou.usagiappapi.activityCategory.entity.toResponseDto
+import com.kou.usagiappapi.activityCategory.exception.ActivityCategoryNotFoundException
 import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
 import com.kou.usagiappapi.activityCategory.service.dto.ActivityCategoryResponseDto
-import com.kou.usagiappapi.common.tool.DateTool
 import com.kou.usagiappapi.diary.entity.Diary
 import com.kou.usagiappapi.diary.entity.DiaryActivityCategory
 import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
@@ -17,10 +17,10 @@ import com.kou.usagiappapi.diary.service.dto.GetDiariesResponseDto
 import com.kou.usagiappapi.diary.service.dto.GetDiaryResponseDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryRequestDto
 import com.kou.usagiappapi.diary.service.dto.UpdateDiaryResponseDto
-import com.kou.usagiappapi.exception.ActivityCategoryNotFoundException
-import com.kou.usagiappapi.manager.image.ImageManager
-import com.kou.usagiappapi.manager.image.ImageUploadResult
-import com.kou.usagiappapi.property.CloudinaryProperties
+import com.kou.usagiappapi.global.image.CloudinaryProperties
+import com.kou.usagiappapi.global.image.ImageManager
+import com.kou.usagiappapi.global.image.ImageUploadResult
+import com.kou.usagiappapi.shared.tool.DateTool
 import com.kou.usagiappapi.user.exception.UserNotFoundException
 import com.kou.usagiappapi.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull

@@ -1,0 +1,202 @@
+package com.kou.usagiappapi.global.security.jwt
+
+import com.kou.usagiappapi.auth.exception.AuthGenerateTokenFailedException
+import com.kou.usagiappapi.global.security.AuthUser
+import com.kou.usagiappapi.user.enums.Role
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jws
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.security.Keys
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.Date
+import javax.crypto.SecretKey
+
+@Component
+class JwtTokenProvider(
+    private val jwtProperties: JwtProperties,
+) {
+    companion object {
+        // TODO token type enum으로?
+        private const val TOKEN_TYPE_ACCESS = "ACCESS"
+        private const val TOKEN_TYPE_REFRESH = "REFRESH"
+        private const val TOKEN_TYPE_CLAIM = "type"
+        private const val EMAIL_CLAIM = "email"
+        private const val ROLE_CLAIM = "role"
+    }
+
+    private val logger: Logger = LoggerFactory.getLogger(javaClass)
+
+    private val secretKey: SecretKey by lazy {
+        println(jwtProperties.secret)
+        Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
+    }
+
+    /**
+     * Access Token 생성
+     */
+    fun generateAccessToken(
+        userId: Long,
+        email: String,
+        role: Role,
+    ): String =
+        generateToken(
+            userId = userId,
+            email = email,
+            role = role,
+            expireDuration = jwtProperties.accessTokenExpireDuration,
+            tokenType = TOKEN_TYPE_ACCESS,
+        )
+
+    /**
+     * Refresh Token 생성
+     */
+    fun generateRefreshToken(
+        userId: Long,
+        email: String,
+        role: Role,
+    ): String =
+        generateToken(
+            userId = userId,
+            email = email,
+            role = role,
+            expireDuration = jwtProperties.refreshTokenExpireDuration,
+            tokenType = TOKEN_TYPE_REFRESH,
+        )
+
+    /**
+     * 토큰 생성 (공통 로직)
+     */
+    fun generateToken(
+        userId: Long,
+        email: String,
+        role: Role,
+        expireDuration: Long,
+        tokenType: String,
+    ): String {
+        val now = Date()
+        val expireDate = Date(now.time + expireDuration)
+
+        try {
+            return Jwts
+                .builder()
+                .subject(userId.toString())
+                .claim(EMAIL_CLAIM, email)
+                .claim(TOKEN_TYPE_CLAIM, tokenType)
+                .claim(ROLE_CLAIM, role)
+                .issuedAt(now)
+                .expiration(expireDate)
+                .signWith(secretKey)
+                .compact()
+        } catch (e: Exception) {
+            logger.error(e.message, e)
+            throw AuthGenerateTokenFailedException()
+        }
+    }
+
+    /**
+     * 토큰 검증
+     */
+    fun validateToken(token: String): Boolean =
+        runCatching { parseToken(token) }
+            .onFailure(::logValidationError)
+            .isSuccess
+
+    /**
+     * 검증 에러 로깅
+     */
+    private fun logValidationError(e: Throwable) {
+        val message =
+            when (e) {
+                is SecurityException -> "Invalid JWT signature"
+                is MalformedJwtException -> "Invalid JWT token"
+                is ExpiredJwtException -> "Expired JWT token"
+                is UnsupportedJwtException -> "Unsupported JWT token"
+                is IllegalArgumentException -> "JWT claims string is empty"
+                else -> "JWT token validation error"
+            }
+        logger.error("$message: ${e.message}")
+    }
+
+    /**
+     * 토큰에서 userId 추출
+     */
+    private fun getUserIdFromToken(token: String): Long = getClaims(token).subject.toLong()
+
+    /**
+     * 토큰에서 email 추출
+     */
+    fun getEmailFromToken(token: String): String = getClaims(token).get(EMAIL_CLAIM, String::class.java)
+
+    /**
+     * 토큰에서 role 추출
+     */
+    fun getRoleFromToken(token: String): String = getClaims(token).get(ROLE_CLAIM, String::class.java)
+
+    /**
+     * 토큰에서 모든 Claims 추출
+     */
+    private fun getClaims(token: String): Claims = parseToken(token).payload
+
+    /**
+     * 토큰 만료 시간 확인
+     */
+    fun getExpiration(token: String): Date = parseToken(token).payload.expiration
+
+    /**
+     * 리프레시 토큰이 지정된 기간 내에 만료되는지 확인
+     *
+     * @param refreshToken 검증할 리프레시 토큰
+     * @param baseDays 만료 임박 기준 일수 (기본 7일)
+     * @return 0일 ~ baseDays 이내 만료 예정이면 true, 이미 만료되었거나 기간이 더 남았으면 false
+     *
+     * 예시:
+     * - 6일 23시간 남음 → true
+     * - 0일 23시간 남음 → true (당일 만료)
+     * - 이미 만료됨 → false
+     * - 8일 남음 → false
+     */
+    fun shouldRefreshToken(
+        refreshToken: String,
+        baseDays: Long = 7,
+    ): Boolean {
+        val expiration = getExpiration(refreshToken).toInstant()
+        val now = Instant.now()
+        val deadline = now.plus(baseDays, ChronoUnit.DAYS)
+        return expiration in now..deadline
+    }
+
+    /**
+     * 토큰 파싱
+     * */
+    private fun parseToken(token: String): Jws<Claims> =
+        Jwts
+            .parser()
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+
+    /**
+     * 토큰 기준으로 AuthUser 생성
+     * */
+    fun getAuthUser(token: String) =
+        AuthUser(
+            id = getUserIdFromToken(token),
+            email = getEmailFromToken(token),
+            role = getRoleFromToken(token),
+        )
+
+    /**
+     * 토큰 만료까지 남은 시간 추출
+     * */
+    fun getRemainingTime(token: String): Long {
+        val expiration = getExpiration(token)
+        return expiration.time - Date().time
+    }
+}

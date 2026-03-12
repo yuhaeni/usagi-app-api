@@ -7,8 +7,8 @@ import com.kou.usagiappapi.auth.controller.dto.SocialLoginResponse
 import com.kou.usagiappapi.auth.controller.dto.toDto
 import com.kou.usagiappapi.auth.controller.dto.toResponse
 import com.kou.usagiappapi.auth.service.AuthService
-import com.kou.usagiappapi.common.dto.ApiResponse
-import com.kou.usagiappapi.security.AuthUser
+import com.kou.usagiappapi.global.security.AuthUser
+import com.kou.usagiappapi.shared.dto.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest

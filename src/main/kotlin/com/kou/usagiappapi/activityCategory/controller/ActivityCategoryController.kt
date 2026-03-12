@@ -3,8 +3,8 @@ package com.kou.usagiappapi.activityCategory.controller
 import com.kou.usagiappapi.activityCategory.controller.dto.GetActivityCategoriesResponse
 import com.kou.usagiappapi.activityCategory.service.ActivityCategoryService
 import com.kou.usagiappapi.activityCategory.service.dto.toResponse
-import com.kou.usagiappapi.common.dto.ApiResponse
-import com.kou.usagiappapi.security.AuthUser
+import com.kou.usagiappapi.global.security.AuthUser
+import com.kou.usagiappapi.shared.dto.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.annotation.AuthenticationPrincipal

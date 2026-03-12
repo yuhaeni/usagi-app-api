@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.diary.entity
 
-import com.kou.usagiappapi.common.entity.BaseEntity
 import com.kou.usagiappapi.diary.enums.Emotion
+import com.kou.usagiappapi.shared.entity.BaseEntity
 import com.kou.usagiappapi.user.entity.User
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity

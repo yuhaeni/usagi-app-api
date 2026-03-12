@@ -1,7 +1,7 @@
 package com.kou.usagiappapi.user.controller
 
-import com.kou.usagiappapi.common.dto.ApiResponse
-import com.kou.usagiappapi.security.AuthUser
+import com.kou.usagiappapi.global.security.AuthUser
+import com.kou.usagiappapi.shared.dto.ApiResponse
 import com.kou.usagiappapi.user.controller.dto.GetUserProfileResponse
 import com.kou.usagiappapi.user.controller.dto.UpdateUserProfileRequest
 import com.kou.usagiappapi.user.controller.dto.UpdateUserProfileResponse
