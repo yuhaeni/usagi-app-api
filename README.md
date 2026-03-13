@@ -35,20 +35,18 @@ AWS Lightsail Container Service
 ```
 
 ## 🛠️ 기술 스택
-
-| 분류 | 기술 |
-|------|------|
-
-| **Language** | Kotlin 2.2.21 |
-| **Framework** | Spring Boot 4.0.1 |
-| **Database** | Postgresql 15 |
-| **ORM** | Spring Data JPA |
-| **Auth** | Spring Security + JWT |
-| **Build** | Gradle|
-| **Infra** | AWS Lightsail |
-| **IaC** | Terraform |
-| **CI/CD** | GitHub Actions
-| **Docs** | Swagger (SpringDoc) |
+```
+| Language | Kotlin 2.2.21 |
+| Framework | Spring Boot 4.0.1 |
+| Database | Postgresql 15 |
+| ORM | Spring Data JPA |
+| Auth | Spring Security + JWT |
+| Build | Gradle|
+| Infra | AWS Lightsail |
+| IaC | Terraform |
+| CI/CD | GitHub Actions
+| Docs | Swagger (SpringDoc) |
+```
 
 ## 📋 주요 기능
 
@@ -65,6 +63,7 @@ AWS Lightsail Container Service
 - [ ] 액션 카테고리 유저별 커스텀
 
 ## 📂 프로젝트 구조
+```
 ├── activityCategory
 │    ├── controller
 │    │    └── dto
@@ -119,8 +118,8 @@ AWS Lightsail Container Service
     ├── exception
     ├── repository
     └── service
-        ├── UserService.kt
         └── dto
+```
 
 ## 🔗 API 명세
 <img width="1423" height="231" alt="image" src="https://github.com/user-attachments/assets/3f04a171-d33e-4057-9f3c-c0c445c37dbe" />
