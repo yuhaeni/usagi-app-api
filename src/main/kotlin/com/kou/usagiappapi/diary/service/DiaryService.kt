@@ -3,7 +3,6 @@ package com.kou.usagiappapi.diary.service
 import com.kou.usagiappapi.activityCategory.entity.toResponseDto
 import com.kou.usagiappapi.activityCategory.exception.ActivityCategoryNotFoundException
 import com.kou.usagiappapi.activityCategory.repository.ActivityCategoryRepository
-import com.kou.usagiappapi.activityCategory.service.dto.ActivityCategoryResponseDto
 import com.kou.usagiappapi.diary.entity.Diary
 import com.kou.usagiappapi.diary.entity.DiaryActivityCategory
 import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
@@ -64,16 +63,14 @@ class DiaryService(
         val diary = getValidatedDiary(userId, diaryId)
         val imageUrl =
             diary.imageId?.let {
-                imageManager.getImageUrl(publicId = it, width = DIARY_IMAGE_WIDTH, height = DIARY_IMAGE_HEIGHT)
+                getDiaryImageUrl(it)
             }
 
         val diaryActivityCategories =
-            diary.diaryActivityCategories.map {
-                ActivityCategoryResponseDto(
-                    id = it.activityCategory.id,
-                    name = it.activityCategory.name,
-                )
-            }
+            diary.diaryActivityCategories
+                .map {
+                    it.activityCategory
+                }.toResponseDto()
 
         return GetDiaryResponseDto(
             diaryId = diary.id,
@@ -118,11 +115,7 @@ class DiaryService(
             emotion = diary.emotion,
             imageUrl =
                 diary.imageId?.let {
-                    imageManager.getImageUrl(
-                        publicId = it,
-                        width = DIARY_IMAGE_WIDTH,
-                        height = DIARY_IMAGE_HEIGHT,
-                    )
+                    getDiaryImageUrl(it)
                 },
             content = diary.content,
             diaryActivityCategories =
@@ -155,17 +148,22 @@ class DiaryService(
             emotion = diary.emotion,
             imageUrl =
                 diary.imageId?.let {
-                    imageManager.getImageUrl(
-                        publicId = it,
-                        width = DIARY_IMAGE_WIDTH,
-                        height = DIARY_IMAGE_HEIGHT,
-                    )
+                    getDiaryImageUrl(it)
                 },
             content = diary.content,
             diaryActivityCategories =
                 diary.diaryActivityCategories.map { it.activityCategory }.toResponseDto(),
         )
     }
+
+    private fun getDiaryImageUrl(imageId: String?): String? =
+        imageId?.let {
+            imageManager.getImageUrl(
+                publicId = it,
+                width = DIARY_IMAGE_WIDTH,
+                height = DIARY_IMAGE_HEIGHT,
+            )
+        }
 
     private fun handleImage(
         imageFile: MultipartFile?,

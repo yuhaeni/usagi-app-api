@@ -73,6 +73,7 @@ class DiaryController(
     fun updateDiary(
         @AuthenticationPrincipal user: AuthUser,
         @PathVariable("id") id: Long,
+        @Valid
         @RequestPart("data", required = false)
         @Parameter(
             content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)],
