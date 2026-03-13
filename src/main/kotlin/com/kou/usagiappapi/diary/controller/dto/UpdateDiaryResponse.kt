@@ -1,0 +1,14 @@
+package com.kou.usagiappapi.diary.controller.dto
+
+import com.kou.usagiappapi.activityCategory.service.dto.ActivityCategoryResponseDto
+import com.kou.usagiappapi.diary.enums.Emotion
+import java.time.LocalDate
+
+data class UpdateDiaryResponse(
+    val diaryId: Long,
+    val date: LocalDate,
+    val emotion: Emotion,
+    val imageUrl: String? = null,
+    val content: String? = null,
+    val diaryActivityCategories: List<ActivityCategoryResponseDto> = emptyList(),
+)

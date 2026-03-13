@@ -1,10 +1,10 @@
 # 🐰 우사기(우리의, 사적인,기록) - 일기 감정 기록 API (Emotion Diary API)
 
-하루의 감정을 기록하고 분석하는 REST API 서비스
+하루의 일상을 기록하는 REST API 서비스
 
 ## 📌 프로젝트 소개
 
-사용자가 일상의 감정을 기록하고, 감정 패턴을 분석할 수 있는 백엔드 서비스입니다.
+사용자가 일상의 감정과 어떤 활동을 했는지 기록하는 기능을 제공하는 서비스 입니다.
 
 ## 🏗️ 아키텍처
 ```
@@ -56,14 +56,71 @@ AWS Lightsail Container Service
 - [✅] Google 소셜 로그인을 통한 회원가입 / 로그인 (JWT 기반 인증)
 - [✅] 일기 CRUD (생성 / 조회 / 수정 / 삭제)
 - [✅] 감정 태그 분류 (기쁨, 슬픔, 분노, 불안 등)
-- [ ] 액션 카테고리 관리 (데이트, 친구 모임, 가족 행사, 업무 등)
-- [ ] 일기 인물 태그 기능 (누구와 하루를 보냈는지)
-- [ ] 기간별 감정 통계 조회
+- [✅] 액션 카테고리 관리 (데이트, 친구 모임, 가족 행사, 업무 등)
+
 
 ### 🚧 개발 예정
-- [ ] DDD 설계 적용
+- [ ] 일기 인물 태그 기능 (누구와 하루를 보냈는지)
 - [ ] 푸시 알림 연동
 - [ ] 액션 카테고리 유저별 커스텀
+
+## 📂 프로젝트 구조
+├── activityCategory
+│    ├── controller
+│    │    └── dto
+│    ├── entity
+│    ├── exception
+│    ├── repository
+│    └── service
+│        └── dto
+├── auth
+│    ├── controller
+│    │    └── dto
+│    ├── entity
+│    ├── enums
+│    ├── exception
+│    ├── repository
+│    ├── service
+│    │    └── dto
+│    └── social
+│        └── google
+├── diary
+│    ├── controller
+│    │    ├── DiaryController.kt
+│    │    └── dto
+│    ├── entity
+│    ├── enums
+│    ├── exception
+│    ├── repository
+│    └── service
+│        └── dto
+├── exception
+├── global
+│    ├── config
+│    ├── image
+│    ├── redis
+│    └── security
+│        └── jwt
+├── shared
+│    ├── dto
+│    ├── entity
+│    └── tool
+├── system
+│    ├── controller
+│    │    └── dto
+│    ├── enums
+│    └── service
+│        └── dto
+└── user
+    ├── controller
+    │    └── dto
+    ├── entity
+    ├── enums
+    ├── exception
+    ├── repository
+    └── service
+        ├── UserService.kt
+        └── dto
 
 ## 🔗 API 명세
 <img width="1423" height="231" alt="image" src="https://github.com/user-attachments/assets/3f04a171-d33e-4057-9f3c-c0c445c37dbe" />

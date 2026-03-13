@@ -9,7 +9,7 @@ plugins {
 
 group = "com.kou"
 version = "0.0.1-SNAPSHOT"
-description = "kou-app-api"
+description = "usagi-app-api"
 
 java {
     toolchain {
