@@ -122,8 +122,7 @@ AWS Lightsail Container Service
 ```
 
 ## 🔗 API 명세
-<img width="1423" height="231" alt="image" src="https://github.com/user-attachments/assets/3f04a171-d33e-4057-9f3c-c0c445c37dbe" />
-<img width="1416" height="344" alt="image" src="https://github.com/user-attachments/assets/d0e717bc-0f38-4e75-9bac-cf1c60a27c72" />
-<img width="1416" height="287" alt="image" src="https://github.com/user-attachments/assets/8d6020dc-36ed-46ff-a005-dc06b1f5b734" />
-<img width="1416" height="109" alt="image" src="https://github.com/user-attachments/assets/16f81f52-22cd-48b2-b0e5-154ac743f70f" />
+<img width="1452" height="345" alt="Image" src="https://github.com/user-attachments/assets/da1015ef-1476-4448-83e3-234fb002b2fb" />
+<img width="1452" height="294" alt="Image" src="https://github.com/user-attachments/assets/b23c3766-46f6-4968-addd-762e368907f5" />
+<img width="1452" height="458" alt="Image" src="https://github.com/user-attachments/assets/cefc4bae-88cd-4d3b-8e16-5482956ceb4f" />
 
