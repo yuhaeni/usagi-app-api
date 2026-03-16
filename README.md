@@ -7,32 +7,11 @@
 사용자가 일상의 감정과 어떤 활동을 했는지 기록하는 기능을 제공하는 서비스 입니다.
 
 ## 🏗️ 아키텍처
-```
-┌──────────────┐     ┌──────────────────┐     ┌──────────────┐
-│   Client     │────▶│  Spring Boot API │────▶│   Database   │
-│  (Mobile)    │◀────│  (Kotlin)        │◀────│ (postgresql) │
-└──────────────┘     └──────────────────┘     └──────────────┘
-                              │
-                              ▼
-                     ┌──────────────────┐
-                     │   AWS Lightsail  │
-                     └──────────────────┘
-```
+<img width="800" height="500" alt="Image" src="https://github.com/user-attachments/assets/19d507c4-1a78-47db-8ac8-c3321fcc1012" />
 
 ## 🌐 인프라 구성
-```
-GitHub Actions (CI/CD)
-    │
-    ▼
-Docker Image
-    │
-    ▼
-AWS Lightsail Container Service
-(nano, scale: 1)
-    │
-    └──▶ AWS Lightsail PostgreSQL
-         (postgres_15, micro_2.0)
-```
+<img width="800" height="500" alt="Image" src="https://github.com/user-attachments/assets/502b1100-fd0b-411e-9ab8-123c5cea1096" />
+
 
 ## 🛠️ 기술 스택
 ```
