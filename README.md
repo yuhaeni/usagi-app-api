@@ -1,6 +1,7 @@
 # 🐰 우사기(우리의, 사적인,기록) - 일기 감정 기록 API (Emotion Diary API)
 
-하루의 일상을 기록하는 REST API 서비스
+<img width="8192" height="4137" alt="image" src="https://github.com/user-attachments/assets/6f856deb-0e8c-42d3-b2fa-73ebaa0ab001" />
+
 
 ## 📌 프로젝트 소개
 
