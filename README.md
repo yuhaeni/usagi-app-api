@@ -1,6 +1,6 @@
 # 🐰 우사기(우리의, 사적인,기록) - 일기 감정 기록 API (Emotion Diary API)
 
-<img width="8192" height="4137" alt="image" src="https://github.com/user-attachments/assets/6f856deb-0e8c-42d3-b2fa-73ebaa0ab001" />
+<img width="8192" height="4158" alt="image" src="https://github.com/user-attachments/assets/4d2e97b3-af7b-4d15-9d5e-57b4d71f5e7e" />
 
 
 ## 📌 프로젝트 소개
