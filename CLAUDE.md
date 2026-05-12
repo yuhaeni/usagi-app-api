@@ -61,6 +61,10 @@ data class ApiResponse<T>(
 )
 ```
 
+**Entity classes:** `@Entity`, `@MappedSuperclass`, `@Embeddable` 클래스는 `kotlin("plugin.allopen")`으로 자동 `open` 처리됨 (`build.gradle.kts`). Hibernate가 LAZY 프록시 서브클래스를 만들기 위해 필수 — 빠지면 `@ManyToOne(fetch = LAZY)`가 조용히 EAGER로 fallback됨.
+
+IntelliJ에서 테스트 실행 시 컴파일러 플러그인이 적용되도록 Settings → Build Tools → Gradle에서 **Build and run using / Run tests using**을 모두 `Gradle`로 설정해야 함.
+
 **Testing stack:**
 - Kotest `DescribeSpec` DSL for all tests
 - MockK for mocking
