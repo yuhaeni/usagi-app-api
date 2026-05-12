@@ -7,7 +7,6 @@ import com.kou.usagiappapi.diary.entity.Diary
 import com.kou.usagiappapi.diary.entity.DiaryActivityCategory
 import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
 import com.kou.usagiappapi.diary.exception.DiaryNotFoundException
-import com.kou.usagiappapi.diary.exception.NotDiaryOwnerException
 import com.kou.usagiappapi.diary.repository.DiaryActivityCategoryRepository
 import com.kou.usagiappapi.diary.repository.DiaryRepository
 import com.kou.usagiappapi.diary.service.dto.CreateDiaryRequestDto
@@ -229,12 +228,5 @@ class DiaryService(
     private fun getValidatedDiary(
         userId: Long,
         diaryId: Long,
-    ): Diary {
-        val diary = diaryRepository.findByIdOrNull(diaryId) ?: throw DiaryNotFoundException()
-        if (diary.user.id != userId) {
-            throw NotDiaryOwnerException()
-        }
-
-        return diary
-    }
+    ): Diary = diaryRepository.findByIdAndUserId(diaryId, userId) ?: throw DiaryNotFoundException()
 }

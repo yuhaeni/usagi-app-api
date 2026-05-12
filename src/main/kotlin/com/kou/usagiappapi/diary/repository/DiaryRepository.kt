@@ -15,4 +15,9 @@ interface DiaryRepository : JpaRepository<Diary, Long> {
         dateAfter: LocalDate,
         dateBefore: LocalDate,
     ): MutableList<Diary>
+
+    fun findByIdAndUserId(
+        id: Long,
+        userId: Long,
+    ): Diary?
 }
