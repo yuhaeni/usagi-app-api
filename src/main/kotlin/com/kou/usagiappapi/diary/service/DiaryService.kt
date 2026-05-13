@@ -21,6 +21,7 @@ import com.kou.usagiappapi.global.image.ImageUploadResult
 import com.kou.usagiappapi.shared.tool.DateTool
 import com.kou.usagiappapi.user.exception.UserNotFoundException
 import com.kou.usagiappapi.user.repository.UserRepository
+import jakarta.persistence.EntityManager
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -36,6 +37,7 @@ class DiaryService(
     private val diaryActivityCategoryRepository: DiaryActivityCategoryRepository,
     private val imageManager: ImageManager,
     private val cloudinaryProperties: CloudinaryProperties,
+    private val entityManager: EntityManager,
 ) {
     companion object {
         private const val DIARY_IMAGE_WIDTH = 500
@@ -199,8 +201,12 @@ class DiaryService(
             throw ActivityCategoryNotFoundException()
         }
 
+        // 단일 DELETE 한 번으로 기존 매핑 일괄 삭제 (orphanRemoval의 N개 개별 DELETE 회피)
+        diaryActivityCategoryRepository.deleteAllByDiary(diary)
+        // JPQL bulk delete는 persistence context를 우회하므로, 스테일 엔티티를 detach해서
+        // commit 시 orphanRemoval이 이미 사라진 row를 다시 DELETE하지 않도록 막는다.
+        diary.diaryActivityCategories.forEach { entityManager.detach(it) }
         diary.diaryActivityCategories.clear()
-        diaryActivityCategoryRepository.flush()
 
         val diaryActivityCategories =
             diaryActivityCategoryRepository.saveAll<DiaryActivityCategory>(
