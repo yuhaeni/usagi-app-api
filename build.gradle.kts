@@ -5,13 +5,6 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     kotlin("plugin.jpa") version "2.2.21"
-    kotlin("plugin.allopen") version "2.2.21"
-}
-
-allOpen {
-    annotation("jakarta.persistence.Entity")
-    annotation("jakarta.persistence.MappedSuperclass")
-    annotation("jakarta.persistence.Embeddable")
 }
 
 group = "com.kou"

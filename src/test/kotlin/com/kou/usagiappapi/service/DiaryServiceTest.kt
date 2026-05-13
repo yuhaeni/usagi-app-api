@@ -8,6 +8,7 @@ import com.kou.usagiappapi.diary.entity.DiaryActivityCategory
 import com.kou.usagiappapi.diary.enums.Emotion
 import com.kou.usagiappapi.diary.exception.DiaryAlreadyExistsException
 import com.kou.usagiappapi.diary.exception.DiaryNotFoundException
+import com.kou.usagiappapi.diary.exception.NotDiaryOwnerException
 import com.kou.usagiappapi.diary.repository.DiaryActivityCategoryRepository
 import com.kou.usagiappapi.diary.repository.DiaryRepository
 import com.kou.usagiappapi.diary.service.DiaryService
@@ -221,8 +222,8 @@ class DiaryServiceTest(
             }
 
             context("다른 사용자의 조회하려는 경우") {
-                it("DiaryNotFoundException이 발생한다 (소유자 아닌 경우 존재 여부를 노출하지 않음)") {
-                    shouldThrow<DiaryNotFoundException> {
+                it("NotDiaryOwnerException이 발생한다") {
+                    shouldThrow<NotDiaryOwnerException> {
                         service.getDiary(otherUser.id, savedDiary.id)
                     }
                 }
@@ -253,9 +254,9 @@ class DiaryServiceTest(
             }
 
             context("다른 사용자의 수정하려는 경우") {
-                it("DiaryNotFoundException이 발생한다 (소유자 아닌 경우 존재 여부를 노출하지 않음)") {
+                it("NotDiaryOwnerException이 발생한다") {
                     val request = UpdateDiaryRequestDto(emotion = Emotion.NEUTRAL)
-                    shouldThrow<DiaryNotFoundException> {
+                    shouldThrow<NotDiaryOwnerException> {
                         service.updateDiary(otherUser.id, savedDiary.id, request)
                     }
                 }
@@ -303,8 +304,8 @@ class DiaryServiceTest(
         describe("일기(감정) 삭제") {
 
             context("다른 사용자의 일기를 삭제하려는 경우") {
-                it("DiaryNotFoundException이 발생한다 (소유자 아닌 경우 존재 여부를 노출하지 않음)") {
-                    shouldThrow<DiaryNotFoundException> {
+                it("NotDiaryOwnerException이 발생한다") {
+                    shouldThrow<NotDiaryOwnerException> {
                         service.deleteDiary(otherUser.id, savedDiary.id)
                     }
                 }

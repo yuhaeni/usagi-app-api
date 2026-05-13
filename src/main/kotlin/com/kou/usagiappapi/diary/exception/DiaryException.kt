@@ -16,3 +16,5 @@ class DiaryNotFoundException : DiaryException(status = HttpStatus.NOT_FOUND, mes
 class DiaryAlreadyExistsException(
     date: LocalDate,
 ) : DiaryException(status = HttpStatus.CONFLICT, message = "${date}에 이미 일기가 존재합니다.")
+
+class NotDiaryOwnerException : DiaryException(status = HttpStatus.FORBIDDEN, message = "접근 권한이 없습니다.")
