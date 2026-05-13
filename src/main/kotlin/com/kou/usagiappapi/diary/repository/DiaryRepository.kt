@@ -1,6 +1,7 @@
 package com.kou.usagiappapi.diary.repository
 
 import com.kou.usagiappapi.diary.entity.Diary
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.LocalDate
 
@@ -16,6 +17,12 @@ interface DiaryRepository : JpaRepository<Diary, Long> {
         dateBefore: LocalDate,
     ): MutableList<Diary>
 
+    @EntityGraph(
+        attributePaths = [
+            "diaryActivityCategories",
+            "diaryActivityCategories.activityCategory",
+        ],
+    )
     fun findByIdAndUserId(
         id: Long,
         userId: Long,

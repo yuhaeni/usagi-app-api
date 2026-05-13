@@ -12,7 +12,7 @@ import com.kou.usagiappapi.diary.service.DiaryService
 import com.kou.usagiappapi.user.entity.User
 import com.kou.usagiappapi.user.enums.SocialProvider
 import com.kou.usagiappapi.user.repository.UserRepository
-import io.kotest.matchers.longs.shouldBeGreaterThan
+import io.kotest.matchers.longs.shouldBeLessThanOrEqual
 import jakarta.persistence.EntityManager
 import org.hibernate.SessionFactory
 import org.hibernate.stat.Statistics
@@ -79,19 +79,17 @@ class DiaryServiceNPlusOneTest(
             statistics.clear()
         }
 
-        describe("getDiary N+1 베이스라인 (개선 전)") {
+        describe("getDiary 쿼리 수 회귀 가드") {
             context("활동 카테고리 ${activityCategoryCount}개를 가진 일기를 단건 조회할 때") {
-                // N+1 특성: 활동 카테고리마다 LAZY 프록시 SELECT가 발생
-                // → 실행 쿼리 수가 활동 카테고리 수보다 많아짐
-                // 개선 후에는 활동 카테고리 수와 무관하게 일정 횟수만 실행되어
-                // shouldBeGreaterThan → shouldBeLessThanOrEqual 로 뒤집어야 함
-                it("실행 쿼리 수가 활동 카테고리 수보다 많다 (N+1 발생)") {
+                // @EntityGraph로 diaryActivityCategories와 그 안의 activityCategory를 fetch graph에 포함시켜
+                // 단일 SELECT(JOIN)로 처리한다. 실행 쿼리 수는 활동 카테고리 수와 무관하게 일정해야 한다.
+                it("실행 쿼리 수가 활동 카테고리 수와 무관하게 일정하다") {
                     service.getDiary(savedUser.id, savedDiary.id)
 
                     val queryCount = statistics.prepareStatementCount
                     println("=== getDiary 실행 쿼리 수: $queryCount (활동 카테고리: ${activityCategoryCount}개) ===")
 
-                    queryCount shouldBeGreaterThan activityCategoryCount.toLong()
+                    queryCount shouldBeLessThanOrEqual 2L
                 }
             }
         }
