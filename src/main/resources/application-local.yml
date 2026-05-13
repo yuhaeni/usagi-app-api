@@ -1,6 +1,6 @@
 spring:
     datasource:
-        url: jdbc:postgresql://localhost:5433/usagi_app_local
+        url: jdbc:postgresql://localhost:5432/usagi_app_local
         username: admin
         password: 1234qwer
         driver-class-name: org.postgresql.Driver
@@ -13,7 +13,7 @@ spring:
     data:
         redis:
             host: localhost
-            port: 6380
+            port: 6379
             password:
 
 jwt:
