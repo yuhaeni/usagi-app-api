@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 class User(
     var name: String? = null,
     var profileImageId: String? = null,
-    @Column(nullable = false, unique = true, updatable = false)
+    @Column(nullable = false, updatable = false)
     val email: String,
     var password: String? = null,
     @Enumerated(EnumType.STRING)
