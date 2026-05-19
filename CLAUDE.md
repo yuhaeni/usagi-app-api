@@ -38,7 +38,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Each domain lives under `src/main/kotlin/com/kou/usagiappapi/` and is self-contained:
 
 - **auth** — Google OAuth2 login, JWT access/refresh token lifecycle
-- **user** — User profiles, ACTIVE/INACTIVE status
+- **user** — User profiles, ACTIVE/WITHDRAWN status
 - **diary** — Core diary CRUD, emotion tags, activity associations
 - **activityCategory** — Activity/action tag categories
 - **system** — System constants/configuration endpoints
