@@ -3,6 +3,7 @@ name: Claude Auto Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches: [dev]
 
 jobs:
   review:
