@@ -128,3 +128,7 @@ AWS Lightsail Container Service
 <img width="1416" height="287" alt="image" src="https://github.com/user-attachments/assets/8d6020dc-36ed-46ff-a005-dc06b1f5b734" />
 <img width="1416" height="109" alt="image" src="https://github.com/user-attachments/assets/16f81f52-22cd-48b2-b0e5-154ac743f70f" />
 
+## 🤖 자동 코드 리뷰
+
+`dev` 브랜치로 향하는 PR은 `Claude Auto Review` GitHub Actions 워크플로우(`.github/workflows/claude-review.yml`)에 의해 자동으로 한국어 1차 코드 리뷰가 달립니다 (코드 품질·버그·컨벤션·테스트·보안 5개 축, blocker/nit 우선순위).
+
