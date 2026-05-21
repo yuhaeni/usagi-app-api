@@ -42,3 +42,6 @@ out/
 ### macOS ###
 .DS_Store
 **/.DS_Store
+
+### 로컬 임시 SQL (EXPLAIN ANALYZE / 더미 데이터 등) ###
+/*.sql
