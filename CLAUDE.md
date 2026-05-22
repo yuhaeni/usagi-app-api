@@ -71,6 +71,8 @@ IntelliJ에서 테스트 실행 시 컴파일러 플러그인이 적용되도록
 - TestContainers spins up real PostgreSQL (postgres:15-alpine) and Redis (redis:alpine) for integration tests
 - Integration tests extend `IntegrationTestSupport` and run under `spring.profiles.active=test`
 
+**DB 인덱스:** 엔티티 `@Index` / `@Table(indexes = ...)` 어노테이션 대신 **Flyway 마이그레이션 SQL로 직접 관리**한다. 추가/변경/제거 라이프사이클을 `V?__...sql` 파일로 일원화해 추적성을 확보하고 코드/DB 불일치 표면을 차단.
+
 ### Tech Stack
 
 | Layer | Technology |

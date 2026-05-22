@@ -17,6 +17,7 @@ import com.kou.usagiappapi.user.entity.User
 import com.kou.usagiappapi.user.enums.SocialProvider
 import com.kou.usagiappapi.user.repository.UserRepository
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.data.repository.findByIdOrNull
@@ -157,6 +158,25 @@ class DiaryServiceTest(
                     shouldThrow<DiaryAlreadyExistsException> {
                         service.createDiary(userId = savedUser.id, requestDto = requestDto, imageFile = null)
                     }
+                }
+            }
+
+            context("다른 사용자가 같은 날짜에 일기를 보유한 경우") {
+                it("본인은 그 날짜에 정상적으로 일기를 작성할 수 있다.") {
+                    val targetDate = LocalDate.parse("2026-04-01")
+                    diaryRepository.save(
+                        Diary(
+                            user = otherUser,
+                            date = targetDate,
+                            emotion = Emotion.NEUTRAL,
+                        ),
+                    )
+
+                    val requestDto = CreateDiaryRequestDto(date = targetDate, emotion = Emotion.HAPPY)
+                    val response = service.createDiary(userId = savedUser.id, requestDto = requestDto, imageFile = null)
+
+                    response.date shouldBe targetDate
+                    response.emotion shouldBe Emotion.HAPPY
                 }
             }
 
@@ -343,6 +363,49 @@ class DiaryServiceTest(
                             LocalDate.parse("2026-01-31"),
                         )
                     response.size shouldBe 4
+                }
+            }
+
+            context("다른 사용자가 같은 기간에 일기를 보유한 경우") {
+                it("본인 일기만 조회되고 다른 사용자의 일기는 섞이지 않는다.") {
+                    val otherUserDiary =
+                        diaryRepository.save(
+                            Diary(
+                                user = otherUser,
+                                date = LocalDate.parse("2026-01-15"),
+                                emotion = Emotion.NEUTRAL,
+                            ),
+                        )
+
+                    val response =
+                        service.getDiaries(
+                            savedUser.id,
+                            LocalDate.parse("2026-01-01"),
+                            LocalDate.parse("2026-01-31"),
+                        )
+                    response.map { it.diaryId } shouldNotContain otherUserDiary.id
+                }
+            }
+
+            context("start, end 가 같은 단일 날짜인 경우") {
+                it("BETWEEN 의 양 끝점은 inclusive 하게 동작한다.") {
+                    val responseStart =
+                        service.getDiaries(
+                            savedUser.id,
+                            LocalDate.parse("2026-01-02"),
+                            LocalDate.parse("2026-01-02"),
+                        )
+                    responseStart.size shouldBe 1
+                    responseStart[0].diaryId shouldBe savedDiary4.id
+
+                    val responseEnd =
+                        service.getDiaries(
+                            savedUser.id,
+                            LocalDate.parse("2026-01-30"),
+                            LocalDate.parse("2026-01-30"),
+                        )
+                    responseEnd.size shouldBe 1
+                    responseEnd[0].diaryId shouldBe savedDiary7.id
                 }
             }
         }
