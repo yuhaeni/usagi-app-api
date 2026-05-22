@@ -43,5 +43,5 @@ out/
 .DS_Store
 **/.DS_Store
 
-### 로컬 임시 SQL (EXPLAIN ANALYZE / 더미 데이터 등) ###
-/*.sql
+### 로컬 SQL 탐색/검증 작업물 (EXPLAIN ANALYZE / 더미 데이터 등) ###
+/scripts/db-explorations/

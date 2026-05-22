@@ -8,9 +8,9 @@
 --   - findDiariesByUserIdAndDate(userId, date)            — 일기 작성 시 중복 체크
 --   - findByUserIdAndDateBetweenOrderByDateAsc(userId, ..) — 월별/기간 조회 (ORDER BY date 까지 인덱스로 처리)
 CREATE INDEX IF NOT EXISTS idx_diary_user_id_date ON diary (user_id, date);
--- P3. refresh_token 인덱스
+-- P3. refresh_token 제약조건 및 인덱스
 -- 대상 쿼리
 --   - findByTokenHash
 --   - deleteAllByUserId
-CREATE INDEX IF NOT EXISTS idx_refresh_token_token_hash ON refresh_token (token_hash);
+ALTER TABLE refresh_token ADD CONSTRAINT uk_refresh_token_token_hash UNIQUE (token_hash);
 CREATE INDEX IF NOT EXISTS idx_refresh_token_user_id ON refresh_token (user_id);

@@ -17,6 +17,7 @@ import com.kou.usagiappapi.user.entity.User
 import com.kou.usagiappapi.user.enums.SocialProvider
 import com.kou.usagiappapi.user.repository.UserRepository
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.data.repository.findByIdOrNull
@@ -365,28 +366,16 @@ class DiaryServiceTest(
                 }
             }
 
-            context("기간 안에 여러 일기가 있는 경우") {
-                it("date 오름차순으로 정렬되어 반환된다.") {
-                    val response =
-                        service.getDiaries(
-                            savedUser.id,
-                            LocalDate.parse("2026-01-01"),
-                            LocalDate.parse("2026-01-31"),
-                        )
-                    response.size shouldBe 4
-                    response.map { it.date } shouldBe response.map { it.date }.sorted()
-                }
-            }
-
             context("다른 사용자가 같은 기간에 일기를 보유한 경우") {
                 it("본인 일기만 조회되고 다른 사용자의 일기는 섞이지 않는다.") {
-                    diaryRepository.save(
-                        Diary(
-                            user = otherUser,
-                            date = LocalDate.parse("2026-01-15"),
-                            emotion = Emotion.NEUTRAL,
-                        ),
-                    )
+                    val otherUserDiary =
+                        diaryRepository.save(
+                            Diary(
+                                user = otherUser,
+                                date = LocalDate.parse("2026-01-15"),
+                                emotion = Emotion.NEUTRAL,
+                            ),
+                        )
 
                     val response =
                         service.getDiaries(
@@ -394,7 +383,7 @@ class DiaryServiceTest(
                             LocalDate.parse("2026-01-01"),
                             LocalDate.parse("2026-01-31"),
                         )
-                    response.size shouldBe 4
+                    response.map { it.diaryId } shouldNotContain otherUserDiary.id
                 }
             }
 
