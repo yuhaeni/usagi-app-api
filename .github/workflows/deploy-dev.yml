@@ -235,6 +235,7 @@ jobs:
                     --arg cloudinary_api_key "${{ secrets.CLOUDINARY_API_KEY }}" \
                     --arg cloudinary_api_secret "${{ secrets.CLOUDINARY_API_SECRET }}" \
                     --arg grafana_image "${{ steps.image-names.outputs.grafana_image }}" \
+                    --arg grafana_admin_user "${{ secrets.USAGI_DEV_GRAFANA_ADMIN_USER }}" \
                     --arg grafana_admin_pass "${{ secrets.USAGI_DEV_GRAFANA_ADMIN_PASSWORD }}" \
                     --arg grafana_root_url "${{ steps.service-url.outputs.url }}/grafana/" \
                     '{
@@ -273,14 +274,15 @@ jobs:
                           }
                         },
                         prometheus: {
-                            image: $prom_image,
-                            ports: {
-                                "9090": "TCP"
-                            }
+                          image: $prom_image,
+                          ports: {
+                            "9090": "TCP"
+                          }
                         },
                        grafana: {
                         image: $grafana_image,
                         environment: {
+                            GF_SECURITY_ADMIN_USER: $grafana_admin_user,
                             GF_SECURITY_ADMIN_PASSWORD: $grafana_admin_pass,
                             GF_SERVER_ROOT_URL: $grafana_root_url,
                             GF_SERVER_SERVE_FROM_SUB_PATH: "true",
