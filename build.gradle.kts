@@ -49,6 +49,7 @@ dependencies {
     implementation("com.cloudinary:cloudinary-http44:1.39.0")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.16.4")
     testImplementation("io.mockk:mockk:1.13.17")
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
