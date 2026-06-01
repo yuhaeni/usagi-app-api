@@ -97,4 +97,4 @@ IntelliJ에서 테스트 실행 시 컴파일러 플러그인이 적용되도록
 
 CI/CD via GitHub Actions: PRs to `dev` run tests; pushes to `dev` build a Docker image and deploy to AWS Lightsail (Spring Boot app + Nginx + Redis containers).
 
-Claude Auto Review (`.github/workflows/claude-review.yml`)는 **base가 `dev`인 PR에서만** 자동으로 한국어 1차 코드 리뷰를 작성한다 (5개 축: 품질·버그·컨벤션·테스트·보안 + blocker/nit). 동일 워크플로우 파일은 default branch validation을 위해 main에도 동일 내용으로 머지되어 있어야 동작.
+코드 리뷰는 GitHub Actions 자동 리뷰 대신 **로컬 Claude Code CLI 의 `/code-review`** 로 받는다 (`/code-review` / `/code-review high` / `/code-review ultra <PR#>`). 머지 직전 사용자가 호출 → diff 리뷰 받고 push.
