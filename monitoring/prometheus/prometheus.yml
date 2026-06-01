@@ -1,0 +1,13 @@
+global:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+    external_labels:
+        cluster: usagi-app
+        env: dev
+
+scrape_configs:
+    - job_name: usagi-app-api
+      metrics_path: /actuator/prometheus
+      static_configs:
+          - targets: ['localhost:8080']
+#          - targets: ['host.docker.internal:8080']
