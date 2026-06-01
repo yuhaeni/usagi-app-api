@@ -12,6 +12,8 @@ env:
     SERVICE_NAME: usagi-app-dev
     APP_IMAGE_NAME: usagi-app-dev
     NGINX_IMAGE_NAME: usagi-nginx-dev
+    PROMETHEUS_IMAGE_NAME: usagi-prometheus-dev
+    GRAFANA_IMAGE_NAME: usagi-grafana-dev
 
 jobs:
     deploy:
@@ -82,11 +84,37 @@ jobs:
                   cache-to: type=gha,mode=max
                   load: true
 
+            - name: Build Prometheus Docker image (DEV)
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./monitoring/prometheus
+                  file: ./monitoring/prometheus/Dockerfile
+                  tags: |
+                      ${{ env.PROMETHEUS_IMAGE_NAME }}:${{ github.sha }}
+                      ${{ env.PROMETHEUS_IMAGE_NAME }}:latest-dev
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  load: true
+
+            - name: Build Grafana Docker image (DEV)
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./monitoring/grafana
+                  file: ./monitoring/grafana/Dockerfile
+                  tags: |
+                        ${{ env.GRAFANA_IMAGE_NAME }}:${{ github.sha }}
+                        ${{ env.GRAFANA_IMAGE_NAME }}:latest-dev
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  load: true
+
             - name: Verify Docker images
               run: |
                   echo "=== DEV Environment Images ==="
                   docker images | grep ${{ env.APP_IMAGE_NAME }}
                   docker images | grep ${{ env.NGINX_IMAGE_NAME }}
+                  docker images | grep ${{ env.PROMETHEUS_IMAGE_NAME }}
+                  docker images | grep ${{ env.GRAFANA_IMAGE_NAME }}
 
             # ============================================
             # Deploy to Lightsail
@@ -120,6 +148,22 @@ jobs:
                     --image ${{ env.NGINX_IMAGE_NAME }}:${{ github.sha }} \
                     --region ${{ env.AWS_REGION }}
 
+            - name: Push Prometheus image to Lightsail
+              run: |
+                  aws lightsail push-container-image \
+                    --service-name ${{ env.SERVICE_NAME }} \
+                    --label prometheus-${{ github.sha }} \
+                    --image ${{ env.PROMETHEUS_IMAGE_NAME }}:${{ github.sha }} \
+                    --region ${{ env.AWS_REGION }}
+
+            - name: Push Grafana image to Lightsail
+              run: |
+                  aws lightsail push-container-image \
+                  --service-name ${{ env.SERVICE_NAME }} \
+                  --label grafana-${{ github.sha }} \
+                  --image ${{ env.GRAFANA_IMAGE_NAME }}:${{ github.sha }} \
+                  --region ${{ env.AWS_REGION }}
+
             - name: Get pushed image names
               id: image-names
               run: |
@@ -127,10 +171,24 @@ jobs:
 
                   NGINX_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("nginx-${{ github.sha }}")) | .image' | head -n 1)
 
+                  PROMETHEUS_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("prometheus-${{ github.sha }}")) | .image' | head -n 1)
+
+                  GRAFANA_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} --region ${{ env.AWS_REGION }} | jq -r '.containerImages[] | select(.image | contains("grafana-${{ github.sha }}")) | .image' | head -n 1)
+
                   if [[ -z "$APP_IMAGE" ]]; then
                     echo "Error: Could not find APP_IMAGE matching ${{ github.sha }}"
                     exit 1
                   fi
+
+                  if [[ -z "$PROMETHEUS_IMAGE" ]]; then
+                    echo "Error: Could not find PROMETHEUS_IMAGE matching ${{ github.sha }}"
+                    exit 1
+                  fi
+
+                    if [[ -z "$GRAFANA_IMAGE" ]]; then
+                        echo "Error: Could not find GRAFANA_IMAGE matching ${{ github.sha }}"
+                        exit 1
+                    fi
 
                   echo "app_image=$APP_IMAGE" >> $GITHUB_OUTPUT
                   echo "nginx_image=$NGINX_IMAGE" >> $GITHUB_OUTPUT
@@ -138,11 +196,34 @@ jobs:
                   echo "Found App Image: $APP_IMAGE"
                   echo "Found Nginx Image: $NGINX_IMAGE"
 
+                  echo "prometheus_image=$PROMETHEUS_IMAGE" >> $GITHUB_OUTPUT
+                  echo "Found Prometheus Image: $PROMETHEUS_IMAGE"
+
+                  echo "grafana_image=$GRAFANA_IMAGE" >> $GITHUB_OUTPUT
+                  echo "Found Grafana Image: $GRAFANA_IMAGE"
+
+            - name: Get Lightsail service URL
+              id: service-url
+              run: |
+                  URL=$(aws lightsail get-container-services \
+                      --service-name ${{ env.SERVICE_NAME }} \
+                      --region ${{ env.AWS_REGION }} \
+                      --query 'containerServices[0].url' \
+                      --output text)
+                  URL=${URL%/}
+                  if [[ -z "$URL" || "$URL" == "None" ]]; then
+                      echo "Error: Could not resolve service URL (서비스가 아직 첫 배포 안 되었을 수 있음)"
+                      exit 1
+                  fi
+                  echo "url=$URL" >> $GITHUB_OUTPUT
+                  echo "Lightsail service URL: $URL"
+
             - name: Create deployment configuration
               run: |
                   jq -n \
                     --arg app_image "${{ steps.image-names.outputs.app_image }}" \
                     --arg nginx_image "${{ steps.image-names.outputs.nginx_image }}" \
+                    --arg prom_image "${{ steps.image-names.outputs.prometheus_image }}" \
                     --arg db_url "${{ secrets.USAGI_DEV_DB_URL }}" \
                     --arg db_user "${{ secrets.USAGI_DEV_DB_USERNAME }}" \
                     --arg db_pass "${{ secrets.USAGI_DEV_DB_PASSWORD }}" \
@@ -153,6 +234,10 @@ jobs:
                     --arg cloudinary_cloud_name "${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
                     --arg cloudinary_api_key "${{ secrets.CLOUDINARY_API_KEY }}" \
                     --arg cloudinary_api_secret "${{ secrets.CLOUDINARY_API_SECRET }}" \
+                    --arg grafana_image "${{ steps.image-names.outputs.grafana_image }}" \
+                    --arg grafana_admin_user "${{ secrets.USAGI_DEV_GRAFANA_ADMIN_USER }}" \
+                    --arg grafana_admin_pass "${{ secrets.USAGI_DEV_GRAFANA_ADMIN_PASSWORD }}" \
+                    --arg grafana_root_url "${{ steps.service-url.outputs.url }}/grafana/" \
                     '{
                       containers: {
                         app: {
@@ -187,7 +272,27 @@ jobs:
                           ports: {
                             "6379": "TCP"
                           }
-                        }
+                        },
+                        prometheus: {
+                          image: $prom_image,
+                          ports: {
+                            "9090": "TCP"
+                          }
+                        },
+                       grafana: {
+                        image: $grafana_image,
+                        environment: {
+                            GF_SECURITY_ADMIN_USER: $grafana_admin_user,
+                            GF_SECURITY_ADMIN_PASSWORD: $grafana_admin_pass,
+                            GF_SERVER_ROOT_URL: $grafana_root_url,
+                            GF_SERVER_SERVE_FROM_SUB_PATH: "true",
+                            GF_AUTH_ANONYMOUS_ENABLED: "false",
+                            GF_USERS_ALLOW_SIGN_UP: "false"
+                            },
+                            ports: {
+                                "3000": "TCP"
+                            }
+                        },
                       },
                       publicEndpoint: {
                         containerName: "nginx",
